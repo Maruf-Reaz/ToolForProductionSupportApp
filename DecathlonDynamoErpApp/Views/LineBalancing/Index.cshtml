@@ -1,0 +1,2303 @@
+﻿@model IEnumerable<Dynamo.Model.LineBalancing.LineBalancingState>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+}
+
+@{
+    ViewData["Title"] = "Line Balancing";
+    var trClass = "";
+}
+
+@section Css {
+    <link asp-append-version="true" rel="stylesheet" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+    <link asp-append-version="true" rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+    <link asp-append-version="true" rel="stylesheet" href="~/vendor/lightbox/lightbox.min.css">
+    <link asp-append-version="true" rel="stylesheet" href="~/css/incentive.css" />
+}
+
+@section Sole {
+    <style>
+        .card .form-control {
+            padding: 5px;
+            text-align: center;
+            font-size: 11px;
+            height: calc(1.5em + 1.25rem + 10px);
+        }
+
+        #allTableDiv .select2-selection {
+            font-size: 11px;
+        }
+
+        #operationId .select2-results__option {
+            font-size: 11px;
+        }
+
+        #lineBalancingTbody .select2-selection {
+            border: 0 !important;
+        }
+
+        .select2-dropdown {
+            min-width: 400px !important;
+        }
+
+        #allTableDiv tr td select.form-control {
+            border-radius: 0;
+            -webkit-appearance: none;
+            border: 0;
+        }
+
+        #allTableDiv .table tbody tr td#noData {
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .line-balancing-img {
+            width: 150px
+        }
+
+        .m-type {
+            min-width: 150px;
+        }
+
+        .operationrow {
+            min-width: 120px;
+        }
+
+        .oid-a,
+        .oid-b,
+        .oid-c,
+        .oid-d {
+            min-width: 50px;
+        }
+
+        #lineBalancingTbody tr,
+        #lineBalancingTbody tr td .select2-container,
+        #lineBalancingTbody tr td select.form-control {
+            height: 35px;
+            color: #333;
+        }
+
+        #lineBalancingTbody .select2-container .select2-selection--single {
+            color: #333;
+        }
+
+            #lineBalancingTbody .select2-container .select2-selection--single .select2-selection__rendered {
+                white-space: normal;
+            }
+
+        #lineBalancingTbody .select2-selection {
+            padding-top: .2rem !important;
+        }
+
+        #lineBalancingTbody .select2-selection__rendered {
+            line-height: 1.3 !important;
+        }
+
+        #allTableDiv .table tbody tr td input.form-control {
+            padding: .2rem;
+        }
+
+        .select2-container--open .select2-dropdown--below {
+            border-top: 1px solid #dee2e6;
+        }
+
+        .select2-container--open .select2-dropdown--above {
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        #lineBalancingTbody .select2-selection {
+            background: transparent;
+            padding: .2rem;
+        }
+
+        .table-top {
+            overflow-y: hidden;
+        }
+
+        .rowsn {
+            width: 40px
+        }
+
+        .machineName {
+            line-height: 1.3 !important;
+            font-size: 11px;
+            white-space: normal;
+            padding: .2rem;
+        }
+
+        .form-control {
+            color: #333;
+        }
+
+        .table tr td:first-child,
+        .table tr th:first-child {
+            border-left: 0;
+        }
+
+        .table tr td:last-child,
+        .table tr th:last-child {
+            border-right: 0;
+        }
+
+        #allTableDiv .table thead tr th,
+        #allTableDiv .table tbody tr td {
+            border-color: #ddd;
+        }
+
+        .alloc-time {
+            min-width: 170px
+        }
+
+        .cycle-time {
+            min-width: 124px
+        }
+
+        .operation-no {
+            min-width: 138px
+        }
+
+        .allocatedTime1,
+        .allocatedTime2,
+        .allocatedTime3,
+        .allocatedTime4 {
+            font-size: 11px !important;
+        }
+
+        .table-bottom .table td {
+            padding-top: .4rem !important;
+            padding-bottom: .4rem !important;
+            vertical-align: middle;
+        }
+
+        .table-bottom .table th {
+            text-align: center;
+            padding-top: .5rem !important;
+            padding-bottom: .5rem !important;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Balance Line</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="/LineBalancing/AllLines">Line Balancing</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Balance Line</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="AllLines" asp-controller="LineBalancing">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header border-bottom-0 p-2">
+            <div class="row m-0">
+                <div class="col-lg-6 m-auto">
+                    <input type="hidden" id="ParticularLineBalancingId" name="ParticularLineBalancingId" class="" value="@ViewBag.ParticularLineBalancing.Id" />
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="h4 px-2 py-0 font-weight-normal">Line Balancing Of:</td>
+                                <td class="h4 px-2 py-0">@ViewBag.Line.LineNumber</td>
+                            </tr>
+                            <tr>
+                                <td class="h4 px-2 py-0 font-weight-normal">Section:</td>
+                                <td class="h4 px-2 py-0">@ViewBag.Line.Section.Name</td>
+                            </tr>
+                            <tr>
+                                <td class="h4 px-2 py-0 font-weight-normal">Conception:</td>
+                                <td class="h4 px-2 py-0">@ViewBag.ParticularLineBalancing.StandardOperationTime.SotModel.Name</td>
+                            </tr>
+                            <tr>
+                                <td class="h4 px-2 py-0 font-weight-normal">Who:</td>
+                                <td class="h4 px-2 py-0">@ViewBag.ParticularLineBalancing.Who</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-lg-6">
+                    <div class="d-flex justify-content-end">
+
+                        <a class="example-image-link" href="~/files/sot_models/@ViewBag.ParticularLineBalancing.StandardOperationTime.SotModel.Photo" data-lightbox="example-1">
+                            <img class="d-block example-image line-balancing-img rounded" src="~/files/sot_models/@ViewBag.ParticularLineBalancing.StandardOperationTime.SotModel.Photo" alt="..." />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="">
+                @*Operator information table*@
+                <div id="allTableDiv">
+                    <div id="lineBalancingTable">
+                        <div class="table-responsive table-top">
+                            <table class="table table-classic table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="text-center thead-date align-middle rowsn" rowspan="2">O/N</th>
+                                        <th class="text-center align-middle operationrow" rowspan="2">Operation</th>
+                                        <th class="text-center align-middle m-type" rowspan="2">M. Type</th>
+
+                                        <th colspan="4" class="text-center border-bottom operation-id">Operator Id</th>
+                                        <th colspan="4" class="text-center border-bottom operation-no">Operator No</th>
+                                        <th colspan="4" class="text-center border-bottom cycle-time">Cycle Time</th>
+                                        <th colspan="4" class="text-center border-bottom alloc-time">Allocated Time</th>
+                                        @*<th colspan="4" class="text-center">Output</th>*@
+                                        <th class="text-center align-middle" rowspan="2">Action</th>
+                                    </tr>
+                                    <tr>
+                                        @*<th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>*@
+
+                                        @*Operation Id*@
+                                        <th class="text-center oid-a">A</th>
+                                        <th class="text-center oid-b">B</th>
+                                        <th class="text-center oid-c">C</th>
+                                        <th class="text-center oid-d">D</th>
+                                        @*Operator No*@
+                                        <th class="text-center">A</th>
+                                        <th class="text-center">B</th>
+                                        <th class="text-center">C</th>
+                                        <th class="text-center">D</th>
+                                        @*Cycle Time*@
+                                        <th class="text-center">A</th>
+                                        <th class="text-center">B</th>
+                                        <th class="text-center">C</th>
+                                        <th class="text-center">D</th>
+
+                                        @*Allocated Time*@
+                                        <th class="text-center">A</th>
+                                        <th class="text-center">B</th>
+                                        <th class="text-center">C</th>
+                                        <th class="text-center">D</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lineBalancingTbody">
+                                    @if (Model.Count() == 0)
+                                    {
+                                        <tr>
+                                            <td colspan="20" id="noData" class="text-center text-red">No Data Found</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var lineBalancingState in Model)
+                                        {
+                                            trClass = "";
+
+                                            @if (ViewBag.LowOutputViewModels.Count != 0)
+                                            {
+                                                foreach (var lowOutput in ViewBag.LowOutputViewModels)
+                                                {
+
+                                                    @if (lowOutput.StateId == lineBalancingState.Id)
+                                                    {
+                                                        trClass = "bg-danger text-white";
+                                                    }
+                                                }
+                                                <tr class="">
+                                                    <input type="hidden" class="form-control rowId" value="@lineBalancingState.Id" />
+                                                    <td class="text-center"><input type="text" class="form-control operationName @trClass" value="@lineBalancingState.OperationName" /></td>
+                                                    <td class="text-center overflow-hidden">
+                                                        <select class="form-control p-0 operationId" data-toggle="select">
+                                                            @foreach (var operation in ViewBag.Operations)
+                                                            {
+                                                                if (operation.Id == lineBalancingState.OperationId)
+                                                                {
+                                                                    <option selected value="@operation.Id">@operation.Name</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@operation.Id">@operation.Name</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </td>
+
+                                                    <td class="text-center overflow-hidden">
+                                                        <input type="hidden" class="machineId" value="@lineBalancingState.Machine.Id" />
+                                                        @*<select class="form-control machineId" data-toggle="select" disabled>
+                                                                <option selected value="@lineBalancingState.Machine.Id">@lineBalancingState.Machine.Name</option>
+                                                            </select>*@
+                                                        <label class="machineName mb-0">@lineBalancingState.Machine.Name</label>
+                                                    </td>
+
+
+
+
+
+
+                                                    <td class="text-center overflow-hidden">
+                                                        <select id="" class="form-control p-0 operatorId1" data-toggle="select">
+                                                            <option value="0">-Select-</option>
+                                                            @foreach (var operator1 in ViewBag.Operators)
+                                                            {
+                                                                if (lineBalancingState.OperatorId1 == operator1.Id)
+                                                                {
+                                                                    <option selected value="@operator1.Id">@operator1.IdCardNumber</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@operator1.Id">@operator1.IdCardNumber</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center overflow-hidden">
+                                                        <select id="" class="form-control p-0 operatorId2" data-toggle="select">
+                                                            <option value="0">-Select-</option>
+                                                            @foreach (var operator2 in ViewBag.Operators)
+                                                            {
+                                                                if (lineBalancingState.OperatorId2 == operator2.Id)
+                                                                {
+                                                                    <option selected value="@operator2.Id">@operator2.IdCardNumber</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@operator2.Id">@operator2.IdCardNumber</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center overflow-hidden">
+                                                        <select id="" class="form-control p-0 operatorId3" data-toggle="select">
+                                                            <option value="0" class="text-danger">-Select-</option>
+                                                            @foreach (var operator3 in ViewBag.Operators)
+                                                            {
+                                                                if (lineBalancingState.OperatorId3 == operator3.Id)
+                                                                {
+                                                                    <option selected value="@operator3.Id">@operator3.IdCardNumber</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@operator3.Id">@operator3.IdCardNumber</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-center overflow-hidden">
+                                                        <select id="" class="form-control p-0 operatorId4" data-toggle="select">
+                                                            <option value="0">-Select-</option>
+                                                            @foreach (var operator4 in ViewBag.Operators)
+                                                            {
+                                                                if (lineBalancingState.OperatorId4 == operator4.Id)
+                                                                {
+                                                                    <option selected value="@operator4.Id">@operator4.IdCardNumber</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@operator4.Id">@operator4.IdCardNumber</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </td>
+
+                                                    <td class="text-center"><input type="number" class="form-control operatorNo1" value="@lineBalancingState.OperatorNo1" /></td>
+                                                    <td class="text-center"><input type="number" class="form-control operatorNo2" value="@lineBalancingState.OperatorNo2" /></td>
+                                                    <td class="text-center"><input type="number" class="form-control operatorNo3" value="@lineBalancingState.OperatorNo3" /></td>
+                                                    <td class="text-center"><input type="number" class="form-control operatorNo4" value="@lineBalancingState.OperatorNo4" /></td>
+
+                                                    <td class="text-center"><input type="number" class="form-control cycleTime1" value="@lineBalancingState.CycleTime1" /></td>
+                                                    <td class="text-center"><input type="number" class="form-control cycleTime2" value="@lineBalancingState.CycleTime2" /></td>
+                                                    <td class="text-center"><input type="number" class="form-control cycleTime3" value="@lineBalancingState.CycleTime3" /></td>
+                                                    <td class="text-center"><input type="number" class="form-control cycleTime4" value="@lineBalancingState.CycleTime4" /></td>
+
+                                                    <td class="text-center allocatedTime1 align-middle font-weight-bold">@lineBalancingState.AllocatedTime1</td>
+                                                    <td class="text-center allocatedTime2 align-middle font-weight-bold">@lineBalancingState.AllocatedTime2</td>
+                                                    <td class="text-center allocatedTime3 align-middle font-weight-bold">@lineBalancingState.AllocatedTime3</td>
+                                                    <td class="text-center allocatedTime4 align-middle font-weight-bold">@lineBalancingState.AllocatedTime4</td>
+                                                    <input type="hidden" value="@lineBalancingState.Output1" class="form-control output1" />
+                                                    <input type="hidden" value="@lineBalancingState.Output2" class="form-control output2" />
+                                                    <input type="hidden" value="@lineBalancingState.Output3" class="form-control output3" />
+                                                    <input type="hidden" value="@lineBalancingState.Output4" class="form-control output4" />
+                                                    <td class="text-center align-middle">
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-success btn-sm rowSaveBtn"><i class="fa fa-save"></i></button>
+                                                            <button type="button" class="btn btn-danger btn-sm rowDeleteBtn"><i class="fa fa-trash"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="text-center mt-3 mb-2">
+                        @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") || await UserManager.IsInRoleAsync(user, "KSIUserOfLineBalancing") || await UserManager.IsInRoleAsync(user, "YSSUserOfLineBalancing") || await UserManager.IsInRoleAsync(user, "MAFUserOfLineBalancing") || await UserManager.IsInRoleAsync(user, "RFLUserOfLineBalancing") || await UserManager.IsInRoleAsync(user, "APEXUserOfLineBalancing") || await UserManager.IsInRoleAsync(user, "EDISONUserOfLineBalancing"))
+                        {
+                            <button id="addNewRowBtn" class="btn btn-primary btn-sm mb-1"><i class="fa fa-plus mr-2"></i> Add New Row</button>
+                            <button id="saveStateBtn" class="btn btn-success btn-sm mb-1"><i class="fa fa-save mr-2"></i> Save State</button>
+                            <button id="calculateBtn" class="btn btn-default btn-sm mb-1"><i class="fa fa-calculator mr-2"></i> Calculate</button>
+                        }
+                        <a id="viewSummeryBtn" class="btn btn-default btn-sm mb-1" target="_blank" href="/LineBalancing/Graph/@ViewBag.ParticularLineBalancing.Id">
+                            <i class="fa fa-align-left mr-2"></i> View Summery
+                        </a>
+                        @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                        {
+                            <button id="clearAllBtn" class="btn btn-danger btn-sm mb-1"><i class="fa fa-broom mr-2"></i> Clear All</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4 pb-3 table-bottom">
+        <div class="card-header">
+            <div class="input-group shadow-none">
+                <h3 class="mt-auto mb-auto mr-3">Search By Operations By Line Operaotor: </h3>
+                <select id="searchOperationByLineId" data-toggle="select" class="form-control d-none">
+                    @foreach (var operation1 in ViewBag.Operations)
+                    {
+                        <option value="@operation1.Id">@operation1.Name</option>
+                    }
+                </select>
+                <button id="searchOperationByLineIdBtn" class="btn btn-success ml-2">
+                    <i class="fa fa-search mr-2"></i> Search
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <div id="operationByLineIdInformationDiv">
+                    <table class="table table-classic table-bordered table-hover table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th colspan="5" class="text-center">Operator's Information</th>
+                            </tr>
+                        </thead>
+                        <tbody id="">
+                            <tr class="noOperators">
+                                <td class=" font-weight-bold text-center alert text-danger border-radius-0 text-uppercase" colspan="17">Please select an operation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4 pb-3 table-bottom">
+        <div class="card-header">
+            <div class="input-group shadow-none">
+                <h3 class="mt-auto mb-auto mr-3">Search By Operators : </h3>
+                <select id="searchOperatorId" data-toggle="select" class="form-control d-none">
+                    @foreach (var operator1 in ViewBag.Operators)
+                    {
+                        <option value="@operator1.Id">@operator1.IdCardNumber - @operator1.Name</option>
+                    }
+                </select>
+                <button id="searchByOperatorBtn" class="btn btn-success ml-2">
+                    <i class="fa fa-search mr-2"></i> Search
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <div id="operatorInformationDiv">
+                    @*Operator information table*@
+                    <table class="table table-classic table-bordered table-hover table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th colspan="5" class="text-center">Operator's Information</th>
+                            </tr>
+                        </thead>
+                        <tbody id="">
+                            <tr class="noOperators">
+                                <td class=" font-weight-bold text-center alert text-danger border-radius-0 text-uppercase" colspan="17">Please select an operator</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4 pb-3 table-bottom">
+        <div class="card-header">
+            <div class="input-group shadow-none">
+                <h3 class="mt-auto mb-auto mr-3">Search By Operations : </h3>
+                <select id="searchOperationId" data-toggle="select" class="form-control d-none">
+                    @foreach (var operation1 in ViewBag.Operations)
+                    {
+                        <option value="@operation1.Id">@operation1.Name</option>
+                    }
+                </select>
+                <button id="searchByOperationBtn" class="btn btn-success ml-2">
+                    <i class="fa fa-search mr-2"></i> Search
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <div id="operationInformationDiv">
+                    <table class="table table-classic table-bordered table-hover table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th colspan="5" class="text-center">Operator's Information</th>
+                            </tr>
+                        </thead>
+                        <tbody id="">
+                            <tr class="noOperators">
+                                <td class=" font-weight-bold text-center alert text-danger border-radius-0 text-uppercase" colspan="17">Please select an operation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/sweetalert2/dist/sweetalert2.min.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/bootstrap-notify/bootstrap-notify.min.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/lightbox/lightbox.min.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/select2/dist/js/select2.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#addNewRowBtn').on('click', function () {
+                var ParticularLineBalancingId = $('#ParticularLineBalancingId').val();
+                var allOperations = '';
+                var allOperators = '';
+                var rowNumber = $('#allTableDiv').find('.operatorId1').toArray().length;
+                var noData = $('#noData');
+                rowNumber = eval(rowNumber) + eval(1);
+                var tBody = $('#lineBalancingTbody');
+                $.when(
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("GetAllOperations", "LineBalancing")',
+                        data: {
+                            lineId: ParticularLineBalancingId
+                        },
+                        cache: false,
+                        success: function (objects) {
+                            if (objects != null) {
+                                allOperations += '<option value="">Select</option>'
+                                $.each(objects, function (index, object) {
+                                    allOperations += '<option value="' + object.id + '">' + object.name + '</option>'
+                                });
+                            }
+                        }
+                    }),
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("GetAllOperators", "LineBalancing")',
+                        cache: false,
+                        success: function (objects) {
+                            if (objects != null) {
+                                $.each(objects, function (index, object) {
+                                    allOperators += '<option value="' + object.id + '">' + object.idCardNumber + '</option>'
+                                });
+                            }
+                        }
+                    })
+                ).then(function () {
+                    if (noData) {
+                        noData.remove();
+                    }
+                    tBody.append(
+                        '<tr>' +
+                        '<input type="hidden" class="form-control rowId" value="-1"/>' +
+                        '<td class="text-center"><input type="text" class="form-control operationName" value="O' + rowNumber + '" /></td>' +
+                        '<td class="text-center overflow-hidden">' +
+                        '<select class="form-control operationId js-single">' + allOperations +'</select>' +
+                        '</td>' +
+                        '<td class="text-center overflow-hidden">' +
+                        '<input type="hidden" class="machineId" value="" />' +
+                        '<label class="machineName mb-0">N/A</label>'+
+                        '</td>' +
+                        '<td class="text-center overflow-hidden"><select  class="form-control  operatorId1 js-single"> <option value="0">-Select-</option>' + allOperators + '</select></td>' +
+                        '<td class="text-center overflow-hidden"><select  class="form-control  operatorId2 js-single"> <option value="0">-Select-</option>' + allOperators + '</select></td>' +
+                        '<td class="text-center overflow-hidden"><select  class="form-control  operatorId3 js-single"> <option value="0">-Select-</option>' + allOperators + '</select></td>' +
+                        '<td class="text-center overflow-hidden"><select  class="form-control  operatorId4 js-single"> <option value="0">-Select-</option>' + allOperators + '</select></td>' +
+                        '<td class="text-center"><input type="number" class="form-control operatorNo1" /></td>' +
+                        '<td class="text-center"><input type="number" class="form-control operatorNo2" /></td>' +
+                        '<td class="text-center"><input type="number" class="form-control operatorNo3" /></td>' +
+                        '<td class="text-center"><input type="number" class="form-control operatorNo4" /></td>' +
+                        '<td class="text-center"><input type="number" class="form-control cycleTime cycleTime1" /></td>' +
+                        '<td class="text-center"><input type="number" class="form-control cycleTime cycleTime2" /></td>' +
+                        '<td class="text-center"><input type="number" class="form-control cycleTime cycleTime3" /></td>' +
+                        '<td class="text-center"><input type="number" class="form-control cycleTime cycleTime4" /></td>' +
+                        '<td class="text-center allocatedTime1 align-middle font-weight-bold"></td>' +
+                        '<td class="text-center allocatedTime2 align-middle font-weight-bold"></td>' +
+                        '<td class="text-center allocatedTime3 align-middle font-weight-bold"></td>' +
+                        '<td class="text-center allocatedTime4 align-middle font-weight-bold"></td>' +
+                        '<input type="hidden" class="form-control output1" />' +
+                        '<input type="hidden" class="form-control output2" />' +
+                        '<input type="hidden" class="form-control output3" />' +
+                        '<input type="hidden" class="form-control output4" />' +
+                        //'<td><input disabled type="number" value="" class="form-control output1" /></td>'+
+                        //'<td><input disabled type="number" value="" class="form-control output2" /></td>'+
+                        //' <td><input disabled type="number" value="" class="form-control output3" /></td>'+
+                        //' <td><input disabled type="number" value="" class="form-control output4" /></td>'+
+                        '<td class="text-center align-middle">'+
+                        '<button type="button" class="btn btn-success btn-sm rowSaveBtn mr-1"><i class="fa fa-save"></i></button>'+
+                        '<button type="button" class="btn btn-danger btn-sm rowDeleteBtn"><i class="fa fa-trash"></i></button>'+
+                        '</td>'+
+                        '</tr>'
+                    );
+                    $('.js-single').select2({
+
+                    });
+                });
+            });
+            $("#lineBalancingTable").on('change', '.operationId', function () {
+                var row = $(this).closest('tr');
+                var operationId = row.find('.operationId').val();
+                var machineId = row.find('.machineId');
+                var machineName = row.find('.machineName');
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: '@Url.Action("GetMachineByOperation", "LineBalancing")',
+                    data: {
+                        id: operationId
+                    },
+                    cache: false,
+                    success: function (object) {
+                        //machineId.empty();
+                        if (object != null) {
+                            machineId.val(object.id);
+                            machineName.text(object.name);
+                        }
+                    }
+                });
+            });
+            $('#lineBalancingTable').on('change', '.operatorNo1', function () {
+                var row = $(this).closest('tr');
+                var operatorNo = $(this).val();
+                var operatorId = row.find('.operatorId1').val();
+                if (operatorId == "" || operatorId == 0) {
+                    $.notify({
+                        title: 'Error!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Please add an Operator Id First!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                    $(this).val("");
+                }
+            });
+            $('#lineBalancingTable').on('change', '.operatorNo2', function () {
+                var row = $(this).closest('tr');
+                var operatorNo = $(this).val();
+                var operatorId = row.find('.operatorId2').val();
+                if (operatorId == "" || operatorId == 0) {
+                    $.notify({
+                        title: 'Error!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Please add an Operator Id First!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                    $(this).val("");
+                }
+            });
+            $('#lineBalancingTable').on('change', '.operatorNo3', function () {
+                var row = $(this).closest('tr');
+                var operatorNo = $(this).val();
+                var operatorId = row.find('.operatorId3').val();
+                if (operatorId == "" || operatorId == 0) {
+                    $.notify({
+                        title: 'Error!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Please add an Operator Id First!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                    $(this).val("");
+                }
+            });
+            $('#lineBalancingTable').on('change', '.operatorNo4', function () {
+                var row = $(this).closest('tr');
+                var operatorNo = $(this).val();
+                var operatorId = row.find('.operatorId4').val();
+                if (operatorId == "" || operatorId == 0) {
+                    $.notify({
+                        title: 'Error!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Please add an Operator Id First!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                    $(this).val("");
+                }
+            });
+
+            $('#lineBalancingTable').on('change', '.cycleTime1', function () {
+                var row = $(this).closest('tr');
+                var operatorNo = row.find('.operatorNo1').val();
+                if (operatorNo == "") {
+                    $.notify({
+                        title: 'Error!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Please add an Operator Number First!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                    $(this).val("");
+                } else {
+                    UpdateAllAllocationTime();
+                }
+            });
+            $('#lineBalancingTable').on('change', '.cycleTime2', function () {
+                var row = $(this).closest('tr');
+                var operatorNo = row.find('.operatorNo2').val();
+                if (operatorNo == "") {
+                    $.notify({
+                        title: 'Error!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Please add an Number Id First!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                    $(this).val("");
+                } else {
+                    UpdateAllAllocationTime();
+                }
+            });
+            $('#lineBalancingTable').on('change', '.cycleTime3', function () {
+                var row = $(this).closest('tr');
+                var operatorNo = row.find('.operatorNo3').val();
+                if (operatorNo == "") {
+                    $.notify({
+                        title: 'Error!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Please add an Number Id First!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                    $(this).val("");
+                } else {
+                    UpdateAllAllocationTime();
+                }
+            });
+            $('#lineBalancingTable').on('change', '.cycleTime4', function () {
+                var row = $(this).closest('tr');
+                var operatorNo = row.find('.operatorNo4').val();
+                if (operatorNo == "") {
+                    $.notify({
+                        title: 'Error!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Please add an Number Id First!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                    $(this).val("");
+                } else {
+                    UpdateAllAllocationTime();
+                }
+            });
+            $("#lineBalancingTable").on('click', '.rowSaveBtn', function () {
+                var row = $(this).closest('tr');
+                var ParticularLineBalancingId = $('#ParticularLineBalancingId').val();
+                var rowId = row.find('.rowId').val();
+
+                var operationName = row.find('.operationName').val();
+                var operationId = row.find('.operationId').val();
+                var machineId = row.find('.machineId').val();
+
+                var operatorId1 = row.find('.operatorId1').val();
+                var operatorId2 = row.find('.operatorId2').val();
+                var operatorId3 = row.find('.operatorId3').val();
+                var operatorId4 = row.find('.operatorId4').val();
+
+                var operatorNo1 = row.find('.operatorNo1').val();
+                var operatorNo2 = row.find('.operatorNo2').val();
+                var operatorNo3 = row.find('.operatorNo3').val();
+                var operatorNo4 = row.find('.operatorNo4').val();
+
+                var cycleTime1 = row.find('.cycleTime1').val();
+                var cycleTime2 = row.find('.cycleTime2').val();
+                var cycleTime3 = row.find('.cycleTime3').val();
+                var cycleTime4 = row.find('.cycleTime4').val();
+
+                var allocatedTime1 = row.find('.allocatedTime1').html();
+                var allocatedTime2 = row.find('.allocatedTime2').html();
+                var allocatedTime3 = row.find('.allocatedTime3').html();
+                var allocatedTime4 = row.find('.allocatedTime4').html();
+
+                var output1 = row.find('.output1').val();
+                var output2 = row.find('.output2').val();
+                var output3 = row.find('.output3').val();
+                var output4 = row.find('.output4').val();
+
+                $.when(
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("Save", "LineBalancing")',
+                        data: {
+                            data: JSON.stringify({
+                                rowId: (rowId) ? rowId : null,
+                                ParticularLineBalancingId: (ParticularLineBalancingId) ? ParticularLineBalancingId : null,
+                                operationName: (operationName) ? operationName : null,
+                                operationId: (operationId) ? operationId : null,
+                                machineId: (machineId) ? machineId : null,
+                                operatorId1: (operatorId1) ? operatorId1 : null,
+                                operatorId2: (operatorId2) ? operatorId2 : null,
+                                operatorId3: (operatorId3) ? operatorId3 : null,
+                                operatorId4: (operatorId4) ? operatorId4 : null,
+
+                                operatorNo1: (operatorNo1) ? operatorNo1 : null,
+                                operatorNo2: (operatorNo2) ? operatorNo2 : null,
+                                operatorNo3: (operatorNo3) ? operatorNo3 : null,
+                                operatorNo4: (operatorNo4) ? operatorNo4 : null,
+
+                                cycleTime1: (cycleTime1) ? cycleTime1 : null,
+                                cycleTime2: (cycleTime2) ? cycleTime2 : null,
+                                cycleTime3: (cycleTime3) ? cycleTime3 : null,
+                                cycleTime4: (cycleTime4) ? cycleTime4 : null,
+
+                                allocatedTime1: (allocatedTime1) ? allocatedTime1 : null,
+                                allocatedTime2: (allocatedTime2) ? allocatedTime2 : null,
+                                allocatedTime3: (allocatedTime3) ? allocatedTime3 : null,
+                                allocatedTime4: (allocatedTime4) ? allocatedTime4 : null,
+
+                                output1: (output1) ? output1 : null,
+                                output2: (output2) ? output2 : null,
+                                output3: (output3) ? output3 : null,
+                                output4: (output4) ? output4 : null
+                            })
+                        },
+                        cache: false,
+                        success: function (objects) {
+                        if (objects) {
+                            row.find('.rowId').val(objects);
+                            //row.find('input:not(.rowEditBtn)').prop('disabled', true);
+                            $.notify({
+                                title: 'Success!',
+                                icon: 'fa fa-check',
+                                html: true,
+                                message: 'Successfully Updated.'
+                            }, {
+                                    type: 'success',
+                                    animate: {
+                                        enter: 'animated fadeInDown'
+                                    },
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    spacing: 10,
+                                    z_index: 1031,
+                                    delay: 2000,
+                                    template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                });
+                        }}
+                    }),
+                ).then(function () {});
+
+            });
+            $("#saveStateBtn").on('click',function () {
+                var ParticularLineBalancingId = $('#ParticularLineBalancingId').val();
+                var error = false;
+                var allrowId = $('.rowId').toArray();
+                var rows = [];
+                //var row = $(this).closest('tr');
+                $.each(allrowId, function (allrowId, rowId) {
+                    var row = $(rowId).closest('tr');
+                    var rowId = row.find('.rowId').val();
+
+                    var operationName = row.find('.operationName').val();
+                    var operationId = row.find('.operationId').val();
+                    var machineId = row.find('.machineId').val();
+
+                    var operatorId1 = row.find('.operatorId1').val();
+                    var operatorId2 = row.find('.operatorId2').val();
+                    var operatorId3 = row.find('.operatorId3').val();
+                    var operatorId4 = row.find('.operatorId4').val();
+
+                    var operatorNo1 = row.find('.operatorNo1').val();
+                    var operatorNo2 = row.find('.operatorNo2').val();
+                    var operatorNo3 = row.find('.operatorNo3').val();
+                    var operatorNo4 = row.find('.operatorNo4').val();
+
+                    var cycleTime1 = row.find('.cycleTime1').val();
+                    var cycleTime2 = row.find('.cycleTime2').val();
+                    var cycleTime3 = row.find('.cycleTime3').val();
+                    var cycleTime4 = row.find('.cycleTime4').val();
+
+                    var allocatedTime1 = row.find('.allocatedTime1').html();
+                    var allocatedTime2 = row.find('.allocatedTime2').html();
+                    var allocatedTime3 = row.find('.allocatedTime3').html();
+                    var allocatedTime4 = row.find('.allocatedTime4').html();
+
+                    var output1 = row.find('.output1').val();
+                    var output2 = row.find('.output2').val();
+                    var output3 = row.find('.output3').val();
+                    var output4 = row.find('.output4').val();
+                    rows.push({
+                        rowId: (rowId) ? rowId : null,
+                        ParticularLineBalancingId: (ParticularLineBalancingId) ? ParticularLineBalancingId : null,
+                        operationName: (operationName) ? operationName : null,
+                        operationId: (operationId) ? operationId : null,
+                        machineId: (machineId) ? machineId : null,
+                        operatorId1: (operatorId1) ? operatorId1 : null,
+                        operatorId2: (operatorId2) ? operatorId2 : null,
+                        operatorId3: (operatorId3) ? operatorId3 : null,
+                        operatorId4: (operatorId4) ? operatorId4 : null,
+
+                        operatorNo1: (operatorNo1) ? operatorNo1 : null,
+                        operatorNo2: (operatorNo2) ? operatorNo2 : null,
+                        operatorNo3: (operatorNo3) ? operatorNo3 : null,
+                        operatorNo4: (operatorNo4) ? operatorNo4 : null,
+
+                        cycleTime1: (cycleTime1) ? cycleTime1 : null,
+                        cycleTime2: (cycleTime2) ? cycleTime2 : null,
+                        cycleTime3: (cycleTime3) ? cycleTime3 : null,
+                        cycleTime4: (cycleTime4) ? cycleTime4 : null,
+
+                        allocatedTime1: (allocatedTime1) ? allocatedTime1 : null,
+                        allocatedTime2: (allocatedTime2) ? allocatedTime2 : null,
+                        allocatedTime3: (allocatedTime3) ? allocatedTime3 : null,
+                        allocatedTime4: (allocatedTime4) ? allocatedTime4 : null,
+
+                        output1: (output1) ? output1 : null,
+                        output2: (output2) ? output2 : null,
+                        output3: (output3) ? output3 : null,
+                        output4: (output4) ? output4 : null
+                    });
+                });
+                 $.when(
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("SaveAll", "LineBalancing")',
+                        data: {
+                            lineBalancingStates: JSON.stringify(
+                                rows
+                            )
+                        },
+                        cache: false,
+                        success: function (objects) {
+                            if (objects) {
+                                //row.find('.rowId').val(objects);
+                                //row.find('input:not(.rowEditBtn)').prop('disabled', true);
+
+                                $.notify({
+                                    title: 'Success!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Successfully Updated.'
+                                }, {
+                                        type: 'success',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                                // location.reload();
+                            }
+                         },
+                         error: function () {
+                             $.notify({
+                                 title: 'Not Saved!',
+                                 icon: 'fa fa-times',
+                                 html: true,
+                                 message: 'Fill up required data!'
+                             }, {
+                                     type: 'danger',
+                                     animate: {
+                                         enter: 'animated fadeInDown'
+                                     },
+                                     placement: {
+                                         from: "top",
+                                         align: "center"
+                                     },
+                                     spacing: 10,
+                                     z_index: 1031,
+                                     delay: 2000,
+                                     template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                 });
+                         }
+                    })
+                 );
+            });
+            $("#lineBalancingTable").on('click', '.rowEditBtn', function () {
+                var row = $(this).closest('tr');
+                row.find('input:not(.rowEditBtn)').prop('disabled', false);
+            });
+            $("#lineBalancingTable").on('click', '.rowDeleteBtn', function () {
+                var row = $(this).closest('tr');
+                var rowId = row.find('.rowId').val();
+                if (rowId == -1) {
+                    row.remove();
+                } else {
+                    swal({
+                            title: "Are you sure?",
+                            text: "The operation will be updated",
+                            type: "warning",
+                            showCancelButton: !0,
+                            useRejections: true,
+                            buttonsStyling: !1,
+                            confirmButtonClass: "btn btn-primary",
+                            confirmButtonText: "Yes",
+                            cancelButtonClass: "btn btn-secondary"
+                        }).then(
+                            value => {
+                                $.when(
+                                $.ajax({
+                                    type: "POST",
+                                    dataType: 'json',
+                                    url: '@Url.Action("Delete", "LineBalancing")',
+                                    data: {
+                                        id: rowId
+                                    },
+                                    cache: false,
+                                    success: function (objects) {
+                                        if (objects) {
+                                            row.remove();
+                                            $.notify({
+                                                title: 'Success!',
+                                                icon: 'fa fa-check',
+                                                html: true,
+                                                message: 'Successfully Deleted.'
+                                            }, {
+                                                    type: 'success',
+                                                    animate: {
+                                                        enter: 'animated fadeInDown'
+                                                    },
+                                                    placement: {
+                                                        from: "top",
+                                                        align: "center"
+                                                    },
+                                                    spacing: 10,
+                                                    z_index: 1031,
+                                                    delay: 2000,
+                                                    template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                                });
+                                            UpdateAllAllocationTime();
+                                        } else {
+                                            $.notify({
+                                                title: 'Error!',
+                                                icon: 'fa fa-check',
+                                                html: true,
+                                                message: 'Failed to Delete.'
+                                            }, {
+                                                    type: 'danger',
+                                                    animate: {
+                                                        enter: 'animated fadeInDown'
+                                                    },
+                                                    placement: {
+                                                        from: "top",
+                                                        align: "center"
+                                                    },
+                                                    spacing: 10,
+                                                    z_index: 1031,
+                                                    delay: 2000,
+                                                    template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                                });
+                                        }
+                                    }
+                                }),
+                                ).then(function () {
+
+                                });
+                            },
+                            dismiss => {
+                    });
+                }
+            });
+            $("#clearAllBtn").on('click', function () {
+                var ParticularLineBalancingId = $('#ParticularLineBalancingId').val();
+                swal({
+                        title: "Are you sure?",
+                        text: "The operation will be updated",
+                        type: "warning",
+                        showCancelButton: !0,
+                        useRejections: true,
+                        buttonsStyling: !1,
+                        confirmButtonClass: "btn btn-primary",
+                        confirmButtonText: "Yes",
+                        cancelButtonClass: "btn btn-secondary"
+                    }).then(
+                        value => {
+                            $.when(
+                            $.ajax({
+                                type: "POST",
+                                dataType: 'json',
+                                url: '@Url.Action("DeleteAll", "LineBalancing")',
+                                data: {
+                                    id: ParticularLineBalancingId
+                                },
+                                cache: false,
+                                success: function (objects) {
+                                    if (objects) {
+                                        $.notify({
+                                            title: 'Success!',
+                                            icon: 'fa fa-check',
+                                            html: true,
+                                            message: 'Successfully Deleted.'
+                                        }, {
+                                                type: 'success',
+                                                animate: {
+                                                    enter: 'animated fadeInDown'
+                                                },
+                                                placement: {
+                                                    from: "top",
+                                                    align: "center"
+                                                },
+                                                spacing: 10,
+                                                z_index: 1031,
+                                                delay: 2000,
+                                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                            });
+                                        location.reload();
+                                    } else {
+                                        $.notify({
+                                            title: 'Error!',
+                                            icon: 'fa fa-check',
+                                            html: true,
+                                            message: 'Failed to Delete.'
+                                        }, {
+                                                type: 'danger',
+                                                animate: {
+                                                    enter: 'animated fadeInDown'
+                                                },
+                                                placement: {
+                                                    from: "top",
+                                                    align: "center"
+                                                },
+                                                spacing: 10,
+                                                z_index: 1031,
+                                                delay: 2000,
+                                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                            });
+                                    }
+                                }
+                            }),
+                            ).then(function () {
+
+                            });
+                        },
+                        dismiss => {
+                        });
+            });
+
+            $("#calculateBtn").on('click', function () {
+                UpdateAllAllocationTime();
+            });
+
+            $("#allTableDiv").on('change', '.rowTarget ', function () { calculateScore($(this).closest('tr')); calculateTotal(); });
+            $("#allTableDiv").on('change', '.rowAchieved ', function () { calculateScore($(this).closest('tr')); calculateTotal();});
+            $("#allTableDiv").on('change', '.rowEnable ', function () { calculateScore($(this).closest('tr')); calculateTotal();});
+
+
+            $('#searchByOperatorBtn').on('click', function () {
+                var searchOperatorId = $('#searchOperatorId').val();
+                var operatorInformationDiv = $('#operatorInformationDiv');
+                 $.when(
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("GetOperatorInfo", "LineBalancing")',
+                        data: {
+                            id: searchOperatorId
+                        },
+                        cache: false,
+                         success: function (objects) {
+                            console.log(objects);
+                             if (objects != null) {
+                                 var skillmaticesTr = "";
+                                 var rowNumber =1;
+                                 if (objects.operatorInfoSkillMatrixViewModels.length !=0) {
+                                     $.each(objects.operatorInfoSkillMatrixViewModels, function (index, skillMatrix) {
+                                         skillmaticesTr += '<tr><td class="text-center">' + rowNumber + '</td><td>' + skillMatrix.operationName + '</td><td>' + skillMatrix.score + '</td><td class="text-center">' + skillMatrix.grade + '</td></tr>';
+                                         rowNumber++;
+                                     });
+                                 }
+                                operatorInformationDiv.children().remove();
+                                operatorInformationDiv.append(
+                                    '<table class="table table-classic table-bordered table-hover table-striped">' +
+                                    '<thead class="thead-light">' +
+                                    '<tr>'+
+                                    '<th colspan="5" class="text-center">Operators Information</th>'+
+                                    '</tr>'+
+                                    '</thead>'+
+                                    ' <tbody >'+
+                                    '<tr>'+
+                                    '<td class="text-uppercase text-gray-dark">Operator Name:</td>'+
+                                    '<td id="" class="font-weight-bold" colspan="2">'+ objects.name + '</td>'+
+                                    '<td class="text-uppercase text-gray-dark">ID Card Number</td>'+
+                                    '<td id="" class="font-weight-bold">' + objects.idCardNumber+'</td>'+
+                                    '</tr>'+
+                                    '<tr>'+
+                                    '<td class="text-uppercase text-gray-dark">Section</td>'+
+                                    '<td id="" class="font-weight-bold" colspan="2">' + objects.sectionName+'</td>'+
+                                    '<td class="text-uppercase text-gray-dark">Line</td>'+
+                                    '<td id="" class="font-weight-bold">' + objects.lineNumber+'</td>'+
+                                    '</tr>'+
+                                    '</tbody>'+
+                                    ' </table>'+
+                                    '<table class="table table-classic table-bordered table-hover table-striped">'+
+                                    '<thead class="thead-light">'+
+                                    '<tr>'+
+                                    ' <th colspan="15" class="text-center">Skills</th>'+
+                                    ' </tr>'+
+                                    '</thead>'+
+                                    '</table>'+
+                                    '<div class="table-responsive">'+
+                                    '<table class="table table-classic table-bordered">'+
+                                    '<thead class="thead-custom">'+
+                                    '<tr>'+
+                                    '<th>Sl</th>'+
+                                    '<th class="text-center">Operation</th>'+
+                                    '<th class="text-center">Total Score (100)</th>'+
+                                    '<th class="text-center">Grade</th>'+
+                                    '</tr>'+
+                                    '</thead>'+
+                                    '<tbody id="skillMatrixTbody">'+
+                                    skillmaticesTr+
+                                    '</tbody>'+
+                                    '</table>'+
+                                    '</div>'
+                                )
+                            }
+
+                        }
+                    })
+                ).then(function () {
+
+                });
+            });
+
+            $('#searchByOperationBtn').on('click', function () {
+                var searchOperationId = $('#searchOperationId').val();
+                var operationInformationDiv = $('#operationInformationDiv');
+                 $.when(
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("GetOperationData", "LineBalancing")',
+                        data: {
+                            id: searchOperationId
+                        },
+                        cache: false,
+                         success: function (objects) {
+                            console.log(objects);
+                             if (objects != null) {
+                                 var skillmatricesTr = "";
+                                 var rowNumber =1;
+                                 if (objects.length !=0) {
+                                     $.each(objects, function (index, skillMatrix) {
+                                         skillmatricesTr += '<tr><td class="text-center">' + rowNumber + '</td><td>' + skillMatrix.operatorName + '</td><td>' + skillMatrix.operatorIdCardNumber + '</td><td>' + skillMatrix.score + '</td><td class="text-center">' + skillMatrix.grade + '</td></tr>';
+                                         rowNumber++;
+                                     });
+                                 }
+                                 operationInformationDiv.children().remove();
+                                 operationInformationDiv.append(
+                                    '<table class="table table-classic table-bordered table-hover table-striped">' +
+                                    '</table>'+
+                                    '<table class="table table-classic table-bordered table-hover table-striped">'+
+                                    '<thead class="thead-light">'+
+                                    '<tr>'+
+                                    ' <th colspan="15" class="text-center">Skills</th>'+
+                                    ' </tr>'+
+                                    '</thead>'+
+                                    '</table>'+
+                                    '<div class="table-responsive">'+
+                                    '<table class="table table-classic table-bordered">'+
+                                    '<thead class="thead-custom">'+
+                                    '<tr>'+
+                                    '<th>Sl</th>'+
+                                    '<th class="text-center">Operator</th>'+
+                                    '<th class="text-center">ID Card Number</th>'+
+                                    '<th class="text-center">Total Score (100)</th>'+
+                                    '<th class="text-center">Grade</th>'+
+                                    '</tr>'+
+                                    '</thead>'+
+                                    '<tbody id="skillMatrixTbody">'+
+                                     skillmatricesTr+
+                                    '</tbody>'+
+                                    '</table>'+
+                                    '</div>'
+                                )
+                            }
+
+                        }
+                    })
+                ).then(function () {
+
+                });
+            });
+
+            $('#searchOperationByLineIdBtn').on('click', function () {
+                var searchOperationByLineId = $('#searchOperationByLineId').val();
+                var allOperatorId = GettAllOperatorId();
+                var operationByLineIdInformationDiv = $('#operationByLineIdInformationDiv');
+
+                 $.when(
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("GetOperationDataById", "LineBalancing")',
+                         data: {
+                             data: JSON.stringify({
+                                 operationId: searchOperationByLineId,
+                                 operatorId: allOperatorId,
+                                }
+                             )
+                         },
+                        cache: false,
+                         success: function (objects) {
+                            console.log(objects);
+                             if (objects != null) {
+                                 var skillmatricesTr = "";
+                                 var rowNumber =1;
+                                 if (objects.length !=0) {
+                                     $.each(objects, function (index, skillMatrix) {
+                                         skillmatricesTr += '<tr><td class="text-center">' + rowNumber + '</td><td>' + skillMatrix.operatorName + '</td><td>' + skillMatrix.operatorIdCardNumber + '</td><td>' + skillMatrix.score + '</td><td class="text-center">' + skillMatrix.grade + '</td></tr>';
+                                         rowNumber++;
+                                     });
+                                 }
+                                 operationByLineIdInformationDiv.children().remove();
+                                 operationByLineIdInformationDiv.append(
+                                    '<table class="table table-classic table-bordered table-hover table-striped">' +
+                                    '</table>'+
+                                    '<table class="table table-classic table-bordered table-hover table-striped">'+
+                                    '<thead class="thead-light">'+
+                                    '<tr>'+
+                                    ' <th colspan="15" class="text-center">Skills</th>'+
+                                    ' </tr>'+
+                                    '</thead>'+
+                                    '</table>'+
+                                    '<div class="table-responsive">'+
+                                    '<table class="table table-classic table-bordered">'+
+                                    '<thead class="thead-custom">'+
+                                    '<tr>'+
+                                    '<th>Sl</th>'+
+                                    '<th class="text-center">Operator</th>'+
+                                    '<th class="text-center">ID Card Number</th>'+
+                                    '<th class="text-center">Total Score (100)</th>'+
+                                    '<th class="text-center">Grade</th>'+
+                                    '</tr>'+
+                                    '</thead>'+
+                                    '<tbody id="skillMatrixTbody">'+
+                                     skillmatricesTr+
+                                    '</tbody>'+
+                                    '</table>'+
+                                    '</div>'
+                                )
+                            }
+
+                        }
+                    })
+                ).then(function () {
+
+                });
+            });
+            //--------------------------------------------------------FUCNTION----------------------------------------------------
+            function GettAllOperatorId() {
+                var allOperator = [];
+                var allOperatorId1 = $('.operatorId1').toArray().map(item => item.value);
+                var allOperatorId2 = $('.operatorId2').toArray().map(item => item.value);
+                var allOperatorId3 = $('.operatorId3').toArray().map(item => item.value);
+                var allOperatorId4 = $('.operatorId4').toArray().map(item => item.value);
+                $.each(allOperatorId1, function (index, value) {
+                    if (value != "") {
+                        if (allOperator.indexOf(value) === -1) {
+                            allOperator.push(value);
+                        }
+                    }
+                });
+                $.each(allOperatorId2, function (index, value) {
+                    if (value != "") {
+                        if (allOperator.indexOf(value) === -1) {
+                            allOperator.push(value);
+                        }
+                    }
+                });
+                $.each(allOperatorId3, function (index, value) {
+                    if (value != "") {
+                        if (allOperator.indexOf(value) === -1) {
+                            allOperator.push(value);
+                        }
+                    }
+                });
+                $.each(allOperatorId4, function (index, value) {
+                    if (value != "") {
+                        if (allOperator.indexOf(value) === -1) {
+                            allOperator.push(value);
+                        }
+                    }
+                });
+                return allOperator;
+            }
+
+            function GetUserOccurrence(operatorNo) {
+                var count = 0;
+                var allOperatorNo1 = $('.operatorNo1').toArray().map(item => item.value);
+                var allOperatorNo2 = $('.operatorNo2').toArray().map(item => item.value);
+                var allOperatorNo3 = $('.operatorNo3').toArray().map(item => item.value);
+                var allOperatorNo4 = $('.operatorNo4').toArray().map(item => item.value);
+                if (operatorNo !="") {
+                    $.each(allOperatorNo1, function (index, value) {
+                        if (value == operatorNo) {
+                            count++;
+                        }
+                    });
+                    $.each(allOperatorNo2, function (index, value) {
+                        if (value == operatorNo) {
+                            count++;
+                        }
+                    });
+                    $.each(allOperatorNo3, function (index, value) {
+                        if (value == operatorNo) {
+                            count++;
+                        }
+                    });
+                    $.each(allOperatorNo4, function (index, value) {
+                        if (value == operatorNo) {
+                            count++;
+                        }
+                    });
+                }
+                return count;
+            }
+
+            function GetOperatorOccurrenceById(operatorId) {
+                var count = 0;
+                var allOperatorNo1 = $('.operatorId1').toArray().map(item => item.value);
+                var allOperatorNo2 = $('.operatorId2').toArray().map(item => item.value);
+                var allOperatorNo3 = $('.operatorId3').toArray().map(item => item.value);
+                var allOperatorNo4 = $('.operatorId4').toArray().map(item => item.value);
+                if (operatorId != "" && operatorId != 0) {
+                    $.each(allOperatorNo1, function (index, value) {
+                        if (value == operatorId) {
+                            count++;
+                        }
+                    });
+                    $.each(allOperatorNo2, function (index, value) {
+                        if (value == operatorId) {
+                            count++;
+                        }
+                    });
+                    $.each(allOperatorNo3, function (index, value) {
+                        if (value == operatorId) {
+                            count++;
+                        }
+                    });
+                    $.each(allOperatorNo4, function (index, value) {
+                        if (value == operatorId) {
+                            count++;
+                        }
+                    });
+                }
+                return count;
+            }
+
+            function UpdateAllocationTime(count,allRows, operatorNo) {
+
+                var at1 = 0;
+                var cy1 = 0;
+                var cy2 = 0;
+                var cy3 = 0;
+                var cy4 = 0;
+                var o1 = 0;
+                var o2 = 0;
+                var o3 = 0;
+                var o4 = 0;
+                var target1 = null;
+                var target2 = null;
+                var target3 = null;
+                var target4 = null;
+                var targetOutput1 = null;
+                var targetOutput2 = null;
+                var targetOutput3 = null;
+                var targetOutput4 = null;
+                var foundO1 = false;
+                var foundO2 = false;
+                var foundO3 = false;
+
+                $.each(allRows, function (index, foundRow) {
+                    var op1 = $(foundRow).find('.operatorNo1').val();
+                    var op2 = $(foundRow).find('.operatorNo2').val();
+                    var op3 = $(foundRow).find('.operatorNo3').val();
+                    var op4 = $(foundRow).find('.operatorNo4').val();
+                    var outPutValue1 = $(foundRow).find('.output1').val();
+                    var outPutValue2 = $(foundRow).find('.output2').val();
+                    var outPutValue3 = $(foundRow).find('.output3').val();
+                    var outPutValue4 = $(foundRow).find('.output4').val();
+
+
+                    if (op1 == operatorNo ) {
+                        //Column 1
+                        if (o1 == 0 && !foundO1) {
+                            //o1
+                            if (outPutValue2) {
+                                o1 += eval(outPutValue2);
+                            }
+                            if (outPutValue3) {
+                                o1 += eval(outPutValue3);
+                            }
+                            if (outPutValue4) {
+                                o1 += eval(outPutValue4);
+                            }
+                            foundO1 = true;
+                            cy1 = $(foundRow).find('.cycleTime1').val();
+                            target1 = $(foundRow).find('.allocatedTime1');
+                            targetOutput1 = $(foundRow).find('.output1');
+                        }
+                        else if (foundO1 && ! foundO2) {
+                            //o2
+                            if (outPutValue2) {
+                                o2 += eval(outPutValue2);
+                            }
+                            if (outPutValue3) {
+                                o2 += eval(outPutValue3);
+                            }
+                            if (outPutValue4) {
+                                o2 += eval(outPutValue4);
+                            }
+                             foundO2 = true;
+                            cy2 = $(foundRow).find('.cycleTime1').val();
+                            target2 = $(foundRow).find('.allocatedTime1');
+                            targetOutput2 = $(foundRow).find('.output1');
+                        }
+                        else if (foundO2 && !foundO3) {
+                            //o2
+                            if (outPutValue2) {
+                                o3 += eval(outPutValue2);
+                            }
+                            if (outPutValue3) {
+                                o3 += eval(outPutValue3);
+                            }
+                            if (outPutValue4) {
+                                o3 += eval(outPutValue4);
+                            }
+                            foundO3 = true;
+                            cy3 = $(foundRow).find('.cycleTime1').val();
+                            target3 = $(foundRow).find('.allocatedTime1');
+                            targetOutput3 = $(foundRow).find('.output1');
+                        }
+                        else if (foundO3) {
+                            //o2
+                            if (outPutValue2) {
+                                o4 += eval(outPutValue2);
+                            }
+                            if (outPutValue3) {
+                                o4 += eval(outPutValue3);
+                            }
+                            if (outPutValue4) {
+                                o4 += eval(outPutValue4);
+                            }
+                            cy4 = $(foundRow).find('.cycleTime1').val();
+                            target4 = $(foundRow).find('.allocatedTime1');
+                            targetOutput4 = $(foundRow).find('.output1');
+                        }
+
+
+                    } else if (op2 == operatorNo) {
+                        //Column 2
+                        if (o1 == 0 && !foundO1) {
+                            if (outPutValue1) {
+                                o1 += eval(outPutValue1);
+                            }
+                            if (outPutValue3) {
+                                o1 += eval(outPutValue3);
+                            }
+                            if (outPutValue4) {
+                                o1 += eval(outPutValue4);
+                            }
+                            foundO1 = true;
+                            cy1 = $(foundRow).find('.cycleTime2').val();
+                            target1 = $(foundRow).find('.allocatedTime2');
+                            targetOutput1 = $(foundRow).find('.output2');
+                        } else if (foundO1 && !foundO2) {
+                            //o2
+                            if (outPutValue1) {
+                                o2 += eval(outPutValue1);
+                            }
+                            if (outPutValue3) {
+                                o2 += eval(outPutValue3);
+                            }
+                            if (outPutValue4) {
+                                o2 += eval(outPutValue4);
+                            }
+                            foundO2 = true;
+                            cy2 = $(foundRow).find('.cycleTime2').val();
+                            target2 = $(foundRow).find('.allocatedTime2');
+                            targetOutput2 = $(foundRow).find('.output2');
+                        }
+                        else if (foundO2 && !foundO3) {
+                            //o2
+                            if (outPutValue1) {
+                                o3 += eval(outPutValue1);
+                            }
+                            if (outPutValue3) {
+                                o3 += eval(outPutValue3);
+                            }
+                            if (outPutValue4) {
+                                o3 += eval(outPutValue4);
+                            }
+                            foundO3 = true;
+                            cy3 = $(foundRow).find('.cycleTime2').val();
+                            target3 = $(foundRow).find('.allocatedTime2');
+                            targetOutput3 = $(foundRow).find('.output2');
+                        }
+                        else if (foundO3) {
+                            //o2
+                            if (outPutValue1) {
+                                o4 += eval(outPutValue1);
+                            }
+                            if (outPutValue3) {
+                                o4 += eval(outPutValue3);
+                            }
+                            if (outPutValue4) {
+                                o4 += eval(outPutValue4);
+                            }
+
+                            cy4 = $(foundRow).find('.cycleTime2').val();
+                            target4 = $(foundRow).find('.allocatedTime2');
+                            targetOutput4 = $(foundRow).find('.output2');
+                        }
+                    } else if (op3 == operatorNo) {
+                        //Column 3
+                        if (o1 == 0 && !foundO1) {
+                            if (outPutValue1) {
+                                o1 += eval(outPutValue1);
+                            }
+                            if (outPutValue2) {
+                                o1 += eval(outPutValue2);
+                            }
+                            if (outPutValue4) {
+                                o1 += eval(outPutValue4);
+                            }
+                            foundO1 = true;
+                            cy1 = $(foundRow).find('.cycleTime3').val();
+                            target1 = $(foundRow).find('.allocatedTime3');
+                            targetOutput1 = $(foundRow).find('.output3');
+                        }
+                        else if (foundO1 && !foundO2) {
+                            //o2
+                            if (outPutValue1) {
+                                o2 += eval(outPutValue1);
+                            }
+                            if (outPutValue2) {
+                                o2 += eval(outPutValue2);
+                            }
+                            if (outPutValue4) {
+                                o2 += eval(outPutValue4);
+                            }
+                            foundO2 = true;
+                            cy2 = $(foundRow).find('.cycleTime3').val();
+                            target2 = $(foundRow).find('.allocatedTime3');
+                            targetOutput2 = $(foundRow).find('.output3');
+                        }
+                        else if (foundO2 && !foundO3) {
+                            //o2
+                            if (outPutValue1) {
+                                o3 += eval(outPutValue1);
+                            }
+                            if (outPutValue2) {
+                                o3 += eval(outPutValue2);
+                            }
+                            if (outPutValue4) {
+                                o3 += eval(outPutValue4);
+                            }
+                            foundO3 = true;
+                            cy3 = $(foundRow).find('.cycleTime3').val();
+                            target3 = $(foundRow).find('.allocatedTime3');
+                            targetOutput3 = $(foundRow).find('.output3');
+                        }
+                        else if (foundO3) {
+                            //o2
+                            if (outPutValue1) {
+                                o4 += eval(outPutValue1);
+                            }
+                            if (outPutValue2) {
+                                o4 += eval(outPutValue2);
+                            }
+                            if (outPutValue4) {
+                                o4 += eval(outPutValue4);
+                            }
+
+                            cy4 = $(foundRow).find('.cycleTime3').val();
+                            target4 = $(foundRow).find('.allocatedTime3');
+                            targetOutput4 = $(foundRow).find('.output3');
+                        }
+
+
+                    } else if (op4 == operatorNo) {
+                        //Column 4
+                        if (o1 == 0 && !foundO1) {
+                            if (outPutValue1) {
+                                o1 += eval(outPutValue1);
+                            }
+                            if (outPutValue2) {
+                                o1 += eval(outPutValue2);
+                            }
+                            if (outPutValue3) {
+                                o1 += eval(outPutValue3);
+                            }
+                            foundO1 = true;
+                            cy1 = $(foundRow).find('.cycleTime4').val();
+                            target1 = $(foundRow).find('.allocatedTime4');
+                            targetOutput1 = $(foundRow).find('.output4');
+                        }
+                        else if (foundO1 && !foundO2) {
+                            //o2
+                            if (outPutValue1) {
+                                o2 += eval(outPutValue1);
+                            }
+                            if (outPutValue2) {
+                                o2 += eval(outPutValue2);
+                            }
+                            if (outPutValue3) {
+                                o2 += eval(outPutValue3);
+                            }
+                            foundO2 = true;
+                            cy2 = $(foundRow).find('.cycleTime4').val();
+                            target2 = $(foundRow).find('.allocatedTime4');
+                            targetOutput2 = $(foundRow).find('.output4');
+                        }
+                        else if (foundO2 && !foundO3) {
+                            //o2
+                            if (outPutValue1) {
+                                o3 += eval(outPutValue1);
+                            }
+                            if (outPutValue2) {
+                                o3 += eval(outPutValue2);
+                            }
+                            if (outPutValue3) {
+                                o3 += eval(outPutValue3);
+                            }
+                            foundO2 = true;
+                            cy3 = $(foundRow).find('.cycleTime4').val();
+                            target3 = $(foundRow).find('.allocatedTime4');
+                            targetOutput3 = $(foundRow).find('.output4');
+                        }
+                        else if (foundO3) {
+                            //o2
+                            if (outPutValue1) {
+                                o4 += eval(outPutValue1);
+                            }
+                            if (outPutValue2) {
+                                o4 += eval(outPutValue2);
+                            }
+                            if (outPutValue3) {
+                                o4 += eval(outPutValue3);
+                            }
+
+                            cy4 = $(foundRow).find('.cycleTime4').val();
+                            target4 = $(foundRow).find('.allocatedTime4');
+                            targetOutput4 = $(foundRow).find('.output4');
+                        }
+                    }
+                });
+                GetAllocationTime(cy1, cy2, cy3, cy4, o1, o2, o3, o4, count, target1, target2, target3, target4, targetOutput1, targetOutput2, targetOutput3, targetOutput4);
+            }
+
+            function UpdateAllAllocationTime() {
+                var allRows = $('#lineBalancingTbody').find('tr').toArray();
+                //for (var i = 0; i < 4; i++) {
+
+                   $.each(allRows, function (index, value) {
+                    var row = $(value);
+                    var operatorNo1 = row.find('.operatorNo1').val();
+                    var operatorNo2 = row.find('.operatorNo2').val();
+                    var operatorNo3 = row.find('.operatorNo3').val();
+                    var operatorNo4 = row.find('.operatorNo4').val();
+
+                       if (operatorNo1 != "") {
+                           var cycleTime = row.find('.cycleTime1').val();
+                           var count = GetUserOccurrence(operatorNo1);
+                           if (count == 1) {
+
+                               //For this column(
+
+                               row.find('.allocatedTime1').html('60');
+
+                               //Change Here
+
+                               var output = MathUtils.roundToPrecision(((60 * 60) / cycleTime), 2);
+
+                               row.find('.output1').val(output);
+
+                           } else if (count == 2) {
+
+                               UpdateAllocationTime(count,allRows, operatorNo1);
+                           }
+                           else if (count == 3) {
+
+                               UpdateAllocationTime(count,allRows, operatorNo1);
+                           }
+                           else if (count == 4) {
+
+                               UpdateAllocationTime(count,allRows, operatorNo1);
+                           }
+                       } else {
+                           row.find('.allocatedTime1').html('');
+                           row.find('.cycleTime1').val('');
+                           row.find('.output1').val('');
+                       }
+                    if (operatorNo2 != "") {
+                        var cycleTime = row.find('.cycleTime2').val();
+                        var count = GetUserOccurrence(operatorNo2);
+
+                        if (count == 1) {
+                            row.find('.allocatedTime2').html('60');
+                            var output = MathUtils.roundToPrecision(((60 * 60) / cycleTime), 2);
+                            row.find('.output2').val(output);
+                        } else if (count == 2) {
+                            UpdateAllocationTime(count,allRows, operatorNo2);
+                        }
+                        else if (count == 3) {
+
+                            UpdateAllocationTime(count,allRows, operatorNo2);
+                        }
+                        else if (count == 4) {
+
+                            UpdateAllocationTime(count,allRows, operatorNo2);
+                        }
+                    } else {
+                        row.find('.allocatedTime2').html('');
+                        row.find('.cycleTime2').val('');
+                        row.find('.output2').val('');
+                    }
+                    if (operatorNo3 != "") {
+                        var cycleTime = row.find('.cycleTime3').val();
+                        var count = GetUserOccurrence(operatorNo3);
+
+                        if (count == 1) {
+                            row.find('.allocatedTime3').html('60');
+                            var output = MathUtils.roundToPrecision(((60 * 60) / cycleTime), 2);
+                            row.find('.output3').val(output);
+                        } else if (count == 2) {
+                            UpdateAllocationTime(count,allRows, operatorNo3);
+                        }
+                        else if (count == 3) {
+                            UpdateAllocationTime(count,allRows, operatorNo3);
+                        }
+                        else if (count == 4) {
+                            UpdateAllocationTime(count,allRows, operatorNo3);
+                        }
+                    } else {
+                        row.find('.allocatedTime3').html('');
+                        row.find('.cycleTime3').val('');
+                        row.find('.output3').val('');
+                    }
+                    if (operatorNo4 != "") {
+                        var cycleTime = row.find('.cycleTime4').val();
+                        var count = GetUserOccurrence(operatorNo4);
+
+                        if (count == 1) {
+                            //For this column(
+                            row.find('.allocatedTime4').html('60');
+                            //Change Here
+                            var output = MathUtils.roundToPrecision(((60 * 60) / cycleTime), 2);
+                            row.find('.output4').val(output);
+                        } else if (count == 2) {
+                            UpdateAllocationTime(count,allRows, operatorNo4);
+                        }
+                        else if (count == 3) {
+
+                            UpdateAllocationTime(count,allRows, operatorNo4);
+
+                        }
+                        else if (count == 4) {
+
+                            UpdateAllocationTime(count,allRows, operatorNo4);
+
+                        }
+
+
+                    } else {
+                        row.find('.allocatedTime4').html('');
+                        row.find('.cycleTime4').val('');
+                        row.find('.output4').val('');
+
+                    }
+
+                   });
+            }
+
+            function GetAllocationTime(cy1, cy2, cy3, cy4, o1, o2, o3, o4, count, target1, target2, target3, target4, targetOutput1, targetOutput2, targetOutput3, targetOutput4) {
+
+                if (count==2) {
+
+                    var allocation1 = 1;
+                    var allocation2 = 59;
+
+                    testOutPut1 = MathUtils.roundToPrecision(((((allocation1 * 60) / cy1)+o1)), 2);
+                    testOutPut2 = MathUtils.roundToPrecision(((((allocation2 * 60) / cy2) +o2)), 2);
+                    if (testOutPut1 == testOutPut2) {
+                        target1.html(allocation1);
+                        target2.html(allocation2);
+                        targetOutput1.val(testOutPut1);
+                        targetOutput2.val(testOutPut2);
+                    }
+                    else {
+                        GetAllocationTimeForTwo(cy1, cy2,o1,o2, allocation1, allocation2, testOutPut1, testOutPut2, target1, target2, targetOutput1, targetOutput2);
+                    }
+                }
+                if (count == 3) {
+
+                    var allocation1 = 1;
+                    var allocation2 = 1;
+                    var allocation3 = 58;
+
+                    testOutPut1 = MathUtils.roundToPrecision(((((allocation1 * 60) / cy1) + o1)), 2);
+                    testOutPut2 = MathUtils.roundToPrecision(((((allocation2 * 60) / cy2) + o2)), 2);
+                    testOutPut3 = MathUtils.roundToPrecision(((((allocation3 * 60) / cy3) + o3)), 2);
+                    if (testOutPut1 == testOutPut2 && testOutPut2 == testOutPut3 ) {
+                        target1.html(allocation1);
+                        target2.html(allocation2);
+                        target3.html(allocation3);
+                        targetOutput1.val(testOutPut1);
+                        targetOutput2.val(testOutPut2);
+                        targetOutput3.val(testOutPut3);
+                    }
+                    else {
+                        GetAllocationTimeForThree(cy1, cy2, cy3, o1, o2, o3, allocation1, allocation2, allocation3, testOutPut1, testOutPut2, testOutPut3, target1, target2, target3, targetOutput1, targetOutput2, targetOutput3);
+                    }
+                }
+            }
+
+            function GetAllocationTimeForTwo(cy1, cy2,o1,o2, allocation1, allocation2, testOutPut1, testOutPut2, target1, target2, targetOutput1, targetOutput2) {
+
+                for (var i = 0; i < 60; i += 0.00001) {
+
+                    if (testOutPut1 > testOutPut2) {
+                        //testOutPut1 = 0;
+                        //testOutPut2 = 0;
+                        allocation1 = allocation1 - 0.001;
+                        allocation2 = allocation2 + 0.001;
+                        testOutPut1 = MathUtils.roundToPrecision((((allocation1 * 60) / cy1)+o1), 1);
+                        testOutPut2 = MathUtils.roundToPrecision((((allocation2 * 60) / cy2)+o2), 1);
+                        //GetAllocationTimeForTwo(cy1, cy2, allocation1, allocation2, testOutPut1, testOutPut2, target1, target2, targetOutput1, targetOutput2)
+                    }
+                    else if (testOutPut2 > testOutPut1) {
+                        //testOutPut1 = 0;
+                        //testOutPut2 = 0;
+                        allocation1 = allocation1 + 0.001;
+                        allocation2 = allocation2 - 0.001;
+
+                        testOutPut1 = MathUtils.roundToPrecision((((allocation1  * 60) / cy1)+o1), 1);
+                        testOutPut2 = MathUtils.roundToPrecision((((allocation2  * 60) / cy2)+o2), 1);
+                        //GetAllocationTimeForTwo(cy1, cy2, allocation1, allocation2, testOutPut1, testOutPut2, target1, target2, targetOutput1, targetOutput2)
+                    }
+                    else if (testOutPut2 == testOutPut1) {
+                        target1.html(MathUtils.roundToPrecision(allocation1,2));
+                        target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                        targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 1));
+                        targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 1));
+                        break;
+                    }
+                }
+            }
+            function GetAllocationTimeForThree(cy1, cy2, cy3, o1, o2, o3, allocation1, allocation2, allocation3, testOutPut1, testOutPut2, testOutPut3, target1, target2, target3, targetOutput1, targetOutput2, targetOutput3) {
+
+                for (var i = 0; i < 60; i += 0.00001) {
+
+                    if ((testOutPut1 >= testOutPut2) && (testOutPut2 >= testOutPut3)) {
+
+                        if ((testOutPut2 == testOutPut1) && (testOutPut1 == testOutPut3)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+                        }
+                        else if (((eval(testOutPut1) - eval(testOutPut2)) < 0.1) && ((eval(testOutPut2) - eval(testOutPut3)) < 0.1)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+                        }
+                        else {
+                            allocation1 = allocation1 - 0.001;
+                            // allocation2 = allocation2 - i;
+                            allocation3 = allocation3 + 0.001;
+                            testOutPut1 = MathUtils.roundToPrecision((((allocation1 * 60) / cy1) + o1), 2);
+                            //testOutPut2 = MathUtils.roundToPrecision((((allocation2 * 60) / cy2) + o2), 1);
+                            testOutPut3 = MathUtils.roundToPrecision((((allocation3 * 60) / cy3) + o3), 2);
+                        //GetAllocationTimeForTwo(cy1, cy2, allocation1, allocation2, testOutPut1, testOutPut2, target1, target2, targetOutput1, targetOutput2)
+                        }
+                    }
+                    else if ((testOutPut2 >= testOutPut1) && (testOutPut1>= testOutPut3) ) {
+
+                        if ((testOutPut2 == testOutPut1) && (testOutPut1 == testOutPut3)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+                        }
+                        else if (((eval(testOutPut2) - eval(testOutPut1)) < 0.1) && ((eval(testOutPut1) - eval(testOutPut3)) < 0.1)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+
+                        }
+                        else {
+                            allocation3 = allocation3 + 0.001;
+                            allocation2 = allocation2 - 0.001;
+
+                            testOutPut3 = MathUtils.roundToPrecision((((allocation3 * 60) / cy3) + o3), 2);
+                            testOutPut2 = MathUtils.roundToPrecision((((allocation2 * 60) / cy2) + o2), 2);
+                        //GetAllocationTimeForTwo(cy1, cy2, allocation1, allocation2, testOutPut1, testOutPut2, target1, target2, targetOutput1, targetOutput2)
+                        }
+                    }
+                    else if ((testOutPut3 >= testOutPut2) && (testOutPut2 >= testOutPut1)) {
+
+                        if ((testOutPut2 == testOutPut1) && ( testOutPut1== testOutPut3)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+                        }
+                        else if (((eval(testOutPut3) - eval(testOutPut2)) < 0.1) && ((eval(testOutPut2) - eval(testOutPut1)) < 0.1)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+                        }
+                        else {
+                            allocation1 = allocation1 + 0.001;
+                            allocation3 = allocation3 - 0.001;
+                            testOutPut3 = MathUtils.roundToPrecision((((allocation3 * 60) / cy3) + o3), 2);
+                            testOutPut1 = MathUtils.roundToPrecision((((allocation1 * 60) / cy1) + o1), 2);
+                        //GetAllocationTimeForTwo(cy1, cy2, allocation1, allocation2, testOutPut1, testOutPut2, target1, target2, targetOutput1, targetOutput2)
+                        }
+                    }
+                    else if ((testOutPut2 >= testOutPut3) && (testOutPut3 >= testOutPut1)) {
+                        if ((testOutPut2 == testOutPut1) && (testOutPut1 == testOutPut3)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+                        }
+                        else if (((eval(testOutPut2) - eval(testOutPut3)) < 0.1) && ((eval(testOutPut3) - eval(testOutPut1)) < 0.1)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+                        }
+                        else {
+                            allocation2 = allocation2 - 0.001;
+                            allocation1 = allocation1 + 0.001;
+                            testOutPut1 = MathUtils.roundToPrecision((((allocation1 * 60) / cy1) + o1), 2);
+                            testOutPut2 = MathUtils.roundToPrecision((((allocation2 * 60) / cy2) + o2), 2);
+                        //GetAllocationTimeForTwo(cy1, cy2, allocation1, allocation2, testOutPut1, testOutPut2, target1, target2, targetOutput1, targetOutput2)
+                        }
+                    }
+                    else if ((testOutPut1 >= testOutPut3) && (testOutPut3>= testOutPut2)) {
+                        if ((testOutPut2 == testOutPut1) && (testOutPut1 == testOutPut3)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+
+                            break;
+                        }
+                        else if (((eval(testOutPut1) - eval(testOutPut3)) < 0.1) && ((eval(testOutPut3) - eval(testOutPut2)) < 0.1)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+                        }
+                        else {
+                            allocation1 = allocation1 - 0.001;
+                            allocation2 = allocation2 + 0.001;
+
+                            testOutPut1 = MathUtils.roundToPrecision((((allocation1 * 60) / cy1) + o1), 2);
+                            testOutPut2 = MathUtils.roundToPrecision((((allocation2 * 60) / cy2) + o2), 2);
+                        //GetAllocationTimeForTwo(cy1, cy2, allocation1, allocation2, testOutPut1, testOutPut2, target1, target2, targetOutput1, targetOutput2)
+                        }
+                    }
+                    else if ((testOutPut3 >= testOutPut1) && (testOutPut1 >= testOutPut2)) {
+
+                        if ((testOutPut2 == testOutPut1) && (testOutPut1 == testOutPut3)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+                        }
+                        else if (((eval(testOutPut3) - eval(testOutPut1)) < 0.1) && ((eval(testOutPut1) - eval(testOutPut2)) < 0.1)) {
+                            target1.html(MathUtils.roundToPrecision(allocation1, 2));
+                            target2.html(MathUtils.roundToPrecision(allocation2, 2));
+                            target3.html(MathUtils.roundToPrecision(allocation3, 2));
+                            targetOutput1.val(MathUtils.roundToPrecision((testOutPut1 - o1), 2));
+                            targetOutput2.val(MathUtils.roundToPrecision((testOutPut2 - o2), 2));
+                            targetOutput3.val(MathUtils.roundToPrecision((testOutPut3 - o3), 2));
+                            break;
+
+                        }
+                        else {
+                            allocation2 = allocation2 + 0.001;
+                            allocation3 = allocation3 - 0.001;
+
+                            testOutPut2 = MathUtils.roundToPrecision((((allocation2 * 60) / cy2) + o2), 2);
+                            testOutPut3 = MathUtils.roundToPrecision((((allocation3 * 60) / cy3) + o3), 2);
+                        }
+                        //GetAllocationTimeForTwo(cy1, cy2, allocation1, allocation2, testOutPut1, testOutPut2, target1, target2, targetOutput1, targetOutput2)
+
+                    }
+                }
+            }
+            MathUtils = {
+                roundToPrecision: function (subject, precision) {
+                    return +((+subject).toFixed(precision));
+                }
+            }
+
+            });
+    </script>
+}

@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>@ViewData["Title"] - Tool for Production Support (TPS) | Dynamo ERP</title>
+
+    <link rel="icon" href="~/img/tps/fav.png" type="image/png">
+
+    @RenderSection("ChromeScript", required: false)
+
+    <link href="~/vendor/fonts/roboto/css.css" rel="stylesheet">
+    <link href="~/vendor/fonts/BAUHS93/font.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/vendor/nucleo/css/nucleo.css">
+    <link rel="stylesheet" href="~/vendor/fontawesome/css/all.min.css">
+    <link href="~/vendor/jquery-confirm/css/jquery-confirm.css" rel="stylesheet" type="text/css" />
+
+    @* Page Plugin *@
+
+    @RenderSection("Css", required: false)
+
+    @*
+        <link rel="stylesheet" href="~/vendor/animate.css/animate.min.css">
+        <link rel="stylesheet" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+        <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+        <link rel="stylesheet" href="~/vendor/quill/dist/quill.core.css">
+        <link rel="stylesheet" href="~/vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+        <link rel="stylesheet" href="~/vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css">
+        <link rel="stylesheet" href="~/vendor/datatables.net-select-bs4/css/select.bootstrap4.min.css">
+        <link rel="stylesheet" href="~/vendor/fullcalendar/dist/fullcalendar.min.css">
+    *@
+
+    @* Style *@
+    <link rel="stylesheet" href="~/vendor/animate.css/animate.min.css">
+    <link rel="stylesheet" href="~/css/dynamo.css" type="text/css">
+    <link rel="stylesheet" href="~/css/style.css" type="text/css">
+
+    @RenderSection("Sole", required: false)
+</head>
+
+<body>
+
+    <div>
+
+        <partial name="_CookieConsentPartial" />
+
+        <main role="main" class="pb-3">
+
+
+            @RenderBody()
+
+
+        </main>
+    </div>
+
+    <script src="~/vendor/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-notify/bootstrap-notify.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/js-cookie/js.cookie.js" asp-append-version="true"></script>
+
+    @RenderSection("datetimepicker", required: false)
+
+    <script src="~/vendor/jquery.scrollbar/jquery.scrollbar.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js" asp-append-version="true"></script>
+    <script src="~/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/argon.min.js" asp-append-version="true"></script>
+    <script>
+        //$(document).on('click', 'input.login, input.password', function () {
+        //    $(".form-content").addClass("onselect")
+        //});
+
+        //$(document).on('click', '.carousel-item .d-block', function () {
+        //    $(".form-content").removeClass("onselect")
+        //});
+
+        $(document).on('click', 'input.login, input.password, .login-form', function () {
+            $(".login-form").addClass("onselect")
+        });
+
+        $(document).on('click', '.carousel.slide', function () {
+            $(".login-form").removeClass("onselect")
+        });
+    </script>
+</body>
+</html>
+

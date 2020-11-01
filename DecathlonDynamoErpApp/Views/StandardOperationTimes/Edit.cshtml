@@ -1,0 +1,131 @@
+﻿@model Dynamo.Model.Sot.StandardOperationTime
+
+@{
+    ViewData["Title"] = "SOT | Edit";
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" href="~/vendor/lightbox/lightbox.min.css">
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Edit</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Archive</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">SOT</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="Index">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header py-2">
+            <h3 class="mb-0">Edit SOT</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="FactoryId" />
+                <input type="hidden" asp-for="CalculationStatusId" />
+                <input type="hidden" asp-for="ValidationStatusId" />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="SotModelId" class="control-label"></label>
+                            <select id="sotModelId" name="sotModelId" class="form-control" data-toggle="select" asp-items="ViewBag.SotModelId"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">DIPL</label>
+                            <input id="dipl" class="form-control" disabled value="@Model.SotModel.Dipl" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Process</label>
+                            <input id="process" class="form-control" disabled value="@Model.SotModel.Process.Name" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Sign Sport</label>
+                            <input id="signSport" class="form-control" disabled value="@Model.SotModel.SignSport.Name" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div>
+                            <a class="example-image-link" id="shoeLink" href="~/files/sot_models/@Model.SotModel.Photo" data-lightbox="example-1">
+                                <img asp-append-version="true" id="shoePhoto" class="d-block example-image" style="width: 100px" src="~/files/sot_models/@Model.SotModel.Photo" alt="" />
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/lightbox/lightbox.min.js" asp-append-version="true"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+            $("#sotModelId").on('change', function () {
+                var sotModelId = $(this).val();
+                var src = "";
+                var href = "";
+                if (sotModelId != "") {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("GetDetails", "SotModels")',
+                        data: {
+                            id: sotModelId,
+                        },
+                        cache: false,
+                        success: function (data) {
+                            $('#dipl').val(data.dipl);
+                            $('#process').val(data.processName);
+                            $('#signSport').val(data.signSportName);
+                            $('#photo').val(data.photo);
+                            src = "/files/sot_models/" + data.photo;
+                            $("#shoePhoto").attr("src", src).fadeIn();
+                            href = "/files/sot_models/" + data.photo;
+                            $("#shoeLink").attr("href", href);
+                        }
+                    });
+                }
+                else {
+                    $('#dipl').val("");
+                    $('#process').val("");
+                    $('#signSport').val("");
+                    $('#photo').val("");
+                    $("#shoePhoto").attr("src", src).fadeIn();
+                    $("#shoeLink").attr("href", href);
+                }
+            });
+        });
+    </script>
+}

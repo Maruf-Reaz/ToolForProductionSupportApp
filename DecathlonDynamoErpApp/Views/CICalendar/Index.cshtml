@@ -1,0 +1,655 @@
+﻿@{
+    ViewData["Title"] = "CI Calendar";
+}
+
+@section Css {
+
+    <link rel="stylesheet" asp-append-version="true" href="~/vendor/fullcalendar-2.2.7-yearview/fullcalendar.css" />
+    <link rel="stylesheet" asp-append-version="true" href="~/vendor/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" asp-append-version="true" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+}
+
+@section Sole {
+    <style>
+        .fc-unthemed td.fc-today span {
+            background: linear-gradient(45deg, #303f9f, #7b1fa2);
+            box-shadow: 0px 0px 5px 0 rgba(123, 31, 162, .5);
+            color: #fff;
+        }
+
+        .select2-close-mask {
+            z-index: 2099;
+        }
+
+        .select2-dropdown {
+            z-index: 3051;
+        }
+
+        .fc-toolbar {
+            display: none;
+        }
+
+        .fc-unthemed td.fc-today.fc-day-number {
+            background: linear-gradient(45deg, #303f9f, #7b1fa2);
+            box-shadow: 0 0 5px 0 rgba(123, 31, 162, .5);
+            color: #fff;
+        }
+
+        .select2-dropdown {
+            z-index: 3051;
+        }
+    </style>
+}
+
+<div class="header header-dark bg-custom pb-6 content__title content__title--calendar">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6">
+                    <h6 class="fullcalendar-title h2 text-white d-inline-block mb-0">Full calendar</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-lg-inline-block ml-lg-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Calendar</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 mt-3 mt-lg-0 text-lg-right">
+                    <a href="#" class="fullcalendar-btn-prev btn btn-sm btn-neutral">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                    <a href="#" class="fullcalendar-btn-next btn btn-sm btn-neutral">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm btn-neutral fullcalendar-btn-today">Today</a>
+                    <a href="#" class="btn btn-sm btn-neutral" data-calendar-view="year">Year</a>
+                    <a href="#" class="btn btn-sm btn-neutral" data-calendar-view="month">Month</a>
+                    <a href="#" class="btn btn-sm btn-neutral" data-calendar-view="basicWeek">Week</a>
+                    <a href="#" class="btn btn-sm btn-neutral" data-calendar-view="basicDay">Day</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card card-calendar animated fadeIn">
+                <div class="card-header">
+                    <h5 class="h3 mb-0">CI Calendar</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div data-toggle="calendar2" class="calendar" id="calendar2"></div>
+                </div>
+            </div>
+            <div class="modal fade cicalendar" id="new-event" tabindex="-1" role="dialog" aria-labelledby="new-event-label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-secondary" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <form class="new-event--form" method="post">
+                                <input type="hidden" id="currentUserId" name="name" value="@ViewBag.CurrentUserId" />
+                                <div class="form-group">
+                                    <label class="form-control-label">Title</label>
+                                    <input id="titleAdd" name="titleAdd" type="text" class="form-control" />
+                                    <span id="titleAddError" class="text-danger"></span>
+                                </div>
+                                <input type="hidden" id="AllDay" name="AllDay" value="true" />
+                                <div class="form-group">
+                                    <label class="form-control-label">From</label>
+                                    <input id="fromDateAdd" name="from" class="form-control datepicker" />
+                                    <span id="fromDateAddError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">To</label>
+                                    <input id="toDateAdd" name="toDateAdd" class="form-control datepicker" />
+                                    <span id="toDateAddError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="form-control-label d-block mb-3">Status color</label>
+                                    <div class="btn-group btn-group-toggle btn-group-colors event-tag" data-toggle="buttons">
+                                        <label class="btn bg-info"><input type="radio" class="StatusColorAdd" name="StatusColorAdd" value="bg-info" autocomplete="off" checked></label>
+                                        <label class="btn bg-warning"><input type="radio" class="StatusColorAdd" name="StatusColorAdd" value="bg-warning" autocomplete="off"></label>
+                                        <label class="btn bg-danger"><input type="radio" class="StatusColorAdd" name="StatusColorAdd" value="bg-danger" autocomplete="off"></label>
+                                        <label class="btn bg-success"><input type="radio" class="StatusColorAdd" name="StatusColorAdd" value="bg-success" autocomplete="off"></label>
+                                        <label class="btn bg-default"><input type="radio" class="StatusColorAdd" name="StatusColorAdd" value="bg-default" autocomplete="off"></label>
+                                        <label class="btn bg-primary"><input type="radio" class="StatusColorAdd" name="StatusColorAdd" value="bg-primary" autocomplete="off"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label mt-3">Description (Optional)</label>
+                                    <input id="Description" name="Description" type="text" class="form-control" />
+                                    <span id="Description_error" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Guest</label>
+                                        <div class="six wide field">
+                                            <div class="two fields">
+                                                <div class="field">
+                                                    <select id="guestIdAdd" class="js-multiple guestIdAdd d-none" multiple="multiple">
+                                                        @foreach (var user in ViewBag.AllUsers)
+                                                        {
+                                                            <option value="@user.Id">@user.UserName</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span id="guestIdError" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary new-event--add">Create</button>
+                                    <button type="button" class="btn btn-neutral ml-auto" data-dismiss="modal">Close</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade cicalendar" id="edit-event" tabindex="-1" role="dialog" aria-labelledby="edit-event-label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-secondary" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <form class="new-event--form" method="post">
+                                <input type="hidden" id="idEdit" name="name" value="" />
+                                <div class="form-group">
+                                    <label class="form-control-label">Title</label>
+                                    <input id="titleEdit" name="title" type="text" class="form-control" />
+                                    <span id="titleError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">From</label>
+                                    <input id="fromDateEdit" name="from" class="form-control datepicker" />
+                                    <span id="fromDateEditError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">To</label>
+                                    <input id="toDateEdit" name="toDateEdit" class="form-control datepicker" />
+                                    <span id="toDateEditError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="form-control-label d-block mb-3">Status color</label>
+                                    <div class="btn-group btn-group-toggle btn-group-colors event-tag" data-toggle="buttons">
+                                        <label class="btn bg-info"><input type="radio" class="StatusColorEdit" name="StatusColorEdit" value="bg-info" autocomplete="off" checked></label>
+                                        <label class="btn bg-warning"><input type="radio" class="StatusColorEdit" name="StatusColorEdit" value="bg-warning" autocomplete="off"></label>
+                                        <label class="btn bg-danger"><input type="radio" class="StatusColorEdit" name="StatusColorEdit" value="bg-danger" autocomplete="off"></label>
+                                        <label class="btn bg-success"><input type="radio" class="StatusColorEdit" name="StatusColorEdit" value="bg-success" autocomplete="off"></label>
+                                        <label class="btn bg-default"><input type="radio" class="StatusColorEdit" name="StatusColorEdit" value="bg-default" autocomplete="off"></label>
+                                        <label class="btn bg-primary"><input type="radio" class="StatusColorEdit" name="StatusColorEdit" value="bg-primary" autocomplete="off"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label mt-3">Description (Optional)</label>
+                                    <input id="descriptionEdit" name="descriptionEdit" type="text" class="form-control" />
+                                    <span id="descriptionEditError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label mt-3">Created By</label>
+                                    <input disabled id="createdByEdit" name="createdByEdit" type="text" class="form-control" />
+                                    <span id="createdByEditEditError" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Guest</label>
+                                        <div class="six wide field">
+                                            <div class="two fields">
+                                                <div class="field">
+                                                    <select name="guestId" id="guestIdEdit" class="js-multiple2 guestIdEdit d-none" multiple="multiple">
+                                                        @foreach (var user in ViewBag.AllUsers)
+                                                        {
+                                                            <option value="@user.Id">@user.UserName</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span id="guestIdEditError" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="modal-footer p-0">
+                                    <div class="">
+                                        <div id="eventAction" class="btn-group"></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" id="updateBtn" data-calendar="update">Update</button>
+                                    <button class="btn btn-danger" id="deleteBtn" data-calendar="delete">Delete</button>
+                                    <button class="btn btn-neutral ml-auto" data-dismiss="modal">Close</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/moment/min/moment.min.js" asp-append-version="true"></script>
+    <script src='~/vendor/fullcalendar-2.2.7-yearview/fullcalendar.min.js' asp-append-version="true"></script>
+    <script src='~/vendor/fullcalendar-2.2.7-yearview/gcal.js' asp-append-version="true"></script>
+    <script src="~/vendor/sweetalert2/dist/sweetalert2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.js-multiple').select2({
+                placeholder: 'Select an option'
+            });
+            $('.js-multiple2').select2({
+                placeholder: 'Select an option'
+            });
+            $('.js-single').select2({
+                placeholder: 'Select an option'
+            });
+            function getFormattedDate(date) {
+                let year = date.getFullYear();
+                let month = (1 + date.getMonth()).toString().padStart(2, '0');
+                let day = date.getDate().toString().padStart(2, '0');
+                return month + '-' + day + '-' + year;
+            }
+            function UserExists(userId, listOfuser) {
+                var i;
+                for (i = 0; i < listOfuser.length; i++) {
+                    if (listOfuser[i].userId === userId) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            var users = @Html.Raw(Json.Serialize(ViewBag.AllUsers)) ;
+
+            var Fullcalendar = function () {
+                var e, a, t = $('[data-toggle="calendar2"]');
+                t.length && (a = {
+                    header: {
+                        right: "",
+                        center: "",
+                        left: 'today',
+                    },
+                    buttonIcons: {
+                        prev: "calendar--pre",
+                        next: "calendar--next"
+                    },
+                    theme: !1,
+                    selectable: !0,
+                    selectHelper: !0,
+                    editable: !0,
+                    disableDragging: true,
+                    eventSources: ['@Url.Action("GetAll", "CICalendar")'],
+                    select: function (startDate, endDate) {
+                        var eDate = new Date(endDate);
+                        eDate.setDate(eDate.getDate() - 1);
+                        $("#new-event").modal("show");
+                        $("#fromDateAdd").val(startDate.format('MM-DD-YYYY'));
+                        $("#toDateAdd").val(getFormattedDate(eDate));
+                        $("#Description").val("");
+                        $("#titleAdd").val("");
+
+                    },
+                    viewRender: function (a) {
+                        e.fullCalendar("getDate").month(), $(".fullcalendar-title").html(a.title)
+                    },
+                    eventClick: function (event) {
+                        $.ajax({
+                            type: "POST",
+                            dataType: 'json',
+                            url: '@Url.Action("Find", "CICalendar")',
+                            data: { id: event.id },
+                            cache: false,
+                            success: function (object) {
+                                if (object) {
+                                    $("#idEdit").val(object.id);
+                                    var cuurentUser = $('#currentUserId').val();
+                                    if (object.createdByUserId == cuurentUser) {
+                                        $("#titleEdit").prop('disabled', false);
+                                        $("#fromDateEdit").prop('disabled', false);
+                                        $("#toDateEdit").prop('disabled', false);
+                                        $("#Description_edit").prop('disabled', false);
+                                        $(".StatusColorEdit").prop('disabled', false);
+                                        $("#descriptionEdit").prop('disabled', false);
+                                        $("#guestIdEdit").prop('disabled', false);
+                                        $("#updateBtn").prop('disabled', false);
+                                        $("#deleteBtn").prop('disabled', false);
+                                        $("#createdByEdit").val("You");
+                                    }
+                                    if (object.createdByUserId != cuurentUser) {
+                                        $("#titleEdit").prop('disabled', true);
+                                        $("#fromDateEdit").prop('disabled', true);
+                                        $("#toDateEdit").prop('disabled', true);
+                                        $("#Description_edit").prop('disabled', true);
+                                        $(".StatusColorEdit").prop('disabled', true);
+                                        $("#descriptionEdit").prop('disabled', true);
+                                        $("#guestIdEdit").prop('disabled', true);
+                                        $("#updateBtn").prop('disabled', true);
+                                        $("#deleteBtn").prop('disabled', true);
+                                        $.each(object.eventGuests, function (key, value) {
+                                            if (value.userId == cuurentUser) {
+                                                $("#eventAction").children().remove();
+                                                if (value.status == 1) {
+                                                    $("#eventAction").append('<button class="btn btn-success btn-sm" id="acceptBtn" >Accept</button>');
+                                                    $("#eventAction").append('<button class="btn btn-danger btn-sm" id="rejectBtn" >Reject</button>');
+                                                } else if (value.status == 2) {
+                                                    $("#eventAction").append('<button disabled class="btn btn-success btn-sm" >Accepted</button>');
+                                                } else if (value.status == 3) {
+                                                    $("#eventAction").append('<button disabled class="btn btn-danger btn-sm" id="acceptBtn" data-calendar="update">Rejected</button>');
+                                                }
+                                            }
+                                        });
+                                        $.each(users, function (key, user) {
+                                            if (user.id == object.createdByUserId) {
+                                                $("#createdByEdit").val(user.userName);
+                                            }
+                                        });
+                                    }
+                                    $("#titleEdit").val(object.title);
+                                    $("#fromDateEdit").val(object.fromDate);
+                                    $("#toDateEdit").val(object.toDate);
+                                    $("#descriptionEdit").val(object.description);
+                                    $("#guestIdEdit").children().remove();
+                                    $.each(users, function (key, user) {
+                                        if (UserExists(user.id, object.eventGuests)) {
+                                            $("#guestIdEdit").append('<option selected value="' + user.id + '">' + user.userName + '</option>');
+                                        } else {
+                                            $("#guestIdEdit").append('<option value="' + user.id + '">' + user.userName + '</option>');
+                                        }
+                                    });
+                                    $("#edit-event input[value=" + object.statusColour + "]").prop("checked", true);
+                                    $("#edit-event").modal("show");
+                                } else {
+                                    swal({
+                                        title: "Failed",
+                                        text: "Failed to add",
+                                        type: "danger",
+                                        showCancelButton: false,
+                                        buttonsStyling: !1,
+                                        confirmButtonClass: "btn btn-primary",
+                                        confirmButtonText: "Ok"
+                                    });
+                                }
+                            }
+                        })
+                    },
+                },
+                (e = t).fullCalendar(a),
+                $("body").on("click", ".new-event--add", function (event) {
+                    event.preventDefault();
+                    var title = $("#titleAdd").val();
+                    var fromDateAdd = $("#fromDateAdd").val();
+                    var toDateAdd = $("#toDateAdd").val();
+                    var description = $("#Description").val();
+                    var allDay = $("#AllDay").val();
+                    var statusColor = $("input[name='StatusColorAdd']:checked").val();
+                    var guestUserId = $("#guestIdAdd").find('option:selected').toArray().map(item => item.value);
+                    if (title == "" || fromDateAdd == "" || toDateAdd == "") {
+                        swal({
+                            title: "Please provide all informtaion",
+                            text: "Please provide all informtaion",
+                            type: "warning",
+                            showCancelButton: false,
+                            buttonsStyling: !1,
+                            confirmButtonClass: "btn btn-primary",
+                            confirmButtonText: "Ok"
+                        });
+                    } else {
+                        $("#new-event").modal("hide");
+                        var url = '@Url.Action("Save", "CICalendar")';
+                        $.ajax({
+                            type: "POST",
+                            dataType: 'json',
+                            url: url,
+                            data: {
+                                data: JSON.stringify({
+                                    title: title,
+                                    fromDate: fromDateAdd,
+                                    toDate: toDateAdd,
+                                    Description: description,
+                                    guestUserId: guestUserId,
+                                    AllDay: allDay ? true : false,
+                                    StatusColour: statusColor,
+                                })
+                            },
+                            cache: false,
+                            success: function (objects) {
+                                if (objects) {
+                                    swal({
+                                        title: "Successfully",
+                                        text: "Successfully added",
+                                        type: "success",
+                                        showCancelButton: false,
+                                        buttonsStyling: !1,
+                                        confirmButtonClass: "btn btn-primary",
+                                        confirmButtonText: "Ok"
+                                    });
+                                    e.fullCalendar("refetchEvents", t);
+                                } else {
+                                    swal({
+                                        title: "Failed",
+                                        text: "Failed to add",
+                                        type: "danger",
+                                        showCancelButton: false,
+                                        buttonsStyling: !1,
+                                        confirmButtonClass: "btn btn-primary",
+                                        confirmButtonText: "Ok"
+                                    });
+                                }
+                            }
+                        })
+                    }
+                }),
+                    $("body").on("click", "#updateBtn", function (event) {
+                    event.preventDefault();
+                    //Get All Values
+                    var id = $("#idEdit").val();
+                    var title = $("#titleEdit").val();
+                    var fromDateAdd = $("#fromDateEdit").val();
+                    var toDateAdd = $("#toDateEdit").val();
+                    var description = $("#descriptionEdit").val();
+                    var allDay = $("#AllDay").val();
+                    var statusColor = $("input[name='StatusColorEdit']:checked").val();
+                    var guestUserId = $("#guestIdEdit").find('option:selected').toArray().map(item => item.value);
+                    if (title == "" || fromDateAdd == "" || toDateAdd == "") {
+                        swal({
+                            title: "Please provide all informtaion",
+                            text: "Please provide all informtaion",
+                            type: "warning",
+                            showCancelButton: false,
+                            buttonsStyling: !1,
+                            confirmButtonClass: "btn btn-primary",
+                            confirmButtonText: "Ok"
+                        });
+                    } else {
+                        $("#edit-event").modal("hide");
+                        var url = '@Url.Action("Save", "CICalendar")';
+                        $.ajax({
+                            type: "POST",
+                            dataType: 'json',
+                            url: url,
+                            data: {
+                                data: JSON.stringify({
+                                    id: id,
+                                    title: title,
+                                    fromDate: fromDateAdd,
+                                    toDate: toDateAdd,
+                                    Description: description,
+                                    guestUserId: guestUserId,
+                                    AllDay: allDay ? true : false,
+                                    StatusColour: statusColor,
+                                })
+                            },
+                            cache: false,
+                            success: function (objects) {
+                                if (objects) {
+                                    swal({
+                                        title: "Successfully",
+                                        text: "Successfully Updated",
+                                        type: "success",
+                                        showCancelButton: false,
+                                        buttonsStyling: !1,
+                                        confirmButtonClass: "btn btn-primary",
+                                        confirmButtonText: "Ok"
+                                    });
+                                    e.fullCalendar("refetchEvents", t);
+                                } else {
+                                    swal({
+                                        title: "Failed",
+                                        text: "Failed to Update",
+                                        type: "danger",
+                                        showCancelButton: false,
+                                        buttonsStyling: !1,
+                                        confirmButtonClass: "btn btn-primary",
+                                        confirmButtonText: "Ok"
+                                    })
+                                }
+                            }
+                        });
+                    }
+                }),
+                $("body").on("click", "#deleteBtn", function (event) {
+                    event.preventDefault();
+                    $("#edit-event").modal("hide");
+                     var Id = $("#idEdit").val();
+                     var url = '@Url.Action("DeleteEvent", "CICalendar")';
+                    swal({
+                        title: "Are you sure?",
+                        text: "You won't be able to revert this!",
+                        type: "warning",
+                        showCancelButton: !0,
+                        buttonsStyling: !1,
+                        useRejections: true,
+                        confirmButtonClass: "btn btn-danger",
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonClass: "btn btn-secondary"
+                    }).then(
+                        value => {
+                            $.ajax({
+                                type: "POST",
+                                dataType: 'json',
+                                url: url,
+                                data: { Id },
+                                cache: false,
+                                success: function (objects) {
+                                    if (objects) {
+                                        swal({
+                                            title: "Deleted!",
+                                            text: "The event has been deleted.",
+                                            type: "success",
+                                            buttonsStyling: !1,
+                                            confirmButtonClass: "btn btn-primary"
+                                        });
+                                        e.fullCalendar("refetchEvents", t);
+                                    } else {
+                                        swal({
+                                            title: "Failed",
+                                            text: "Failed to delete",
+                                            type: "error",
+                                            showCancelButton: false,
+                                            buttonsStyling: !1,
+                                            confirmButtonClass: "btn btn-primary",
+                                            confirmButtonText: "Ok"
+                                        });
+                                    }
+                                }
+                            });
+                        },
+                        dismiss => {
+
+                        });
+                }),
+                $("body").on("click", "#acceptBtn", function (event) {
+                    event.preventDefault();
+                    $("#edit-event").modal("hide");
+                    var Id = $("#idEdit").val();
+                    var cuurentUser = $('#currentUserId').val();
+                    var url = '@Url.Action("AcceptEvent", "CICalendar")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: { eventId: Id, userId: cuurentUser },
+                        cache: false,
+                        success: function (objects) {
+                            if (objects) {
+                                swal({
+                                    title: "Accepted!",
+                                    text: "The event has been accepted.",
+                                    type: "success",
+                                    buttonsStyling: !1,
+                                    confirmButtonClass: "btn btn-primary"
+                                });
+                                e.fullCalendar("refetchEvents", t);
+                            } else {
+                                swal({
+                                    title: "Failed",
+                                    text: "Failed to accept",
+                                    type: "error",
+                                    showCancelButton: false,
+                                    buttonsStyling: !1,
+                                    confirmButtonClass: "btn btn-primary",
+                                    confirmButtonText: "Ok"
+                                });
+                            }
+                        }
+                    });
+                }),
+                $("body").on("click", "#rejectBtn", function (event) {
+                    event.preventDefault();
+                    $("#edit-event").modal("hide");
+                    var Id = $("#idEdit").val();
+                    var cuurentUser = $('#currentUserId').val();
+                    var url = '@Url.Action("RejectEvent", "CICalendar")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: { eventId: Id, userId: cuurentUser },
+                        cache: false,
+                        success: function (objects) {
+                            if (objects) {
+                                swal({
+                                    title: "Deleted!",
+                                    text: "The event has been rejected.",
+                                    type: "success",
+                                    buttonsStyling: !1,
+                                    confirmButtonClass: "btn btn-primary"
+                                });
+                                e.fullCalendar("refetchEvents", t);
+                            } else {
+                                swal({
+                                    title: "Failed",
+                                    text: "Failed to reject",
+                                    type: "error",
+                                    showCancelButton: false,
+                                    buttonsStyling: !1,
+                                    confirmButtonClass: "btn btn-primary",
+                                    confirmButtonText: "Ok"
+                                });
+                            }
+                        }
+                    });
+                }),
+                $("body").on("click", "[data-calendar-view]", function (a) {
+                    a.preventDefault(), $("[data-calendar-view]").removeClass("active"),
+                        $(this).addClass("active");
+                    var t = $(this).attr("data-calendar-view");
+                    e.fullCalendar("changeView", t)
+                }),
+                $("body").on("click", ".fullcalendar-btn-next", function (a) {
+                    a.preventDefault(), e.fullCalendar("next")
+                }),
+                $("body").on("click", ".fullcalendar-btn-prev", function (a) {
+                    a.preventDefault(), e.fullCalendar("prev")
+                }),
+                $("body").on("click", ".fullcalendar-btn-today", function (a) {
+                    a.preventDefault(), e.fullCalendar("today")
+                }))
+            }();
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

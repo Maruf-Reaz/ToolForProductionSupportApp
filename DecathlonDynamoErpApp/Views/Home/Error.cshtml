@@ -1,0 +1,115 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Security.cshtml";
+}
+
+@{
+    ViewData["Title"] = "Error";
+}
+
+@section Sole {
+    <style>
+        body {
+            background: unset;
+        }
+
+        .bg-custom {
+            box-shadow: unset;
+        }
+
+        .bg-custom {
+            background: linear-gradient(489deg, #623f95, #0189a3);
+        }
+
+            .bg-custom::before {
+                content: "";
+                height: 100%;
+                width: 100%;
+                top: 0;
+                left: 0;
+                position: absolute;
+                background: url('/img/texture/10.png') repeat;
+                opacity: 0.7;
+            }
+
+        .separator-bottom {
+            bottom: -2px;
+        }
+    </style>
+}
+
+<div class="header bg-custom py-7 py-lg-7 pt-lg-7">
+    <div class="container">
+        <div class="header-body text-center mb-7">
+            <div class="row justify-content-center">
+                <div class="col-xl-5 col-lg-6 col-md-8 px-5">
+                    <h1 class="text-white">404!</h1>
+                    <p class="text-lead text-white">Sorry, the resource you requested could not be found.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="separator separator-bottom separator-skew zindex-100">
+        <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <polygon class="fill-default" points="2560 0 2560 100 0 100"></polygon>
+        </svg>
+    </div>
+</div>
+
+<div class="container mt--8 pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card bg-gradient-success border-0 mb-0 text-center">
+                <div class="card-header bg-transparent pb-3">
+                    <h4 class="text-uppercase ls-1 text-white py-3 mb-0">Possible Reason</h4>
+                </div>
+                <div class="card-body px-lg-6">
+                    <div class="display-1 text-white">Error 404!</div>
+                    <span class="text-white">Error 404 occured due to one or more than one of the following reasons.</span>
+                    <ul class="list-unstyled my-5 text-left">
+                        <li class="mb-2">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <div class="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
+                                        <i class="fas fa-terminal"></i>
+                                    </div>
+                                </div>
+                                <div class="pl-3">
+                                    <span class="text-white">Resource with the specific ID does not exist.</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-2">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <div class="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
+                                        <i class="fas fa-pen-fancy"></i>
+                                    </div>
+                                </div>
+                                <div class="pl-3">
+                                    <span class="text-white">The URL does not match any route.</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-2">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <div class="icon icon-xs icon-shape bg-white shadow rounded-circle text-muted">
+                                        <i class="fas fa-hdd"></i>
+                                    </div>
+                                </div>
+                                <div class="pl-3">
+                                    <span class="text-white">The URL or content was either deleted or moved.</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <a href="/" class="btn btn-secondary mb-3">
+                        <i class="fa fa-home mr-2"></i>Back to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

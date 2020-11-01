@@ -1,0 +1,139 @@
+﻿@model Dynamo.Model.Machines.Machine
+
+@{
+    ViewData["Title"] = "Machines | Details";
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Details</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Archive</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">Machines</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Details</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="Index">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header">
+            <h3 class="mb-0">Details Machine</h3>
+        </div>
+        <div class="card-body">
+            <input type="hidden" asp-for="Id" />
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" disabled />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Code" class="control-label"></label>
+                        <input asp-for="Code" class="form-control" disabled />
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Physiology" class="control-label"></label>
+                        <input asp-for="Physiology" class="form-control" disabled />
+                        <span asp-validation-for="Physiology" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="BasicTiredness" class="control-label"></label>
+                        <input asp-for="BasicTiredness" class="form-control" disabled />
+                        <span asp-validation-for="BasicTiredness" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="NoiseyEnvironment" class="control-label"></label>
+                        <input asp-for="NoiseyEnvironment" class="form-control" disabled />
+                        <span asp-validation-for="NoiseyEnvironment" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="ChangeBobin" class="control-label"></label>
+                        <input asp-for="ChangeBobin" class="form-control" disabled />
+                        <span asp-validation-for="ChangeBobin" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="StandWorking" class="control-label"></label>
+                        <input asp-for="StandWorking" class="form-control" disabled />
+                        <span asp-validation-for="StandWorking" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Other" class="control-label"></label>
+                        <input asp-for="Other" class="form-control" disabled />
+                        <span asp-validation-for="Other" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Field1" class="control-label"></label>
+                        <input asp-for="Field1" class="form-control" disabled />
+                        <span asp-validation-for="Field1" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Field2" class="control-label"></label>
+                        <input asp-for="Field2" class="form-control" disabled />
+                        <span asp-validation-for="Field2" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Field3" class="control-label"></label>
+                        <input asp-for="Field3" class="form-control" disabled />
+                        <span asp-validation-for="Field3" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Total" class="control-label"></label>
+                        <input name="Total" id="Total" type="hidden" step="any" value="@Model.Total" class="form-control" />
+                        <input disabled name="TotalView" id="TotalView" type="number" value="@Model.Total" step="any" class="form-control" />
+                        <span asp-validation-for="Total" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        var initial_url = $(location).attr('href');
+        var splitted_url = initial_url.split('/');
+        var new_url = document.location.origin + '/' + splitted_url[3];
+        $('.label2 ul li > a.nav-link').filter(function () {
+            return this.href == new_url;
+        }).addClass('active').parent().parent().parent().addClass('show').parent().addClass('nav-color-active');
+    </script>
+}

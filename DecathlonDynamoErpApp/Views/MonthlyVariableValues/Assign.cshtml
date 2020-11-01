@@ -1,0 +1,995 @@
+﻿@model IEnumerable<Dynamo.Model.Incentives.MonthlyVariableValue>
+@{
+    ViewData["Title"] = "Monthly Variables Values | Assign";
+}
+
+@section Sole {
+
+    <style>
+
+        .form-control {
+            color: #333;
+        }
+
+        .table td, .table th {
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        .jobinfocreate {
+            width: 50px;
+        }
+
+        .container.pt-2.pb-2 {
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+
+        input.addJobBtn {
+            flex: 1
+        }
+
+        span.select2 {
+            flex: 2;
+            margin-right: 10px;
+        }
+
+        .unit-row {
+            text-align: center;
+        }
+
+        tr[class*="jobTypeHeading"] th {
+            color: #fff;
+            background: #355C7D;
+        }
+
+        [id*="jobTypeTbody"] tr:not(:first-child) td {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        /*[id*="jobTypeTbody"] tr td {
+            min-width: 100px !important;
+        }
+        [id*="jobTypeTbody"] tr td.unit-row {
+            min-width: 40px !important;
+        }*/
+        [id*="jobTypeTbody"] tr td .select2-selection {
+            border: 0;
+        }
+
+        tfoot[id*="subTotal"] tr td {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        tfoot[id*="subTotal"] tr {
+            background-color: #E9ECEF;
+        }
+
+        [id*="table"] [id*="jobTypeTbody"] {
+            border-top: 0 !important;
+        }
+
+            [id*="table"] [id*="jobTypeTbody"] tr:first-child {
+                background: #5E72E4;
+                color: #fff;
+            }
+
+                [id*="table"] [id*="jobTypeTbody"] tr:first-child td {
+                    border-bottom: 0 !important;
+                }
+
+            [id*="table"] [id*="jobTypeTbody"] tr:nth-child(2) th {
+                border-top: 0 !important;
+            }
+
+        input.totalFinalAmount {
+            padding: .7rem !important;
+        }
+
+        table {
+            empty-cells: hide;
+        }
+
+        .d-flex > input.btn {
+            flex: 1;
+        }
+
+        .d-flex > span.select2 {
+            flex: 2;
+        }
+
+        #skillMatrixTbody tr td:not(:last-child) input {
+            min-width: 80px
+        }
+
+        .noSkillMatrix td {
+            border-top-width: 2px;
+            border-top-width: 2px;
+        }
+
+        .rowComment {
+            min-width: 150px !important;
+        }
+
+        .buttons-save-edit {
+            margin-bottom: 1px
+        }
+
+        .table-bordered thead th:last-child {
+            width: 150px;
+        }
+    </style>
+
+}
+@section Css {
+    <link rel="stylesheet" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+}
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Operator Skills</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Incentive</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">Line Incentive Variables</a></li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header border-bottom-0 py-2">
+            <h3 class="mb-0">Line Incentive</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                @*Operator information table*@
+                <table class="table table-classic table-bordered table-hover table-striped">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center font-weight-bold" colspan="4">
+                                Incentive Variable of Section :
+                                <span class="text-primary">@ViewBag.Section.Name</span>
+                                @{ var assignVariable = true; }
+                                <input type="hidden" id="lineId" name="lineId" class="" value="@ViewBag.Section.Id" />
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="">
+                        <tr>
+                            <td>
+                                <div class="container">
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-4">
+                                            <div class="d-flex">
+                                                <a href="#!" id="prevButton" class="btn-lg" value="Previous"
+                                                   data-original-title="Previous Month">
+                                                    <i class="fa fa-angle-double-left fa-lg text-default"></i>
+                                                </a>
+
+                                                <input type="hidden" id="prev_month"
+                                                       value="@ViewBag.Date.AddMonths(-1).ToString("MM-yyyy")">
+                                                <!--Month-->
+                                                <!--Dates-->
+                                                <input id="monthpicker" name="monthpicker"
+                                                       class="docs-date monthpicker form-control text-center" type="text"
+                                                       value="@ViewBag.Date.ToString("MM-yyyy")"
+                                                       autocomplete="off">
+
+                                                <!--Next Button-->
+                                                <a href="#!" id="nextButton" class="btn-lg" value="Next"
+                                                   data-original-title="Next Month">
+                                                    <i class="fa fa-angle-double-right fa-lg text-default"></i>
+                                                </a>
+
+                                                <input type="hidden" id="next_month"
+                                                       value="@ViewBag.Date.AddMonths(1).ToString("MM-yyyy")">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <select id="sectionSelect" class="form-control d-none" data-toggle="select">
+                                                @foreach (var sec in ViewBag.Sections)
+                                                {
+                                                    if (sec.Id == ViewBag.Section.Id)
+                                                    {
+                                                        <option selected value="@sec.Id">@sec.Name</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@sec.Id">@sec.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <input type="button" id="showReportButton" class="btn btn-primary" name="date" value="Show Report" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            @if (ViewBag.MonthlySectionEarningPoint != null)
+                            {
+                                <td>
+                                    <div class="container">
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-10">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="text-center">
+                                                            <label>Target Point</label>
+                                                            <input type="hidden" id="monthlySectionEarningPointId" class="" name="targetPoint" value="@ViewBag.MonthlySectionEarningPoint.Id" />
+                                                            <input type="number" disabled id="targetPoint" class="form-control text-center" name="targetPoint" value="@ViewBag.MonthlySectionEarningPoint.TargetPoint" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="text-center">
+                                                            <label>Money Per Point</label>
+                                                            <input type="number" disabled id="moneyPerPoint" class="form-control text-center" name="moneyPerPoint" value="@ViewBag.MonthlySectionEarningPoint.MoneyPerPoint" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 d-flex">
+                                                        <div class="text-left align-self-end buttons-save-edit">
+                                                            <input type="button" disabled id="saveEarningBtn" class="btn btn-success" name="name" value="Save Earning Points" />
+                                                            <input type="button" id="editEarningBtn" class="btn btn-primary" name="name" value="Edit" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <div class="container">
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-10">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="text-center">
+                                                            <label>Target Point</label>
+                                                            <input type="hidden" id="monthlySectionEarningPointId" class="form-control" name="targetPoint" value="0" />
+                                                            <input type="number" id="targetPoint" class="form-control" name="targetPoint" value="0" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="text-center">
+                                                            <label>Money Per Point</label>
+                                                            <input type="number" id="moneyPerPoint" class="form-control" name="moneyPerPoint" value="0" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 d-flex">
+                                                        <div class="text-left align-self-end buttons-save-edit">
+                                                            <input type="button" id="saveEarningBtn" class="btn btn-success" name="name" value="Save Earning Points" />
+                                                            <input type="button" id="editEarningBtn" class="btn btn-primary" name="name" value="Edit" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    </tbody>
+                </table>
+                @*First Table*@
+                <table id="mainTable" class="table table-classic table-bordered table-hover table-striped">
+                    <thead class="thead-light">
+                        <tr>
+                            <th colspan="15" class="text-center">Incentive of @ViewBag.Date.ToString("Y")</th>
+                        </tr>
+                    </thead>
+                </table>
+
+                @* --------------------------------------------------------------------------- *@
+                <div id="allTableDiv">
+                    <div id="incentiveVariableTable">
+                        <div class="table-responsive">
+                            <table class="table table-classic table-bordered">
+                                <thead class="thead-custom">
+                                    <tr>
+                                        <th class="text-center">Sl</th>
+                                        <th class="text-center">Variable Name</th>
+                                        <th class="text-center">Value</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="incentiveVariableTbody">
+                                    @{int rowNo = 0; double total = 0; }
+                                    @if (Model == null)
+                                    {
+                                        <tr class="noVariable">
+                                            <td class=" font-weight-bold text-center alert text-danger border-radius-0 text-uppercase" colspan="17">There are no incentive variable value. </td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var monthlyVariableValue in ViewBag.MonthlyVariableValues)
+                                        {
+                                            total += monthlyVariableValue.Value;
+                                            <tr>
+                                                <td class="rowSl text-center">@{rowNo++;}@rowNo</td>
+                                                @*<input type="hidden" class="rowId form-control" value="@lineIncentive" />*@
+                                                @if (true)
+                                                {
+                                                    <input type="hidden" class="rowId" value="@monthlyVariableValue.Id" />
+                                                    <input type="hidden" class="rowIncentiveVariables" value="@monthlyVariableValue.IncentiveVariableId" />
+                                                    <td>@monthlyVariableValue.IncentiveVariable.Name</td>
+                                                    <td class="p-0"><input disabled type="number" class="rowValue form-control border-0 border-radius-0 text-center" value="@monthlyVariableValue.Value" /></td>
+                                                    <td class="py-0 align-middle">
+                                                        <div class="btn-group">
+                                                            <input disabled type="button" class="btn btn-default btn-sm rowCalculateBtn" value="Calculate" />
+                                                            <input disabled type="button" class="btn btn-success btn-sm rowSaveBtn" value="Save" />
+                                                            <input type="button" class="btn btn-primary btn-sm rowEditBtn" value="Edit" />
+                                                            <input disabled type="button" class="btn btn-danger btn-sm rowDeleteBtn" value="Delete" />
+                                                        </div>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="rowSl"></td>
+                                                    <input type="hidden" class="rowId" value="-1" />
+                                                    <input type="hidden" class="rowIncentiveVariables" value="@monthlyVariableValue.Id" />
+                                                    <td>@monthlyVariableValue.IncentiveVariable.Name</td>
+                                                    <td><input disabled type="number" class="rowValue form-control" value="@monthlyVariableValue.Value" /></td>
+                                                    <td>
+                                                        <div class="btn-group">
+                                                            <input disabled type="button" class="btn btn-default btn-sm rowCalculateBtn" value="Calculate" />
+                                                            <input disabled type="button" class="btn btn-success btn-sm rowSaveBtn" value="Save" />
+                                                            <input type="button" class="btn btn-primary btn-sm rowEditBtn" value="Edit" />
+                                                            <input disabled type="button" class="btn btn-danger btn-sm rowDeleteBtn" value="Delete" />
+                                                        </div>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2" class="text-center">Total</td>
+                                        <td id="total" class="text-center">@total</td>
+                                        <td colspan="2" class="text-center"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+                @* --------------------------------------------------------------------------- *@
+
+                @* Last Table *@
+                <table class="table table-classic table-bordered table-hover table-striped">
+                    @* Add to main table *@
+                    <tfoot>
+                        <tr>
+                            <td class="text-center">
+                                <div class="container">
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-6">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <select id="incentiveVariableSelect" data-toggle="select" class="form-control d-none">
+                                                        @foreach (var incentiveVariable in ViewBag.IncentiveVariables)
+                                                        {
+                                                            <option value="@incentiveVariable.Id">@incentiveVariable.Name</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <button id="addVariableBtn" class="btn btn-primary">
+                                                        <i class="fa fa-plus mr-2"></i> Add Variable
+                                                    </button>
+                                                    <button id="saveAllBtn" class="btn btn-success">
+                                                        <i class="fa fa-save mr-2"></i> Save All
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/sweetalert2/dist/sweetalert2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-notify/bootstrap-notify.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.monthpicker').datepicker({
+                autoclose: true,
+                setDate: new Date(),
+                format: "mm-yyyy",
+                startView: "months",
+                minViewMode: "months",
+
+            });
+            $('.monthpicker').on('change', function () {
+                $("#showReportButton").trigger('click');
+            });
+            $("#showReportButton").click(function () {
+                var date = $("#monthpicker").val();
+                var sectionId = $("#sectionSelect :selected").val();
+                var res = date.split("-");
+                var month = res[0];
+                var year = res[1];
+                var url = '/MonthlyVariableValues/Assign/' + sectionId + '/' + month + '/' + year;
+                $(location).attr("href", url);
+            });
+
+            $("#prevButton").click(function () {
+                var date = $("#prev_month").val();
+                var sectionId = $("#sectionSelect :selected").val();
+                var res = date.split("-");
+                var month = res[0];
+                var year = res[1];
+                var url = '/MonthlyVariableValues/Assign/' + sectionId + '/' + month + '/' + year;
+                $(location).attr("href", url);
+            });
+
+            $("#nextButton").click(function () {
+                var date = $("#next_month").val();
+                var sectionId = $("#sectionSelect :selected").val();
+                var res = date.split("-");
+                var month = res[0];
+                var year = res[1];
+                var url = '/MonthlyVariableValues/Assign/' + sectionId + '/' + month + '/' + year;
+                $(location).attr("href", url);
+            });
+
+            $('#sectioId').select2({
+                placeholder: 'Please Select Section'
+            });
+            $('#operationId').select2({
+                placeholder: 'Please Select'
+            });
+            $('#sectionSelect').select2({
+                placeholder: 'Please Select'
+            });
+            $("#incentiveVariableTbody").on('click', '.rowCalculateBtn', function () {
+                calculateScore();
+
+            });
+
+            $("#addVariableBtn").on('click', function () {
+                var incentiveVariableId = $("#incentiveVariableSelect :selected").val();
+                var incentiveVariableName = $('#incentiveVariableSelect :selected').text();
+                var incentiveVariableExist = false;
+                var incentiveVariableTbody = $('#incentiveVariableTbody');
+                var allIncentiveVariables = $(".rowIncentiveVariables");
+                //Check if jobtype table already Exists
+                allIncentiveVariables.each(function () {
+                    if (incentiveVariableId == $(this).val()) {
+                        incentiveVariableExist = true;
+                        $.notify({
+                            title: 'Variable Already Exists!',
+                            icon: 'fa fa-check',
+                            html: true,
+                            message: 'Please update the variable instead of adding the same variable again.'
+                        }, {
+                                type: 'warning',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 2000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                    }
+                });
+                if (incentiveVariableId == 0) {
+                    incentiveVariableExist = true;
+                    $.notify({
+                        title: 'Warning!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Sorry no operation found.'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                }
+                //Check if table already exists
+                //get column
+                if (!incentiveVariableExist) {
+                    incentiveVariableTbody.find('.noVariable').remove();
+                    incentiveVariableTbody.append(
+                        '<tr>' +
+                        '<td class="rowSl text-center"></td>' +
+                        '<input type="hidden" class="rowId" value="-1"/>' +
+                        '<input type="hidden" class="rowIncentiveVariables" value="' + incentiveVariableId + '"/>' +
+                        '<input type="hidden" class="rowIncentiveVariables" value="' + incentiveVariableId + '"/>' +
+                        '<td>' + incentiveVariableName + '</td>' +
+                        '<td class="p-0"><input type="number" class="rowValue form-control border-0 border-radius-0 text-center" value="0"/></td>' +
+                        '<td class="align-middle py-0">' +
+                        '<div class="btn-group">' +
+                        '<input type="button" class="btn btn-default btn-sm rowCalculateBtn" value="Calculate" />' +
+                        '<input type="button" class="btn btn-success btn-sm rowSaveBtn" value="Save" />' +
+                        '<input type="button" class="btn btn-primary btn-sm rowEditBtn" value="Edit" />' +
+                        '<input type="button" class="btn btn-danger btn-sm rowDeleteBtn" value="Delete" />' +
+                        '</div>' +
+                        '</td>' +
+                        '</tr>'
+                    );
+                    updateRowSerialNumber();
+                }
+            });
+
+            $("#incentiveVariableTable").on('click', '.rowSaveBtn', function () {
+                calculateScore();
+                var date = $("#monthpicker").val();
+                var sectionId = $("#sectionSelect :selected").val();
+                var res = date.split("-");
+                var month = res[0];
+                var year = res[1];
+                var row = $(this).closest('tr');
+                var rowId = row.find('.rowId').val();
+                var incentiveVariableId = row.find('.rowIncentiveVariables').val();
+                var value = row.find('.rowValue').val();
+                var total = $('#total').text();
+                if (value == "" || value == "0") {
+                    $.notify({
+                        title: 'Warning!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Fill up all the required data.'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                }
+                else {
+                    if (total > 100) {
+                        $.notify({
+                            title: 'Warning!',
+                            icon: 'fa fa-check',
+                            html: true,
+                            message: 'Total exceed 100!'
+                        }, {
+                                type: 'warning',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 2000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                    }
+                    else {
+                        $.when(
+                            $.ajax({
+                                type: "POST",
+                                dataType: 'json',
+                                url: '@Url.Action("Save", "MonthlyVariableValues")',
+                                data: {
+                                    data: JSON.stringify({
+                                        id: (rowId) ? rowId : null,
+                                        sectionId: (sectionId) ? sectionId : null,
+                                        incentiveVariableId: (incentiveVariableId) ? incentiveVariableId : null,
+                                        value: (value) ? value : null,
+                                        month: (month) ? month : null,
+                                        year: (year) ? year : null
+                                    })
+                                },
+                                cache: false,
+                                success: function (objects) {
+                                if (objects) {
+                                    row.find('.rowId').val(objects);
+                                    row.find('input:not(.rowEditBtn)').prop('disabled', true);
+                                    $.notify({
+                                        title: 'Success!',
+                                        icon: 'fa fa-check',
+                                        html: true,
+                                        message: 'Successfully Updated.'
+                                    }, {
+                                            type: 'success',
+                                            animate: {
+                                                enter: 'animated fadeInDown'
+                                            },
+                                            placement: {
+                                                from: "top",
+                                                align: "center"
+                                            },
+                                            spacing: 10,
+                                            z_index: 1031,
+                                            delay: 2000,
+                                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                        });
+                                }}
+                            }),
+                            ).then(function () { });
+                    }
+                }
+            });
+            $("#incentiveVariableTable").on('click', '.rowEditBtn', function () {
+                var row = $(this).closest('tr');
+                row.find('input:not(.rowEditBtn)').prop('disabled', false);
+            });
+            $("#incentiveVariableTable").on('click', '.rowDeleteBtn', function () {
+                var row = $(this).closest('tr');
+                var rowId = row.find('.rowId').val();
+                if (rowId == -1) {
+                    row.remove();
+                    updateRowSerialNumber();
+                    calculateScore();
+                } else {
+                    swal({
+                        title: "Are you sure?",
+                        text: "The operation will be updated.",
+                        type: "warning",
+                        showCancelButton: !0,
+                        useRejections: true,
+                        buttonsStyling: !1,
+                        confirmButtonClass: "btn btn-primary",
+                        confirmButtonText: "Yes",
+                        cancelButtonClass: "btn btn-secondary"
+                    }).then(
+                        value => {
+                            $.when(
+                            //get Jobs by id
+                            $.ajax({
+                                type: "POST",
+                                dataType: 'json',
+                                url: '@Url.Action("Delete", "MonthlyVariableValues")',
+                                data: {
+                                    id: rowId
+                                },
+                                cache: false,
+                                success: function (objects) {
+                                    if (objects) {
+                                        row.remove();
+                                        $.notify({
+                                            title: 'Success!',
+                                            icon: 'fa fa-check',
+                                            html: true,
+                                            message: 'Successfully Deleted.'
+                                        }, {
+                                                type: 'success',
+                                                animate: {
+                                                    enter: 'animated fadeInDown'
+                                                },
+                                                placement: {
+                                                    from: "top",
+                                                    align: "center"
+                                                },
+                                                spacing: 10,
+                                                z_index: 1031,
+                                                delay: 2000,
+                                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                            });
+                                        updateRowSerialNumber();
+                                        calculateScore();
+                                    } else {
+                                        $.notify({
+                                            title: 'Something went wrong!',
+                                            icon: 'fa fa-check',
+                                            html: true,
+                                            message: 'Not Deleted!'
+                                        }, {
+                                                type: 'danger',
+                                                animate: {
+                                                    enter: 'animated fadeInDown'
+                                                },
+                                                placement: {
+                                                    from: "top",
+                                                    align: "center"
+                                                },
+                                                spacing: 10,
+                                                z_index: 1031,
+                                                delay: 2000,
+                                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                            });
+                                    }
+                                }
+                            }),
+                            ).then(function () {
+
+                            });
+                        },
+                        dismiss => {
+                        });
+
+                }
+            });
+            $("#allTableDiv").on('change', '.rowValue ', function () { calculateScore(); });
+
+
+            function calculateScore() {
+                var total = 0;
+                var rowSerials = $('#incentiveVariableTbody').find(".rowValue").toArray();
+                $.each(rowSerials, function (index, value) {
+                    total += eval($(value).val());
+                });
+                if (total > 100) {
+                    $.notify({
+                        title: 'Warning!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Total exceeds 100!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                }
+                $('#total').text(total);
+
+            }
+            $("#saveAllBtn").on('click', function () {
+                calculateScore();
+                var date = $("#monthpicker").val();
+                var sectionId = $("#sectionSelect :selected").val();
+                var res = date.split("-");
+                var month = res[0];
+                var year = res[1];
+                var error = false;
+                var total = $('#total').text();
+                if (total == 100) {
+                    var allrowId = $('.rowId').toArray();
+                    var rows = [];
+                    //var row = $(this).closest('tr');
+                    $.each(allrowId, function (allrowId, rowId) {
+                        var row = $(rowId).closest('tr');
+                        var rowId = row.find('.rowId').val();
+                        var incentiveVariableId = row.find('.rowIncentiveVariables').val();
+                        var value = row.find('.rowValue').val();
+                        if (value == "" || value == "0") {
+                            $.notify({
+                                title: 'Warning!',
+                                icon: 'fa fa-check',
+                                html: true,
+                                message: 'Fill up all the required data!'
+                            }, {
+                                    type: 'warning',
+                                    animate: {
+                                        enter: 'animated fadeInDown'
+                                    },
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    spacing: 10,
+                                    z_index: 1031,
+                                    delay: 2000,
+                                    template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                });
+                            error = true;
+                        } else {
+                            rows.push({
+                                id: (rowId) ? rowId : null,
+                                sectionId: (sectionId) ? sectionId : null,
+                                incentiveVariableId: (incentiveVariableId) ? incentiveVariableId : null,
+                                value: (value) ? value : null,
+                                month: (month) ? month : null,
+                                year: (year) ? year : null
+                            });
+                        }
+                    });
+                    if (error == false) {
+                        $.when(
+                            $.ajax({
+                                type: "POST",
+                                dataType: 'json',
+                                url: '@Url.Action("SaveAll", "MonthlyVariableValues")',
+                                data: {
+                                    monthlyVariableValuesJson: JSON.stringify(
+                                        rows
+                                    )
+                                },
+                                cache: false,
+                                success: function (objects) {
+                                    if (objects) {
+                                        $.notify({
+                                            title: 'Success!',
+                                            icon: 'fa fa-check',
+                                            html: true,
+                                            message: 'Successfully Updated ' + objects + ' records.'
+                                        }, {
+                                                type: 'success',
+                                                animate: {
+                                                    enter: 'animated fadeInDown'
+                                                },
+                                                placement: {
+                                                    from: "top",
+                                                    align: "center"
+                                                },
+                                                spacing: 10,
+                                                z_index: 1031,
+                                                delay: 2000,
+                                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                            });
+                                    }
+                                }
+                            }),
+
+                        ).then(function () { location.reload(); });
+                    }
+                } else {
+                    $.notify({
+                        title: 'Warning!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: "Please make sure total is 100"
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                }
+            });
+
+            //saveEarningBtn
+            $("#saveEarningBtn").on('click', function () {
+                var monthlySectionEarningPointId = $('#monthlySectionEarningPointId').val();
+                var targetPoint = $('#targetPoint').val();
+                var moneyPerPoint = $('#moneyPerPoint').val();
+                var date = $("#monthpicker").val();
+                var sectionId = $("#sectionSelect :selected").val();
+                var res = date.split("-");
+                var month = res[0];
+                var year = res[1];
+                $.when(
+                    //get Jobs by id
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("SaveMonthlyEarningPoint", "MonthlyVariableValues")',
+                        data: {
+                            data: JSON.stringify({
+                                id: (monthlySectionEarningPointId) ? monthlySectionEarningPointId : 0,
+                                sectionId: (sectionId) ? sectionId : null,
+                                targetPoint: (targetPoint) ? targetPoint : null,
+                                moneyPerPoint: (moneyPerPoint) ? moneyPerPoint : null,
+                                month: (month) ? month : null,
+                                year: (year) ? year : null
+                            })
+                        },
+                        cache: false,
+                        success: function (objects) {
+                            if (objects) {
+                                $.notify({
+                                    title: 'Success!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: "Successfully Deleted."
+                                }, {
+                                        type: 'success',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                                updateRowSerialNumber();
+                                calculateScore();
+
+                                $('#targetPoint').prop('disabled', true);
+                                $('#moneyPerPoint').prop('disabled', true);
+                                $('#saveEarningBtn').prop('disabled', true);
+
+                            } else {
+                                alert("Failed to delete");
+                            }
+                        }
+                    }),
+                ).then(function () {
+                });
+            });
+            $("#editEarningBtn").on('click', function () {
+                $('#targetPoint').prop('disabled', false);
+                $('#moneyPerPoint').prop('disabled', false);
+                $('#saveEarningBtn').prop('disabled', false);
+            });
+            MathUtils = {
+                roundToPrecision: function (subject, precision) {
+                    return +((+subject).toFixed(precision));
+                }
+            }
+
+            function updateRowSerialNumber() {
+
+                var count = 0;
+                var rowSerials = $('#incentiveVariableTbody').find(".rowSl").toArray();
+                $.each(rowSerials, function (index, value) {
+                    count += eval(1);
+                    value.innerHTML = count;
+                });
+
+            }
+
+            Date.prototype.toShortFormat = function () {
+
+                var month_names = ["Jan", "Feb", "Mar",
+                    "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep",
+                    "Oct", "Nov", "Dec"];
+
+                var day = this.getDate();
+                var month_index = this.getMonth();
+                var year = this.getFullYear();
+
+                return "" + day + " " + month_names[month_index] + " " + year;
+            }
+        });
+    </script>
+}

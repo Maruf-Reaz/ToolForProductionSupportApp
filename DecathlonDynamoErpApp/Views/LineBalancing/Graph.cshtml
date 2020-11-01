@@ -1,0 +1,456 @@
+﻿@model IEnumerable<Dynamo.Model.LineBalancing.ViewModels.LineBalancingStateViewModel>
+
+@inject IJsonHelper Json
+@{
+    ViewData["Title"] = "Graph";
+}
+
+@section Css {
+    <link asp-append-version="true" href="~/vendor/chart.js/Chart.min.css" rel="stylesheet" />
+}
+
+@section Sole {
+    <style>
+        table thead th:last-child {
+            width: 150px;
+        }
+
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .chartjs-tooltip {
+            opacity: 1;
+            position: absolute;
+            background: rgba(0, 0, 0, .7);
+            color: white;
+            border-radius: 3px;
+            -webkit-transition: all .1s ease;
+            transition: all .1s ease;
+            pointer-events: none;
+            -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+            padding: 4px;
+        }
+
+        .chartjs-tooltip-key {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+        }
+
+        .table tr th:first-child {
+            border-left: 0;
+        }
+        .table tr th:last-child {
+            border-right: 0;
+        }
+
+        .card .table td:not(.p-0):not(.py-0) {
+            padding-top: .4rem !important;
+            padding-bottom: .4rem !important;
+            vertical-align: middle;
+        }
+
+        .card .table th {
+            text-align: center;
+            padding-top: .5rem !important;
+            padding-bottom: .5rem !important;
+        }
+
+        .form-control {
+            height: 35px;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Graph</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Line Balancing</a></li>
+                            <li class="breadcrumb-item"><a asp-controller="LineBalancing" asp-action="Index">Balance Line</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Graph</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card mb-4">
+                <div class="card-header bg-transparent py-2">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            @*<h6 class="text-uppercase text-muted ls-1 mb-1">Performance</h6>*@
+                            <h5 class="h3 mb-0">Line Balancing of -@ViewBag.Line.LineNumber</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card mb-4 pb-5">
+                <div class="card-header py-2">
+                    <h3 class="mb-0">Summary</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-items-center table-hover table-striped table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th colspan="4" class="text-center">
+                                        Summary
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-weight-bold">
+                                        TARGET LB RATIO (%)
+                                    </td>
+                                    <td>
+                                        @ViewBag.TargetLbRatio %
+                                    </td>
+                                    <td class="font-weight-bold">
+                                        TARGET OUTPUT
+                                    </td>
+                                    <td>
+                                        @ViewBag.TargetOutput.ToString("#.##")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bold">
+                                        ACTUAL LB RATIO (%)
+                                    </td>
+                                    <td>
+                                        @ViewBag.ActualLbRatio %
+                                    </td>
+                                    <td class="font-weight-bold">
+                                        ACTUAL OUTPUT
+                                    </td>
+                                    <td>
+                                        <input type="hidden" id="actualOutput" name="name" value="@ViewBag.ActualOutput.ToString("#.##")" />
+                                        @ViewBag.ActualOutput.ToString("#.##")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bold">
+                                        BASIC TOTAL PROCESSING TIME (sec.)
+                                    </td>
+                                    <td>
+                                        @ViewBag.TotalProcessingTime.ToString("#.##")
+                                    </td>
+                                    <td class="font-weight-bold">
+                                        NUMBER OF OPERATOR
+                                    </td>
+                                    <td>
+                                        <input type="hidden" id="numberOfOperator" name="name" value="@ViewBag.TotalNumberOfOperators" />
+                                        @ViewBag.TotalNumberOfOperators
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bold text-red text-wrap">
+                                        FIRST BOTTLENECK PROCESSING TIME (sec.)
+                                    </td>
+                                    <td class="font-weight-bold text-red">
+                                        @ViewBag.FirstBottleNeckValue.ToString("#.##") | Operation: @ViewBag.FirstBottleNeckOperationName
+                                    </td>
+                                    <td class="font-weight-bold text-yellow text-wrap">
+                                        SECOND BOTTLENECK PROCESSING TIME (sec.)
+                                    </td>
+                                    <td class="font-weight-bold text-yellow">
+                                        @ViewBag.SecondBottleNeckValue.ToString("#.##") | Operation: @ViewBag.SecondBottleNeckOperationName
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bold align-middle">
+                                        SOT
+                                    </td>
+                                    <td id="sot">
+                                        @ViewBag.TotalSotValue
+                                    </td>
+                                    <td class="font-weight-bold align-middle">
+                                        INDIRECT MP
+                                    </td>
+                                    <td class="p-0">
+                                        <input id="indirectMP" class="form-control border-0 border-radius-0" type="number" name="name" value="" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bold">
+                                        ACTUAL OWE (%)
+                                    </td>
+                                    <td id="actualOwe"></td>
+                                    <td colspan="2" class="font-weight-bold py-0 align-middle">
+                                        <input id="calculateOweBtn" class="btn btn-success btn-sm" type="button" name="name" value="Calculate Actual OWE" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bold">
+                                        Target OWE (%)
+                                    </td>
+                                    <td class="p-0">
+                                        <input id="targetOwe" class="form-control border-0 border-radius-0" type="number" name="name" value="" />
+                                    </td>
+
+                                    <td colspan="2" class="font-weight-bold py-0 align-middle">
+                                        <input id="calculateRPTOweBtn" class="btn btn-success btn-sm" type="button" name="name" value="Calculate RPT" />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="font-weight-bold">
+                                        Actual RPT
+                                    </td>
+                                    <td id="actualRPT"></td>
+                                    <td class="font-weight-bold">
+                                        Target RPT
+                                    </td>
+                                    <td id="targetRPT"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/chart.js/Chart.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/chart.js/utils.js" asp-append-version="true"></script>
+    <script src="~/vendor/chart.js/chartjs-plugin-datalabels.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/chart.js/chartjs-plugin-annotation.min.js" asp-append-version="true"></script>
+    <script>
+        $('#calculateOweBtn').on('click', function () {
+            var sot = $('#sot').html();
+            var indirectMP = $('#indirectMP').val();
+            var numberOfOperator = $('#numberOfOperator').val();
+            var totalMp = eval(indirectMP) + eval(numberOfOperator);
+            var actualOutput = $('#actualOutput').val();
+            var actualOwe = 0;
+            actualOwe = ((sot * actualOutput) / (totalMp * 60)) * 100;
+            $('#actualOwe').html(MathUtils.roundToPrecision(actualOwe, 2));
+        });
+
+        $('#calculateRPTOweBtn').on('click', function () {
+            var sot = $('#sot').html();
+            var actualOwe = $('#actualOwe').html();
+            var targetOwe = $('#targetOwe').val();
+
+            if (actualOwe == "" || targetOwe=="") {
+
+            }
+            else {
+                var actualRPT = 0;
+                var targetRPT = 0;
+                actualRPT = (eval(sot) / eval(actualOwe))*100;
+                targetRPT = (eval(sot) / eval(targetOwe))*100;
+            }
+
+            $('#actualRPT').html(MathUtils.roundToPrecision(actualRPT, 2));
+            $('#targetRPT').html(MathUtils.roundToPrecision(targetRPT, 2));
+        });
+
+        var customTooltips = function (tooltip) {
+            $(this._chart.canvas).css('cursor', 'pointer');
+        };
+        MathUtils = {
+            roundToPrecision: function (subject, precision) {
+                return +((+subject).toFixed(precision));
+            }
+        }
+        var ctx = document.getElementById("myChart");
+        var color = Chart.helpers.color;
+
+        // The original draw function for the line chart. This will be applied after we have drawn our highlight range (as a rectangle behind the line chart).
+        var originalLineDraw = Chart.controllers.line.prototype.draw;
+        // Extend the line chart, in order to override the draw function.
+        Chart.helpers.extend(Chart.controllers.line.prototype, {
+            draw: function () {
+                var chart = this.chart;
+                // Get the object that determines the region to highlight.
+                var yHighlightRange = chart.config.data.yHighlightRange;
+
+                // If the object exists.
+                if (yHighlightRange !== undefined) {
+                    var ctx = chart.chart.ctx;
+
+                    var yRangeBegin = yHighlightRange.begin;
+                    var yRangeEnd = yHighlightRange.end;
+
+                    var xaxis = chart.scales['x-axis-0'];
+                    var yaxis = chart.scales['y-axis-0'];
+
+                    var yRangeBeginPixel = yaxis.getPixelForValue(yRangeBegin);
+                    var yRangeEndPixel = yaxis.getPixelForValue(yRangeEnd);
+
+                    ctx.save();
+
+                    // The fill style of the rectangle we are about to fill.
+                    ctx.fillStyle = 'rgba(57, 150, 179, 0.2)';
+                    // Fill the rectangle that represents the highlight region. The parameters are the closest-to-starting-point pixel's x-coordinate,
+                    // the closest-to-starting-point pixel's y-coordinate, the width of the rectangle in pixels, and the height of the rectangle in pixels, respectively.
+                    ctx.fillRect(xaxis.left, Math.min(yRangeBeginPixel, yRangeEndPixel), xaxis.right - xaxis.left, Math.max(yRangeBeginPixel, yRangeEndPixel) - Math.min(yRangeBeginPixel, yRangeEndPixel));
+
+                    ctx.restore();
+                }
+
+                // Apply the original draw function for the line chart.
+                originalLineDraw.apply(this, arguments);
+            }
+        });
+        var model = @Html.Raw(Json.Serialize(Model));
+
+        var firstBottleNeck = @Html.Raw(Json.Serialize(ViewBag.FirstBottleNeckValue));
+        var secondBottleNeck = @Html.Raw(Json.Serialize(ViewBag.SecondBottleNeckValue));
+        var ucl = @Html.Raw(Json.Serialize(ViewBag.Ucl));
+        var bpt = @Html.Raw(Json.Serialize(ViewBag.Bpt));
+        var lcl = @Html.Raw(Json.Serialize(ViewBag.Lcl));
+        // initialise a new array
+        var datapoints = [];
+        var labels = [];
+        var data = [];
+        var pointBackgroundColors = [];
+
+        // build an array of objects
+        $.each(model, function (index, item) {
+            labels.push(item.operationName);
+
+            if (item.graphTime == firstBottleNeck) {
+                pointBackgroundColors.push("#f5365c");
+            }
+            else if (item.graphTime == secondBottleNeck) {
+                pointBackgroundColors.push("#FFCD56");
+            }
+            else {
+                pointBackgroundColors.push("#36A2EB");
+
+            }
+
+            data.push(MathUtils.roundToPrecision(item.graphTime, 2));
+
+        });
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    backgroundColor: color(window.chartColors.blue).alpha(0).rgbString(),
+                    borderColor: window.chartColors.blue,
+                    pointBackgroundColor: window.chartColors.blue,
+                    pointBackgroundColor: pointBackgroundColors,
+                    data: data,
+                    lineTension: 0,
+                    pointRadius: 5,
+                }],
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return tooltipItem.yLabel;
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Process Time (sec.) / Process Name (Operator No.)'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            suggestedMax: eval(ucl) + eval(5)
+                        },
+                        gridLines: {
+                           // drawBorder: true,
+                            //color: ['pink', 'red', 'orange', 'yellow', 'green', 'blue']
+                        },
+                    }]
+                },
+                responsive: true,
+                plugins: {
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        //formatter: Math.round,
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
+                annotation: {
+                    annotations: [{
+                        id: 'hline1',
+                        type: 'line',
+                        mode: 'horizontal',
+                        scaleID: 'y-axis-0',
+                        value: MathUtils.roundToPrecision(ucl, 2),
+                        borderColor: '#0000FF',
+                        borderWidth: 3,
+                        label: {
+                            backgroundColor: '#0000FF',
+                            enabled: true,
+                            content: 'U.C.L = ' + MathUtils.roundToPrecision(ucl, 2),
+                            position: 'left',
+                            xAdjust: 10,
+                        }
+                    }, {
+                        id: 'hline2',
+                        type: 'line',
+                        mode: 'horizontal',
+                        scaleID: 'y-axis-0',
+                        value: MathUtils.roundToPrecision(lcl, 2),
+                            borderColor: '#0000FF',
+                        borderWidth: 3,
+                            label: {
+                                backgroundColor: '#0000FF',
+                            enabled: true,
+                                content: 'L.C.L = ' + MathUtils.roundToPrecision(lcl, 2),
+                                position: 'left',
+                                xAdjust: 10,
+                        }
+                    }, {
+                        id: 'hline3',
+                        type: 'line',
+                        mode: 'horizontal',
+                        scaleID: 'y-axis-0',
+                            value: MathUtils.roundToPrecision(bpt, 2),
+                            borderColor: '#0dd939',
+                            borderWidth: 3,
+                            label: {
+                                backgroundColor: '#0dd939',
+                                fontColor: "#fff",
+                            enabled: true,
+                                content: 'B.P.T = ' + MathUtils.roundToPrecision(bpt, 2),
+                                position: 'left',
+                                xAdjust: 10,
+                        }
+                    }
+                    ]
+                },
+
+            },
+        });
+
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

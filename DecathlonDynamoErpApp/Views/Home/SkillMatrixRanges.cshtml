@@ -1,0 +1,206 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+}
+
+@{
+    ViewData["Title"] = "Skill Matrix Ranges";
+}
+
+@section Css {
+    <link asp-append-version="true" type="text/css" rel="stylesheet" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+}
+
+@section Sole {
+    <style>
+        .card .table td {
+            padding: .4rem;
+        }
+
+        input.form-control {
+            height: 40px;
+        }
+
+        .card .table td {
+            vertical-align: middle;
+        }
+
+        .card .table th {
+            text-align: center;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Skill Matrix Ranges</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Archive</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Skill Matrix Ranges</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card animated fadeIn">
+                <div class="card-header py-2">
+                    <h3 class="mb-0">Skill Matrix Range</h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table align-items-center table-hover table-striped table-borderless">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="text-center">
+                                        Grade
+                                    </th>
+                                    <th class="text-center">
+                                        Range
+                                    </th>
+                                    <th class="text-center">
+                                        Level
+                                    </th>
+                                    @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                    {
+                                        <th class="text-center">
+                                            Action
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.SkillMatrixRanges)
+                                {
+
+                                    if (item.Code == 1)
+                                    {
+                                        <tr>
+                                            <td class="text-white text-center" style="background: #00AF50">A</td>
+                                            <td class="text-center"> 91 ≤ A ≤ ∞</td>
+                                            <td class="p-0"><input type="text" class="form-control level border-0 border-radius-0 text-center" placeholder="Put your comment..." value="@item.Level" /></td>
+                                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                            {
+                                                <td class="text-center">
+                                                    <input type="hidden" class="rangeId" value="@item.Id" />
+                                                    <input type="button" class="btn btn-default btn-sm saveBtn" value="Save" />
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                    if (item.Code == 2)
+                                    {
+                                        <tr>
+                                            <td class="text-white text-center" style="background: #91D152">B</td>
+                                            <td class="text-center">81 ≤ B ≤ 90</td>
+                                            <td class="p-0"><input type="text" class="form-control level border-0 border-radius-0 text-center" placeholder="Put your comment..." value="@item.Level" /></td>
+                                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                            {
+                                                <td class="text-center">
+                                                    <input type="hidden" class="rangeId" value="@item.Id" />
+                                                    <input type="button" class="btn btn-default btn-sm saveBtn" value="Save" />
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                    if (item.Code == 3)
+                                    {
+                                        <tr>
+                                            <td class="text-white text-center" style="background: #FFFF01">C</td>
+                                            <td class="text-center"> 71 ≤ C ≤ 80</td>
+                                            <td class="p-0"><input type="text" class="form-control level border-0 border-radius-0 text-center" placeholder="Put your comment..." value="@item.Level" /></td>
+                                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                            {
+                                                <td class="text-center">
+                                                    <input type="hidden" class="rangeId" value="@item.Id" />
+                                                    <input type="button" class="btn btn-default btn-sm saveBtn" value="Save" />
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                    if (item.Code == 4)
+                                    {
+                                        <tr>
+                                            <td class="text-white text-center" style="background: #3333FF">D</td>
+                                            <td class="text-center">61 ≤ D ≤ 70</td>
+                                            <td class="p-0"><input type="text" class="form-control level border-0 border-radius-0 text-center" placeholder="Put your comment..." value="@item.Level" /></td>
+                                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                            {
+                                                <td class="text-center">
+                                                    <input type="hidden" class="rangeId" value="@item.Id" />
+                                                    <input type="button" class="btn btn-default btn-sm saveBtn" value="Save" />
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                    if (item.Code == 5)
+                                    {
+                                        <tr>
+                                            <td class="text-white text-center" style="background: #FE0000">E</td>
+                                            <td class="text-center">0 ≤ E ≤ 60</td>
+                                            <td class="p-0"><input type="text" class="form-control level border-0 border-radius-0 text-center" placeholder="Put your comment..." value="@item.Level" /></td>
+                                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                            {
+                                                <td class="text-center">
+                                                    <input type="hidden" class="rangeId" value="@item.Id" />
+                                                    <input type="button" class="btn btn-default btn-sm saveBtn" value="Save" />
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/sweetalert2/dist/sweetalert2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net/js/jquery.dataTables.min.js" asp-append-version="true"></script>
+
+    <script>
+        $('.saveBtn').on('click', function () {
+            var row = $(this).closest('tr');
+            var rangeId = row.find('.rangeId').val();
+            var level = row.find('.level').val();
+            var url = '@Url.Action("SaveRange", "Home")';
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: url,
+                data: {
+                    rangeId: rangeId,
+                    level: level,
+                },
+                cache: false,
+                success: function (result) {
+                    if (result) {
+                        swal({
+                            title: "Success!",
+                            text: "Level Updated Successfully",
+                            type: "success",
+                            buttonsStyling: !1,
+                            confirmButtonClass: "btn btn-primary"
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+}

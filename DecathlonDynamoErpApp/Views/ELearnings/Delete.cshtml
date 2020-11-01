@@ -1,0 +1,203 @@
+﻿@model Dynamo.Model.ELearnings.ELearning
+
+@{
+    ViewData["Title"] = "ELearnings | Delete";
+}
+
+@section Sole {
+    <style>
+        .text-white {
+            color: #fff !important;
+        }
+
+        .bg-custom {
+            background: linear-gradient(87deg, #fb6340 0, #F5365C 100%) !important;
+            box-shadow: unset;
+        }
+
+            .bg-custom::before {
+                content: "";
+                height: 100%;
+                width: 100%;
+                top: 0;
+                left: 0;
+                position: absolute;
+                background: url('/img/texture/10.png') repeat;
+                opacity: 0.7;
+            }
+
+        nav.navbar-top {
+            border-bottom: 0 !important;
+        }
+
+        .navbar-search-dark .input-group {
+            border-color: rgba(0, 0, 0, .6);
+            background-color: rgba(255, 255, 255, .9);
+        }
+
+        .navbar-search-dark .input-group-text {
+            color: rgba(0, 0, 0, .6);
+        }
+
+        .navbar-search-dark .form-control {
+            color: rgba(0, 0, 0, .9);
+        }
+
+            .navbar-search-dark .form-control::placeholder {
+                color: rgba(0, 0, 0, .9);
+            }
+
+        .navbar-search-dark .focused .input-group {
+            border-color: rgba(0, 0, 0, .9);
+            background-color: #fff
+        }
+
+        .breadcrumb-dark .breadcrumb-item + .breadcrumb-item::before {
+            color: #fff;
+        }
+
+        .breadcrumb-dark .breadcrumb-item a {
+            color: #f6f9fc !important;
+        }
+
+        .breadcrumb-dark .breadcrumb-item.active {
+            color: #dee2e6 !important;
+        }
+
+        nav.navbar-top .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, .95) !important;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Delete</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">E-Learnings</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Delete</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="Index">Back to List</a>
+                    <a class="btn btn-sm btn-neutral" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header">
+            <h3 class="mb-0">Delete E-Learning</h3>
+            <h3 class="text-danger mb-0">Are you sure you want to delete this?</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" disabled></textarea>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="DateOfUpload" class="control-label"></label>
+                        <input value="@Html.DisplayFor(model => model.DateOfUpload)" name="DateOfUpload" class="form-control" disabled />
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="ELearningFileName1" class="control-label"></label>
+                        @if (Model.ELearningFileName1.ToLower() == "no file")
+                        {
+                            <label class="btn btn-primary d-block" data-toggle="popover"><i class="fa fa-ban mr-2"></i>No Attachment</label>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary d-block" href='~/files/e_learnings/@Model.ELearningFileName1' target="_blank"> <i class="fa fa-download mr-2"></i> Download</a>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="ELearningFileName2" class="control-label"></label>
+                        @if (Model.ELearningFileName2.ToLower() == "no file")
+                        {
+                            <label class="btn btn-primary d-block" data-toggle="popover"><i class="fa fa-ban mr-2"></i>No Attachment</label>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary d-block" href='~/files/e_learnings/@Model.ELearningFileName2' target="_blank"> <i class="fa fa-download mr-2"></i> Download</a>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <form class="delete-form" asp-action="Delete">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="button" value="Delete" class="btn btn-danger delete-button" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input.delete-button').click(function () {
+                $.confirm({
+                    icon: 'fa fa-trash',
+                    theme: 'modern',
+                    animation: 'zoom',
+                    closeAnimation: 'zoom',
+                    backgroundDismiss: true,
+                    backgroundDismissAnimation: 'shake',
+                    closeIcon: true,
+                    html: true,
+                    title: 'Confirmation!',
+                    content: 'This cannot be undone.',
+                    backgroundDismiss: true,
+                    typeAnimated: true,
+                    smoothContent: true,
+                    type: 'red',
+                    buttons: {
+                        delete: {
+                            text: 'Delete',
+                            btnClass: 'btn-danger',
+                            action: function () {
+                                $(".delete-form").submit();
+                            },
+                        },
+                        cancel: {
+                            text: 'Cancel',
+                            btnClass: 'btn-success',
+                            action: function () {
+
+                            },
+                        },
+                    }
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        var initial_url = $(location).attr('href');
+        var splitted_url = initial_url.split('/');
+        var new_url = document.location.origin + '/' + splitted_url[3];
+        $('.label0 > a.nav-link').filter(function () {
+            return this.href == new_url;
+        }).parent().addClass('nav-color-active');
+    </script>
+}

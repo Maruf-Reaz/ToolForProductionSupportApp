@@ -1,0 +1,203 @@
+﻿@model Dynamo.Model.Machines.Machine
+
+@{
+    ViewData["Title"] = "Machines | Edit";
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Edit</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Archive</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">Machines</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="Index">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header py-2">
+            <h3 class="mb-0">Edit Machine</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="FactoryId" />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Code" class="control-label"></label>
+                            <input asp-for="Code" class="form-control" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Physiology" class="control-label"></label>
+                            <input asp-for="Physiology" class="form-control" />
+                            <span asp-validation-for="Physiology" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="BasicTiredness" class="control-label"></label>
+                            <input asp-for="BasicTiredness" class="form-control" />
+                            <span asp-validation-for="BasicTiredness" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="NoiseyEnvironment" class="control-label"></label>
+                            <input asp-for="NoiseyEnvironment" class="form-control" />
+                            <span asp-validation-for="NoiseyEnvironment" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="ChangeBobin" class="control-label"></label>
+                            <input asp-for="ChangeBobin" class="form-control" />
+                            <span asp-validation-for="ChangeBobin" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="StandWorking" class="control-label"></label>
+                            <input asp-for="StandWorking" class="form-control" />
+                            <span asp-validation-for="StandWorking" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Other" class="control-label"></label>
+                            <input asp-for="Other" class="form-control" />
+                            <span asp-validation-for="Other" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Field1" class="control-label"></label>
+                            <input asp-for="Field1" class="form-control" />
+                            <span asp-validation-for="Field1" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Field2" class="control-label"></label>
+                            <input asp-for="Field2" class="form-control" />
+                            <span asp-validation-for="Field2" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Field3" class="control-label"></label>
+                            <input asp-for="Field3" class="form-control" />
+                            <span asp-validation-for="Field3" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Total" class="control-label"></label>
+                            <input name="Total" id="Total" type="hidden" step="any" value="@Model.Total" class="form-control" />
+                            <input disabled name="TotalView" id="TotalView" type="number" value="@Model.Total" step="any" class="form-control" />
+                            <span asp-validation-for="Total" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+            $('input').on('change', function () {
+                calculateScore();
+            });
+
+            function calculateScore() {
+                var Physiology = $('#Physiology').val();
+                var BasicTiredness = $('#BasicTiredness').val();
+                var NoiseyEnvironment = $('#NoiseyEnvironment').val();
+                var ChangeBobin = $('#ChangeBobin').val();
+                var StandWorking = $('#StandWorking').val();
+                var Other = $('#Other').val();
+                var Field1 = $('#Field1').val();
+                var Field2 = $('#Field2').val();
+                var Field3 = $('#Field3').val();
+                var total = 0;
+                if (Physiology != "") {
+                    total += eval(Physiology);
+                }
+                if (BasicTiredness != "") {
+                    total += eval(BasicTiredness);
+                }
+                if (NoiseyEnvironment != "") {
+                    total += eval(NoiseyEnvironment);
+                }
+                if (ChangeBobin != "") {
+                    total += eval(ChangeBobin);
+                }
+                if (StandWorking != "") {
+                    total += eval(StandWorking);
+                }
+                if (Other != "") {
+                    total += eval(Other);
+                }
+                if (Field1 != "") {
+                    total += eval(Field1);
+                }
+                if (Field2 != "") {
+                    total += eval(Field2);
+                }
+                if (Field3 != "") {
+                    total += eval(Field3);
+                }
+
+                $('#Total').val(MathUtils.roundToPrecision(total));
+                $('#TotalView').val(MathUtils.roundToPrecision(total));
+
+            }
+            MathUtils = {
+                roundToPrecision: function (subject, precision) {
+                    return +((+subject).toFixed(precision));
+                }
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        var initial_url = $(location).attr('href');
+        var splitted_url = initial_url.split('/');
+        var new_url = document.location.origin + '/' + splitted_url[3];
+        $('.label2 ul li > a.nav-link').filter(function () {
+            return this.href == new_url;
+        }).addClass('active').parent().parent().parent().addClass('show').parent().addClass('nav-color-active');
+    </script>
+}
+

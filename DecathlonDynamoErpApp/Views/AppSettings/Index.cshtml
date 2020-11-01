@@ -1,0 +1,266 @@
+﻿@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "App Settings";
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables.net-select-bs4/css/select.bootstrap4.min.css">
+}
+
+<style>
+    table thead th:last-child {
+        width: 150px;
+    }
+
+    .table td, .table th {
+        padding: .7rem;
+    }
+</style>
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Settings</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">App</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Settings</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card animated fadeIn mb-0">
+                <div class="card-header py-2">
+                    <h3 class="mb-0">Settings</h3>
+                </div>
+                <div class="table-responsive py-2">
+                    <table class="table align-items-center table-hover table-striped table-bordered" id="datatable-basic">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>
+                                    Option Name
+                                </th>
+                                <th class="text-center">
+                                    Enable/Disable
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Select Theme</td>
+                                <td class="p-0">
+                                    @{
+                                        if (HttpContextAccessor.HttpContext.Request.Cookies["theme"] != null)
+                                        {
+                                            var theme = HttpContextAccessor.HttpContext.Request.Cookies["theme"].ToString();
+
+                                            if (theme == "Default")
+                                            {
+                                                <select name="theme" id="theme" class="custom-select border-0 border-radius-0">
+                                                    <option value="0" selected>Default</option>
+                                                    <option value="1">Dark Mode</option>
+                                                    <option value="2">Light Mode</option>
+                                                </select>
+                                            }
+                                            if (theme == "Dark Mode")
+                                            {
+                                                <select name="theme" id="theme" class="custom-select border-0 border-radius-0">
+                                                    <option value="0">Default</option>
+                                                    <option value="1" selected>Dark Mode</option>
+                                                    <option value="2">Light Mode</option>
+                                                </select>
+                                            }
+                                            if (theme == "Light Mode")
+                                            {
+                                                <select name="theme" id="theme" class="custom-select border-0 border-radius-0">
+                                                    <option value="0">Default</option>
+                                                    <option value="1">Dark Mode</option>
+                                                    <option value="2" selected>Light Mode</option>
+                                                </select>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <select name="theme" id="theme" class="custom-select border-0 border-radius-0">
+                                                <option value="0">Default</option>
+                                                <option value="1" selected>Dark Mode</option>
+                                                <option value="2">Light Mode</option>
+                                            </select>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Sidebar Theme <span class="text-warning">(Does not work with "Dark Mode" on.)</span>
+                                </td>
+                                <td class="p-0">
+                                    @{
+                                        if (HttpContextAccessor.HttpContext.Request.Cookies["sidebartheme"] != null)
+                                        {
+                                            var sidebartheme = HttpContextAccessor.HttpContext.Request.Cookies["sidebartheme"].ToString();
+
+                                            if (sidebartheme == "Light")
+                                            {
+                                                <select name="sidebartheme" id="sidebartheme" class="custom-select border-0 border-radius-0">
+                                                    <option value="0" selected>Light</option>
+                                                    <option value="1">Dark</option>
+                                                </select>
+                                            }
+                                            if (sidebartheme == "Dark")
+                                            {
+                                                <select name="sidebartheme" id="sidebartheme" class="custom-select border-0 border-radius-0">
+                                                    <option value="0">Light</option>
+                                                    <option value="1" selected>Dark</option>
+                                                </select>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <select name="sidebartheme" id="sidebartheme" class="custom-select border-0 border-radius-0">
+                                                <option value="0">Light</option>
+                                                <option value="1" selected>Dark</option>
+                                            </select>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Sidebar Style
+                                </td>
+                                <td class="p-0">
+                                    @{
+                                        if (HttpContextAccessor.HttpContext.Request.Cookies["sidebarstyle"] != null)
+                                        {
+                                            var sidebarstyle = HttpContextAccessor.HttpContext.Request.Cookies["sidebarstyle"].ToString();
+
+                                            if (sidebarstyle == "Regular")
+                                            {
+                                                <select name="sidebarstyle" id="sidebarstyle" class="custom-select border-0 border-radius-0">
+                                                    <option value="0" selected>Regular</option>
+                                                    <option value="1">Rounded</option>
+                                                </select>
+                                            }
+                                            if (sidebarstyle == "Rounded")
+                                            {
+                                                <select name="sidebarstyle" id="sidebarstyle" class="custom-select border-0 border-radius-0">
+                                                    <option value="0">Regular</option>
+                                                    <option value="1" selected>Rounded</option>
+                                                </select>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <select name="sidebarstyle" id="sidebarstyle" class="custom-select border-0 border-radius-0">
+                                                <option value="0" selected>Regular</option>
+                                                <option value="1">Rounded</option>
+                                            </select>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <h4 class="text-danger">*** Make sure you accept the cookies by clicking '×' button from cookies dialog.</h4>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/vendor/datatables.net/js/jquery.dataTables.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons/js/dataTables.buttons.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons/js/buttons.html5.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons/js/buttons.flash.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons/js/buttons.print.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-select/js/dataTables.select.min.js" asp-append-version="true"></script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $('#theme').on('change', function () {
+            var item = $("#theme option:selected").text();
+            $.post('@Url.Action("SetTheme", "Home")', {
+                data: item
+            });
+        })
+
+        $('#sidebartheme').on('change', function () {
+            var item = $("#sidebartheme option:selected").text();
+            $.post('@Url.Action("SidebarTheme", "Home")', {
+                data: item
+            });
+        })
+
+        $('#sidebarstyle').on('change', function () {
+            var item = $("#sidebarstyle option:selected").text();
+            $.post('@Url.Action("SidebarStyle", "Home")', {
+                data: item
+            });
+        })
+
+        $(document).ready(function () {
+            $('.toggleCheckbox').change(function () {
+               var id = $(this).closest('tr').find('.cssId').val();
+               if ($(this).is(":checked")) {
+                   var url = '@Url.Action("ChangeStatus", "AppSettings")';
+                   $.ajax({
+                       type: "POST",
+                       dataType: 'json',
+                       url: url,
+                       data: { id: id },
+                       cache: false
+                   });
+               } else {
+                   var url = '@Url.Action("ChangeStatus", "AppSettings")';
+                   $.ajax({
+                       type: "POST",
+                       dataType: 'json',
+                       url: url,
+                       data: { id: id },
+                       cache: false
+                   });
+               }
+           });
+        });
+        $(document).on('change', '.custom-select', function () {
+            $.notify({
+                title: 'Prompt!',
+                icon: 'fa fa-check',
+                html: true,
+                message: '<span class="d-flex align-items-center">Setting saved. Please reload the page to take effect. </br> <button class="reload-btn btn btn-neutral ml-3"><i class="fa fa-redo-alt mr-2"></i> Reload</button></span>'
+            }, {
+                    type: 'info',
+                    animate: {
+                        enter: 'animated fadeInDown'
+                    },
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    },
+                    spacing: 10,
+                    z_index: 1031,
+                    delay: 0,
+                    template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                });
+        });
+    </script>
+}
+

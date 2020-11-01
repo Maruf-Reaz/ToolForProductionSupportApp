@@ -1,0 +1,934 @@
+﻿@model IEnumerable<Dynamo.Model.Skills.SkillMatrix>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+    var skillMatrixRange1 = ViewBag.SkillMatrixRanges[0];
+    var skillMatrixRange2 = ViewBag.SkillMatrixRanges[1];
+    var skillMatrixRange3 = ViewBag.SkillMatrixRanges[2];
+    var skillMatrixRange4 = ViewBag.SkillMatrixRanges[3];
+    var skillMatrixRange5 = ViewBag.SkillMatrixRanges[4];
+}
+
+@{
+    ViewData["Title"] = "Skill Matrix | Operator Skills";
+}
+
+@section Sole {
+    <style>
+
+        .form-control {
+            color: #333;
+        }
+
+        .table td, .table th {
+            vertical-align: middle;
+        }
+
+        #skillMatrixTable .table td {
+            padding: 0;
+        }
+
+            #skillMatrixTable .table td .form-control {
+                border-radius: 0;
+                border: 0;
+                height: 40px;
+            }
+
+        #skillMatrixTbody tr td:not(:last-child) input {
+            min-width: 50px
+        }
+
+        .noSkillMatrix td {
+            border-top-width: 2px;
+            border-top-width: 2px;
+            padding: 0.5rem !important;
+        }
+
+        .range-text {
+            min-width: 170px;
+        }
+
+        .table-bottom .select2-selection {
+            border: 0;
+        }
+
+        .table tr th:first-child,
+        .table tr td:first-child {
+            border-left: 0;
+        }
+
+        .table tr th:last-child,
+        .table tr td:last-child {
+            border-right: 0;
+        }
+
+        .operation-name {
+            min-width: 200px;
+        }
+
+        .bg-light-green {
+            background: #91D152 !important;
+        }
+
+        .bg-green {
+            background: #00AF50 !important;
+        }
+
+        .bg-yellow {
+            background: #FFFF01 !important;
+        }
+
+        .bg-blue {
+            background: #3333FF !important;
+        }
+
+        .bg-red {
+            background: #FE0000 !important;
+        }
+
+        .card .table td:not(.p-0):not(.py-0) {
+            padding-top: .4rem !important;
+            padding-bottom: .4rem !important;
+            vertical-align: middle;
+        }
+
+        .card .table th {
+            text-align: center;
+            padding-top: .5rem !important;
+            padding-bottom: .5rem !important;
+        }
+    </style>
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Operator Skills</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="#">Skill Matrices</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Operator Skills</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" href="javascript: history.go(-1)">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header border-bottom-0">
+            <h3 class="mb-0">Skill Matrix</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                @*Operator information table*@
+                <table class="table table-classic table-bordered table-hover table-striped border-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th colspan="5" class="text-center">Operator's Information</th>
+                        </tr>
+                    </thead>
+                    <thead class="thead-custom">
+                        <tr>
+                            <th class="text-center font-weight-bold text-gray-dark" colspan="5">
+                                Operator Name:
+                                <span class="text-primary">@ViewBag.Operator.Name</span>
+                                <input type="hidden" id="operatorId" name="operatorId" class="" value="@ViewBag.Operator.Id" />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="shipInformationTbody">
+                        <tr>
+                            <td class="text-uppercase text-gray-dark">ID Card Number</td>
+                            <td id="" class="font-weight-bold">@ViewBag.Operator.IdCardNumber</td>
+                            <td class="text-white text-center" style="background: #00AF50">A</td>
+                            <td class="text-center"> 91 ≤ A ≤ ∞</td>
+                            <td class="range-text text-center">
+                                @skillMatrixRange1.Level
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-uppercase text-gray-dark">Section</td>
+                            <td id="" class="font-weight-bold">@ViewBag.Operator.Section.Name</td>
+                            <td class="text-white text-center" style="background: #91D152">B</td>
+                            <td class="text-center">81 ≤ B ≤ 90</td>
+                            <td class="range-text text-center">
+                                @skillMatrixRange2.Level
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-uppercase text-gray-dark">Line</td>
+                            <td id="" class="font-weight-bold">@ViewBag.Operator.Line.LineNumber</td>
+                            <td class="text-darker text-center" style="background: #FFFF01">C</td>
+                            <td class="text-center"> 71 ≤ C ≤ 80</td>
+                            <td class="range-text text-center">
+                                @skillMatrixRange3.Level
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-uppercase text-gray-dark">Joining Date</td>
+                            <td id="" class="font-weight-bold">@ViewBag.Operator.JoiningDate.ToString("dd MMM yyyy")</td>
+                            <td class="text-white text-center bg-primary">D</td>
+                            <td class="text-center">61 ≤ D ≤ 70</td>
+                            <td class="range-text text-center">
+                                @skillMatrixRange4.Level
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td class="text-white text-center bg-danger">E</td>
+                            <td class="text-center">0 ≤ E ≤ 60</td>
+                            <td class="range-text text-center">
+                                @skillMatrixRange5.Level
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                @*First Table*@
+                <table id="mainTable" class="table table-classic table-bordered table-hover table-striped border-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th colspan="15" class="text-center">Skills</th>
+                        </tr>
+                    </thead>
+                </table>
+                @* --------------------------------------------------------------------------- *@
+                <div id="allTableDiv">
+
+                    <div id="skillMatrixTable">
+                        <div class="table-responsive">
+                            <table class="table table-classic table-bordered">
+                                <thead class="thead-custom">
+                                    <tr>
+                                        <th class="p-2 align-middle">Sl</th>
+                                        <th class="text-center p-2 align-middle">Operation</th>
+                                        <th class="text-center p-2" colspan="2">Skill <br /> Standard</th>
+                                        <th class="text-center p-2 align-middle" colspan="2">Skill Score</th>
+                                        <th class="text-center p-2" colspan="2">Total Score <br /> (50)</th>
+                                        <th class="text-center p-2">Total Score <br /> (100)</th>
+                                        <th class="text-center p-2 align-middle">Grade</th>
+                                        <th class="text-center p-2">Target <br /> Grade</th>
+                                        <th class="text-center p-2">Required <br /> Month </th>
+                                        <th class="text-center p-2 align-middle">Last Updated</th>
+                                        @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "YSSUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "MAFUserOfSkillMatrix") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "APEXUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSkillMatrix"))
+                                        {
+                                            <th class="text-center p-2 align-middle">Action</th>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <th class="p-2"></th>
+                                        <th class="p-2"></th>
+                                        <th class="text-center p-2">SOT (Sec)</th>
+                                        <th class="text-center p-2">RFT %</th>
+                                        <th class="text-center p-2">SOT (Sec)</th>
+                                        <th class="text-center p-2">RFT %</th>
+                                        <th class="text-center p-2">SOT (Sec)</th>
+                                        <th class="text-center p-2">RFT %</th>
+                                        <th class="p-2"></th>
+                                        <th class="p-2"></th>
+                                        <th class="p-2"></th>
+                                        <th class="p-2"></th>
+                                        <th class="p-2"></th>
+                                        @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "YSSUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "MAFUserOfSkillMatrix") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "APEXUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSkillMatrix"))
+                                        {
+                                            <th class="p-2"></th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody id="skillMatrixTbody">
+                                    @{int rowNo = 0; }
+                                    @if (Model.Count() == 0)
+                                    {
+                                        <tr class="noSkillMatrix">
+                                            <td class="text-center" colspan="17"><span class="badge badge-danger">Please add an operation</span></td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var skillMatrix in Model)
+                                        {
+                                            double rowTotalSot50 = Math.Round((skillMatrix.StandardSotInSecond / skillMatrix.SotScore) * 50, 2);
+                                            double rowTotalRft50 = Math.Round((skillMatrix.RftScore * 50 / skillMatrix.StandardRft), 2);
+                                            double rowTotal100 = rowTotalSot50 + rowTotalRft50;
+                                            if (rowTotal100 > 100) { rowTotal100 = 100; }
+                                            if (rowTotal100 < 0) { rowTotal100 = 0; }
+                                            string grade = "";
+                                            if (rowTotal100 >= 91)
+                                            {
+                                                grade = "A";
+                                            }
+                                            else if (rowTotal100 >= 81 && rowTotal100 < 91)
+                                            {
+                                                grade = "B";
+                                            }
+                                            else if (rowTotal100 >= 71 && rowTotal100 < 81)
+                                            {
+                                                grade = "C";
+                                            }
+                                            else if (rowTotal100 >= 61 && rowTotal100 < 71)
+                                            {
+                                                grade = "D";
+                                            }
+                                            else if (rowTotal100 < 61)
+                                            {
+                                                grade = "E";
+                                            }
+                                            <tr>
+                                                <td class="rowSl pl-2 pr-2 text-center">@{rowNo++;}@rowNo</td>
+                                                <input type="hidden" class="rowId form-control" value="@skillMatrix.Id" />
+                                                <input type="hidden" class="rowOperationId form-control" value="@skillMatrix.OperationId" />
+                                                <td class="pl-2 pr-2 text-wrap operation-name">@skillMatrix.Operation.Name</td>
+                                                <td class="p-0"><input disabled type="number" step="any" class="rowStandardSot form-control text-center" value="@skillMatrix.StandardSotInSecond" /></td>
+                                                <td class="p-0"><input disabled type="number" step="any" class="rowStandardRft form-control text-center" value="@skillMatrix.StandardRft" /></td>
+                                                <td class="p-0"><input disabled type="number" step="any" class="rowScoreSot form-control text-center" value="@skillMatrix.SotScore" /></td>
+                                                <td class="p-0"><input disabled type="number" step="any" class="rowScoreRft form-control text-center" value="@skillMatrix.RftScore" /></td>
+                                                <td class="rowTotalSot50 text-center">
+                                                    @rowTotalSot50
+                                                </td>
+                                                <td class="rowTotalRft50 text-center">
+                                                    @rowTotalRft50
+                                                </td>
+                                                <td class="rowTotal100 text-center">
+                                                    @rowTotal100
+                                                </td>
+                                                @if (grade == "A")
+                                                {
+                                                    <td class="rowGrade bg-green text-center text-white">
+                                                        @grade
+                                                    </td>
+                                                }
+                                                else if (grade == "B")
+                                                {
+                                                    <td class="rowGrade text-center text-white" style="background-color: #91D152">
+                                                        @grade
+                                                    </td>
+                                                }
+                                                else if (grade == "C")
+                                                {
+                                                    <td class="rowGrade bg-yellow text-center">
+                                                        @grade
+                                                    </td>
+                                                }
+                                                else if (grade == "D")
+                                                {
+                                                    <td class="rowGrade bg-primary text-center text-white">
+                                                        @grade
+                                                    </td>
+                                                }
+                                                else if (grade == "E")
+                                                {
+                                                    <td class="rowGrade bg-danger text-center text-white">
+                                                        @grade
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="rowGrade text-center text-white">
+                                                        @grade
+                                                    </td>
+                                                }
+
+                                                @if (skillMatrix.TargetGrade == "A")
+                                                {
+                                                    <td class="p-0"><input disabled type="text" class="rowTargetGrade form-control bg-green text-center text-white" value="@skillMatrix.TargetGrade" /></td>
+                                                }
+                                                else if (skillMatrix.TargetGrade == "B")
+                                                {
+                                                    <td class="p-0"><input disabled type="text" class="rowTargetGrade form-control text-center text-white" style="background-color: #91D152" value="@skillMatrix.TargetGrade" /></td>
+                                                }
+                                                else if (skillMatrix.TargetGrade == "C")
+                                                {
+                                                    <td class="p-0"><input disabled type="text" class="rowTargetGrade form-control bg-yellow text-center" value="@skillMatrix.TargetGrade" /></td>
+                                                }
+                                                else if (skillMatrix.TargetGrade == "D")
+                                                {
+                                                    <td class="p-0"><input disabled type="text" class="rowTargetGrade form-control bg-primary text-center text-white" value="@skillMatrix.TargetGrade" /></td>
+                                                }
+                                                else if (skillMatrix.TargetGrade == "E")
+                                                {
+                                                    <td class="p-0"><input disabled type="text" class="rowTargetGrade form-control bg-red text-center text-white" value="@skillMatrix.TargetGrade" /></td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="p-0"><input disabled type="text" class="rowTargetGrade form-control text-center" value="@skillMatrix.TargetGrade" /></td>
+                                                }
+                                                <td class="p-0"><input disabled type="number" class="rowTargetMonth form-control text-center" value="@skillMatrix.TargetMonth" /></td>
+                                                <td class="text-center">
+                                                    @skillMatrix.UpdatedOn.ToString("dd MMM yyyy")
+                                                </td>
+                                                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                             await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                             await UserManager.IsInRoleAsync(user, "KSIUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "YSSUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "MAFUserOfSkillMatrix") ||
+                             await UserManager.IsInRoleAsync(user, "RFLUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "APEXUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSkillMatrix"))
+                                                {
+                                                    <td class="pl-2 pr-2 align-middle py-0 text-center">
+                                                        <div class="btn-group">
+                                                            <input disabled type="button" class="btn btn-default btn-sm rowCalculateBtn" value="Calculate" />
+                                                            <input disabled type="button" class="btn btn-success btn-sm rowSaveBtn" value="Save" />
+                                                            <input type="button" class="btn btn-primary btn-sm rowEditBtn" value="Edit" />
+                                                            <input disabled type="button" class="btn btn-danger btn-sm rowDeleteBtn" value="Delete" />
+                                                        </div>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                @* --------------------------------------------------------------------------- *@
+
+                @* Last Table *@
+                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "YSSUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "MAFUserOfSkillMatrix") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "APEXUserOfSkillMatrix") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSkillMatrix"))
+                {
+                    <table class="table table-classic table-bordered table-hover table-striped table-bottom border-0">
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    Select Section
+                                </td>
+                                <td class="p-0">
+                                    <select id="sectioId" class="form-control  js-single d-none">
+                                        <option selected value="0">--Select--</option>
+                                        @foreach (var item in ViewBag.Sections)
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    Select Operation
+                                </td>
+                                <td class="p-0">
+                                    <select id="operationId" class="form-control  js-single2">
+                                        <option selected value="0">--Select a Section First--</option>
+                                    </select>
+                                </td>
+                                <td colspan="11" class="py-0 align-middle text-center">
+                                    <input type="hidden" class="jobOperationExists" name="name" value="99" />
+                                    <button id="addOperationBtn" class="btn btn-default btn-sm">
+                                        <i class="fa fa-plus mr-1"></i> Add
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="col-lg-12 my-2">
+                        <div class="text-center">
+                            <button id="saveAllBtn" class="btn btn-success">
+                                <i class="fa fa-save mr-2"></i> Save All
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/sweetalert2/dist/sweetalert2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-notify/bootstrap-notify.min.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            $('#sectioId').select2({
+                placeholder: 'Please Select Section'
+            });
+            $('#operationId').select2({
+                placeholder: 'Please Select'
+            });
+
+            $('#sectioId').on( 'change', function () {
+                var sectionId = $('#sectioId :selected').val();
+                var operationSelect = $('#operationId');
+                var operationOption = '';
+                $.when(
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("GetAllBySection", "Operations")',
+                        data: {
+                            id: sectionId
+                        },
+                        cache: false,
+                        success: function (objects) {
+                            //console.log(objects);
+                            if (objects != null) {
+                                //operationSelect.prop('disabled', false);
+                                operationSelect.empty();
+                                //operationSelect.append(' <option selected disabled>--Select--</option>');
+                                $.each(objects, function (index, object) {
+                                    operationOption += '<option value="' + object.id + '">' + object.name + '</option>'
+                                });
+                                operationSelect.append(operationOption);
+                            }
+
+                        }
+                    })
+                ).then(function () {
+
+                });
+            });
+
+            $("#addOperationBtn").on('click',function () {
+                var operationId = $('#operationId :selected').val();
+                var operationName = $('#operationId :selected').text();
+                var operationExist = false;
+                var skillMatrixTbody = $('#skillMatrixTbody');
+                var allOperation = $(".rowOperationId");
+                //Check if jobtype table already Exists
+                allOperation.each(function() {
+                    if (operationId == $(this).val()) {
+                        operationExist = true;
+                        $.notify({
+                            title: 'Operation Already Exists!',
+                            icon: 'fa fa-check',
+                            html: true,
+                            message: "Please update the skill instead of adding the same operation again."
+                        }, {
+                                type: 'warning',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 1000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                    }
+                });
+                if (operationId == 0 || operationId == undefined) {
+                    operationExist = true;
+                    $.notify({
+                        title: 'Warning!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: "Sorry no operation found."
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 1000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                }
+                //Check if table already exists
+                //get column
+                if (!operationExist) {
+                    var date = new Date();
+                    skillMatrixTbody.find('.noSkillMatrix').remove();
+                    skillMatrixTbody.append(
+                        '<tr>' +
+                        '<td class="rowSl pl-2 pr-2 text-center"></td>' +
+                        '<input type="hidden" class="rowId form-control" value="-1"/>' +
+                        '<input type="hidden" class="rowOperationId form-control" value="' + operationId + '"/>' +
+                        '<input type="hidden" class="rowOperationId form-control" value="' + operationId + '"/>' +
+                        '<td class="pl-2 pr-2">' + operationName + '</td>' +
+                        '<td class="p-0"><input type="number" step="any" class="rowStandardSot form-control text-center" value="0"/></td>' +
+                        '<td class="p-0"><input type="number" step="any" class="rowStandardRft form-control text-center" value="100"/></td>' +
+                        '<td class="p-0"><input type="number" step="any" class="rowScoreSot form-control text-center" value="0"/></td>' +
+                        '<td class="p-0"><input type="number" step="any" class="rowScoreRft form-control text-center" value="0"/></td>' +
+                        '<td class="rowTotalSot50 text-center"></td>' +
+                        '<td class="rowTotalRft50 text-center"></td>' +
+                        '<td class="rowTotal100 text-center"></td>' +
+
+                        '<td class="rowGrade text-center">NA</td>' +
+
+                        '<td class="p-0"><input  type="text" class="rowTargetGrade form-control text-center" value="NA"/></td>' +
+                        '<td class="p-0"><input  type="number" class="rowTargetMonth form-control text-center" value="0"/></td>' +
+                        '<td class="text-center">' + date.toShortFormat() +'</td>' +
+                        '<td class="pl-2 pr-2 align-middle py-0 text-center">' +
+                        '<div class="btn-group">' +
+                        '<input type="button" class="btn btn-default btn-sm rowCalculateBtn" value="Calculate" />' +
+                        '<input type="button" class="btn btn-success btn-sm rowSaveBtn" value="Save" />' +
+                        '<input type="button" class="btn btn-primary btn-sm rowEditBtn" value="Edit" />' +
+                        '<input type="button" class="btn btn-danger btn-sm rowDeleteBtn" value="Delete" />' +
+                        '</div>' +
+                        '</td>' +
+                        '</tr>'
+                    );
+                    updateRowSerialNumber();
+                }
+            });
+
+            $("#skillMatrixTbody").on('click', '.rowCalculateBtn', function () {
+                var row = $(this).closest('tr');
+                calculateScore(row);
+            });
+
+            $("#skillMatrixTbody").on('click', '.rowSaveBtn', function () {
+                var operatorId = $('#operatorId').val();
+                var row = $(this).closest('tr');
+                var rowId = row.find('.rowId').val();
+                var operationId = row.find('.rowOperationId').val();
+                var standardSot = row.find('.rowStandardSot').val();
+                var standardRft = row.find('.rowStandardRft').val();
+                var scoreSot = row.find('.rowScoreSot').val();
+                var scoreRft = row.find('.rowScoreRft').val();
+                var targetGrade = row.find('.rowTargetGrade').val();
+                var targetMonth = row.find('.rowTargetMonth').val();
+                if (operationId == 0 || standardSot == 0 || standardRft == 0 || scoreSot == 0 || scoreRft == 0) {
+                    $.notify({
+                        title: 'Warning!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: "Fill up all the required data!"
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 1000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                } else {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("Save", "SkillMatrices")',
+                        data: {
+                            data: JSON.stringify({
+                                rowId: (rowId) ? rowId : null,
+                                operatorId: (operatorId) ? operatorId : null,
+                                operationId: (operationId) ? operationId : null,
+                                standardSot: (standardSot) ? standardSot : 0,
+                                standardRft: (standardRft) ? standardRft : 0,
+                                scoreSot: (scoreSot) ? scoreSot : 0,
+                                scoreRft: (scoreRft) ? scoreRft : 0,
+                                targetGrade: (targetGrade) ? targetGrade : 0,
+                                targetMonth: (targetMonth) ? targetMonth : 0
+                            })
+                        },
+                        cache: false,
+                        success: function (objects) {
+                            if (objects) {
+                                row.find('.rowId').val(objects);
+                                row.find('input:not(.rowEditBtn)').prop('disabled', true);
+                                $.notify({
+                                    title: 'Success!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: "Successfully Updated!"
+                                }, {
+                                        type: 'success',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 1000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    });
+                }
+            });
+
+            $("#skillMatrixTbody").on('click', '.rowEditBtn', function () {
+                var row = $(this).closest('tr');
+                row.find('input:not(.rowEditBtn)').prop('disabled', false);
+            });
+
+            $("#skillMatrixTbody").on('click', '.rowDeleteBtn', function () {
+                var row = $(this).closest('tr');
+                var rowId = row.find('.rowId').val();
+                if (rowId == -1) {
+                    row.remove();
+                    updateRowSerialNumber();
+                } else {
+                    swal({
+                        title: "Are you sure?",
+                        text: "The operation will be updated",
+                        type: "warning",
+                        showCancelButton: !0,
+                        useRejections: true,
+                        buttonsStyling: !1,
+                        confirmButtonClass: "btn btn-primary",
+                        confirmButtonText: "Yes",
+                        cancelButtonClass: "btn btn-secondary"
+                    }).then(
+                        value => {
+                            $.when(
+                            //get Jobs by id
+                            $.ajax({
+                                type: "POST",
+                                dataType: 'json',
+                                url: '@Url.Action("Delete", "SkillMatrices")',
+                                data: {
+                                    id: rowId
+                                },
+                                cache: false,
+                                success: function (objects) {
+                                    if (objects) {
+                                        row.remove();
+                                        $.notify({
+                                            title: 'Success!',
+                                            icon: 'fa fa-check',
+                                            html: true,
+                                            message: "Successfully Deleted!"
+                                        }, {
+                                                type: 'success',
+                                                animate: {
+                                                    enter: 'animated fadeInDown'
+                                                },
+                                                placement: {
+                                                    from: "top",
+                                                    align: "center"
+                                                },
+                                                spacing: 10,
+                                                z_index: 1031,
+                                                delay: 1000,
+                                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                            });
+                                        updateRowSerialNumber();
+                                    } else {
+                                        alert("Failed to delete");
+                                    }
+                                }
+                            }),
+                            ).then(function () {
+
+                            });
+                        },
+                        dismiss => {
+                        });
+
+                }
+            });
+
+            $("#allTableDiv").on('change', '.rowStandardSot ', function () { calculateScore($(this).closest('tr')); });
+            $("#allTableDiv").on('change', '.rowStandardRft', function () { calculateScore($(this).closest('tr')); });
+            $("#allTableDiv").on('change', '.rowScoreSot', function () { calculateScore($(this).closest('tr')); });
+            $("#allTableDiv").on('change', '.rowScoreRft', function () { calculateScore($(this).closest('tr')); });
+
+            $("#saveAllBtn").on('click', function () {
+                var operatorId = $('#operatorId').val();
+                var error = false;
+                var allrowId = $('.rowId').toArray();
+                var rows = [];
+                //var row = $(this).closest('tr');
+                $.each(allrowId, function (allrowId, rowId) {
+                    var row = $(rowId).closest('tr');
+                    var rowId = row.find('.rowId').val();
+                    var operationId = row.find('.rowOperationId').val();
+                    var standardSot = row.find('.rowStandardSot').val();
+                    var standardRft = row.find('.rowStandardRft').val();
+                    var scoreSot = row.find('.rowScoreSot').val();
+                    var scoreRft = row.find('.rowScoreRft').val();
+                    var targetGrade = row.find('.rowTargetGrade').val();
+                    var targetMonth = row.find('.rowTargetMonth').val();
+                    if (operationId == 0 || standardSot == 0 || standardRft == 0 || scoreSot == 0 || scoreRft == 0) {
+                        $.notify({
+                            title: 'Warning!',
+                            icon: 'fa fa-check',
+                            html: true,
+                            message: "Fill up all the required data!"
+                        }, {
+                                type: 'warning',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 1000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                        error = true;
+                    } else {
+                        rows.push({
+                            rowId: (rowId) ? rowId : null,
+                            operatorId: (operatorId) ? operatorId : null,
+                            operationId: (operationId) ? operationId : null,
+                            standardSot: (standardSot) ? standardSot : 0,
+                            standardRft: (standardRft) ? standardRft : 0,
+                            scoreSot: (scoreSot) ? scoreSot : 0,
+                            scoreRft: (scoreRft) ? scoreRft : 0,
+                            targetGrade: (targetGrade) ? targetGrade : 0,
+                            targetMonth: (targetMonth) ? targetMonth : 0
+                        });
+                    }
+                });
+                if (error == false) {
+                    $.when(
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("SaveAll", "SkillMatrices")',
+                            data: {
+                                skillMatrices: JSON.stringify(
+                                rows
+                            )
+                        },
+                        cache: false,
+                        success: function (objects) {
+                        if (objects) {
+                            //row.find('.rowId').val(objects);
+                            //row.find('input:not(.rowEditBtn)').prop('disabled', true);
+                            $.notify({
+                                title: 'Success!',
+                                icon: 'fa fa-check',
+                                html: true,
+                                message: "Successfully Updated " + objects + " record(s)."
+                            }, {
+                                    type: 'success',
+                                    animate: {
+                                        enter: 'animated fadeInDown'
+                                    },
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    spacing: 10,
+                                    z_index: 1031,
+                                    delay: 1000,
+                                    template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                });
+                        }}
+                    }),
+
+                    ).then(function () { // location.reload();
+                        //swall success tick mark animation not working.
+                            });
+                }
+                //console.log(rows);
+            });
+
+            function calculateScore(row) {
+                var rowStandardSot = row.find('.rowStandardSot').val();
+                var rowStandardRft = row.find('.rowStandardRft').val();
+                var rowScoreSot = row.find('.rowScoreSot').val();
+                var rowScoreRft = row.find('.rowScoreRft').val();
+                var rowTotalSot50 = MathUtils.roundToPrecision(((eval(rowStandardSot) / eval(rowScoreSot)) * 50),2);
+                var rowTotalRft50 = MathUtils.roundToPrecision((eval(rowScoreRft) * 50 / eval(rowStandardRft)),2);
+                var rowTotal100 = MathUtils.roundToPrecision((eval(rowTotalSot50) + eval(rowTotalRft50)), 2);
+                row.find('.rowTotalSot50').html(rowTotalSot50 ? rowTotalSot50 : 0);
+                row.find('.rowTotalRft50').html(rowTotalRft50 ? rowTotalRft50 : 0);
+                var Total100 = 0;
+                if (rowTotal100 > 100) {
+                    Total100 = 100;
+                } else if (rowTotal100 < 0) {
+                    Total100 = 0;
+                } else {
+                    Total100 = rowTotal100;
+                }
+                row.find('.rowTotal100').html(Total100 ? Total100 : 0);
+                row.find('.rowGrade').html(rowTotal100 ? Grade.calculate(rowTotal100) : "NA");
+                if (Grade.calculate(rowTotal100) == "A") {
+                    row.find('.rowGrade').addClass("bg-green text-white").removeClass("bg-light-green bg-yellow bg-primary bg-red text-black");
+                }
+                else if (Grade.calculate(rowTotal100) == "B") {
+                    row.find('.rowGrade').addClass("bg-light-green text-white").removeClass("bg-green bg-yellow bg-primary bg-red text-black");
+                }
+                else if (Grade.calculate(rowTotal100) == "C") {
+                    row.find('.rowGrade').addClass("bg-yellow text-black").removeClass("bg-green bg-light-green bg-primary bg-red text-white");
+                }
+                else if (Grade.calculate(rowTotal100) == "D") {
+                    row.find('.rowGrade').addClass("bg-primary text-white").removeClass("bg-green bg-light-green bg-yellow bg-red text-black");
+                }
+                else {
+                    row.find('.rowGrade').addClass("bg-danger text-white").removeClass("bg-green bg-light-green bg-yellow bg-primary text-black");
+                }
+                //$('.rowGrade').addClass();
+            }
+            Grade = {
+                calculate: function (number) {
+                    if (number >= 91) {
+                        return "A";
+                    } else if (number >= 81 && number < 91) {
+                        return "B";
+                    } else if (number >= 71 && number < 81) {
+                        return "C";
+                    } else if (number >= 61 && number < 71) {
+                        return "D";
+                    } else if (number < 61) {
+                        return "E";
+                    }
+                }
+            }
+            MathUtils = {
+                roundToPrecision: function (subject, precision) {
+                    return +((+subject).toFixed(precision));
+                }
+            }
+
+            function updateRowSerialNumber() {
+
+                var count = 0;
+                var rowSerials = $('#skillMatrixTbody').find(".rowSl").toArray();
+                $.each(rowSerials, function (index, value) {
+                    count += eval(1);
+                    value.innerHTML = count;
+                });
+            }
+
+            Date.prototype.toShortFormat = function () {
+                var month_names = ["Jan", "Feb", "Mar",
+                    "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep",
+                    "Oct", "Nov", "Dec"];
+
+                var day = this.getDate();
+                var month_index = this.getMonth();
+                var year = this.getFullYear();
+
+                return "" + day + " " + month_names[month_index] + " " + year;
+            }
+        });
+    </script>
+}

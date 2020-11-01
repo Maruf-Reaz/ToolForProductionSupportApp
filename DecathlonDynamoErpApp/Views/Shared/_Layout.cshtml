@@ -1,0 +1,291 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Dynamo.Model.Common.Authentication.ApplicationUser> SignInManager
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] - Tool for Production Support (TPS) | Dynamo ERP</title>
+    <link asp-append-version="true" rel="icon" href="~/img/tps/fav.png" type="image/png">
+    <style>
+        body {
+            background: url("/img/texture/6.png") fixed repeat;
+            color: #000;
+        }
+
+        #sidenav-main .scrollbar-inner {
+            overflow-x: hidden !important;
+        }
+
+        nav#sidenav-main {
+            overflow: hidden !important;
+        }
+
+        .navbar-vertical.navbar-dark {
+            border-color: rgba(255, 255, 255, .1);
+            background-color: #172b4d;
+        }
+
+        .active-sidebar.g-sidenav-pinned .sidenav.d-block.d-lg-none {
+            transform: translateX(-62px);
+            max-width: 0px !important;
+        }
+
+        .active-sidebar.g-sidenav-show.g-sidenav-pinned .sidenav.d-block.d-lg-none {
+            transform: translateX(0);
+            max-width: 250px !important;
+        }
+
+        .navbar-vertical .navbar-brand-img, .navbar-vertical .navbar-brand > img {
+            max-width: 135px !important;
+            max-height: unset !important;
+        }
+
+        .sidenav .navbar-brand {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        @@media (max-width:975px) {
+            nav.navbar-top .sidenav-toggler-inner {
+                padding-right: 25px;
+                padding-left: 10px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+        }
+
+        .logo-nav-spin-tps {
+            width: 55px;
+            top: -26px;
+        }
+
+        .tps-nav-outer {
+            width: 55px;
+            animation: spin 10s linear infinite;
+        }
+
+        .tps-nav-inner {
+            width: 55px;
+        }
+
+        @@-moz-keyframes spin {
+            100% {
+                -moz-transform: rotate(360deg);
+            }
+        }
+
+        @@-webkit-keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @@keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        .sidenav-header img.tps-text {
+            width: 65px;
+            right: -10px;
+            top: -13px;
+        }
+    </style>
+
+    @* fonts *@
+
+    <link asp-append-version="true" type="text/css" rel="stylesheet" href="~/vendor/fonts/roboto/css.css">
+    <link asp-append-version="true" type="text/css" rel="stylesheet" href="~/vendor/fonts/roboto/css300.css">
+    <link asp-append-version="true" type="text/css" rel="stylesheet" href="~/vendor/nucleo/css/nucleo.css">
+    <link asp-append-version="true" type="text/css" rel="stylesheet" href="~/vendor/fontawesome/css/all.min.css">
+    <link asp-append-version="true" type="text/css" rel="stylesheet" href="~/vendor/jquery-confirm/css/jquery-confirm.css">
+
+    @* Page Plugin *@
+
+    @RenderSection("Css", required: false)
+
+    @* Style *@
+    <link asp-append-version="true" type="text/css" rel="stylesheet" href="~/vendor/animate.css/animate.min.css">
+    <link asp-append-version="true" type="text/css" rel="stylesheet" href="~/css/dynamo.css">
+
+    @{
+        if (HttpContextAccessor.HttpContext.Request.Cookies["theme"] != null)
+        {
+            var theme = HttpContextAccessor.HttpContext.Request.Cookies["theme"].ToString();
+
+            if (theme == "Default")
+            {
+                <link asp-append-version="true" rel="stylesheet" href="~/css/blue-gradient.css" type="text/css">
+            }
+            if (theme == "Dark Mode")
+            {
+                <link asp-append-version="true" rel="stylesheet" href="~/css/dark-mode.css" type="text/css">
+            }
+            if (theme == "Light Mode")
+            {
+                <link asp-append-version="true" rel="stylesheet" href="~/css/light.css" type="text/css">
+            }
+        }
+        else
+        {
+            <link asp-append-version="true" rel="stylesheet" href="~/css/dark-mode.css" type="text/css">
+        }
+    }
+
+    <link asp-append-version="true" rel="stylesheet" href="~/css/style.css" type="text/css">
+
+    @RenderSection("Sole", required: false)
+
+</head>
+
+<body class='@if (HttpContextAccessor.HttpContext.Request.Cookies["leftNavigation"] != null) {
+                var leftNavigation = HttpContextAccessor.HttpContext.Request.Cookies["leftNavigation"].ToString();
+          if (leftNavigation == "unpinned") { leftNavigation = "g-sidenav-hidden deactive-sidebar"; @leftNavigation}
+    else { leftNavigation = "g-sidenav-pinned active-sidebar"; @leftNavigation } }
+
+else { var leftNavigation = "g-sidenav-hidden deactive-sidebar"; @leftNavigation }'>
+
+    <partial name="_LeftNavigation" />
+
+    <div class='main-content @if (HttpContextAccessor.HttpContext.Request.Cookies["sidebarstyle"] != null) {
+                            var sidebarstyle = HttpContextAccessor.HttpContext.Request.Cookies["sidebarstyle"].ToString();
+                            if (sidebarstyle == "Regular"){ sidebarstyle = ""; @sidebarstyle }
+                            if (sidebarstyle == "Rounded"){ sidebarstyle = "radius-panel";@sidebarstyle } }
+                else { var sidebarstyle = ""; @sidebarstyle }' id="panel">
+
+        <partial name="_CookieConsentPartial" />
+
+        <main role="main" class="pb-3">
+
+            <partial name="_TopNavigation" />
+
+            @RenderBody()
+
+            <partial name="_Footer" />
+
+        </main>
+
+    </div>
+
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/jquery/dist/jquery.min.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/bootstrap-notify/bootstrap-notify.min.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/js-cookie/js.cookie.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/jquery.scrollbar/jquery.scrollbar.min.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/jquery-confirm/js/jquery-confirm.js"></script>
+
+    @RenderSection("Scripts", required: false)
+
+    <script asp-append-version="true" type="text/javascript" src="~/js/main.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/js/site.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var url = window.location;
+
+            //label 0
+
+            $('.label0 > a.nav-link').filter(function () {
+                return this.href == url;
+            }).parent().addClass('nav-color-active');
+
+
+            //label 3
+
+            $('.label3 ul li > a.nav-link').filter(function () {
+                return this.href == url;
+            }).addClass('active').parent().parent().parent().addClass('show').parent().addClass('nav-color-active');
+
+            $('.label3 ul li div ul li a').filter(function () {
+                return this.href == url;
+            }).addClass('active').parent().parent().parent().addClass('show').parent().removeClass('nav-color-active').parent().parent().addClass('show').parent    ().addClass('nav-color-active');
+
+
+            //Label 2
+
+            $('.label2 ul li > a.nav-link').filter(function () {
+                return this.href == url;
+            }).addClass('active').parent().parent().parent().addClass('show').parent().addClass('nav-color-active');
+
+            //SOT
+
+            $('#label33 ul li > a.nav-link').filter(function () {
+                return this.href == url;
+            }).addClass('active').parent().parent().parent().addClass('show').parent().removeClass('nav-color-active').parent().parent().addClass('show').parent    ().addClass('nav-color-active');
+
+
+
+            // End Nav active color
+
+            $(document).on('click', '.sidenav-toggler', function () {
+                if (innerWidth > 1199) {
+                    $('body.deactive-sidebar').removeClass('g-sidebar-hidden').toggleClass('g-sidenav-pinned')
+                    $('body.active-sidebar').addClass('g-sidenav-show')
+                }
+            });
+
+
+            $(document).ready(function () {
+                if (innerWidth < 900) {
+                    $('body.active-sidebar').removeClass('g-sidenav-pinned').addClass('g-sidenav-hidden')
+                }
+            });
+
+             $('.g-sidenav-pinned .sidenav-toggler').click(function () {
+                    var item = "unpinned";
+                    $.post('@Url.Action("Sidebar", "Home")', {
+                        data: item
+                    });
+                })
+
+                $('.g-sidenav-hidden .sidenav-toggler').click(function () {
+                    var item = "pinned";
+                    $.post('@Url.Action("Sidebar", "Home")', {
+                        data: item
+                    });
+                })
+
+            $(document).on('click', '.reload-btn', function () {
+                location.reload();
+            });
+        });
+
+        $("#searchText").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#sidenav-main ul li").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    </script>
+    @{
+        if (HttpContextAccessor.HttpContext.Request.Cookies["theme"] != null)
+        {
+            var theme = HttpContextAccessor.HttpContext.Request.Cookies["theme"].ToString();
+
+            if (theme == "Default")
+            {
+                <script asp-append-version="true" type="text/javascript" src="~/js/logout-light.js"></script>
+            }
+            if (theme == "Dark Mode")
+            {
+                <script asp-append-version="true" type="text/javascript" src="~/js/logout-dark.js"></script>
+            }
+            if (theme == "Light Mode")
+            {
+                <script asp-append-version="true" type="text/javascript" src="~/js/logout-light.js"></script>
+            }
+        }
+        else
+        {
+            <script asp-append-version="true" type="text/javascript" src="~/js/logout-dark.js"></script>
+        }
+    }
+</body>
+
+</html>

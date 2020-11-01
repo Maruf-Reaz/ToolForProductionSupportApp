@@ -1,0 +1,194 @@
+﻿@model Dynamo.Model.Sot.StandardOperationTime
+
+@{
+    ViewData["Title"] = "SOT | Delete";
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" href="~/vendor/lightbox/lightbox.min.css">
+}
+
+@section Sole {
+    <style>
+        .text-white {
+            color: #fff !important;
+        }
+
+        .bg-custom {
+            background: linear-gradient(87deg, #fb6340 0, #F5365C 100%) !important;
+            box-shadow: unset;
+        }
+
+            .bg-custom::before {
+                content: "";
+                height: 100%;
+                width: 100%;
+                top: 0;
+                left: 0;
+                position: absolute;
+                background: url('/img/texture/10.png') repeat;
+                opacity: 0.7;
+            }
+
+        nav.navbar-top {
+            border-bottom: 0 !important;
+        }
+
+        .navbar-search-dark .input-group {
+            border-color: rgba(0, 0, 0, .6);
+            background-color: rgba(255, 255, 255, .9);
+        }
+
+        .navbar-search-dark .input-group-text {
+            color: rgba(0, 0, 0, .6);
+        }
+
+        .navbar-search-dark .form-control {
+            color: rgba(0, 0, 0, .9);
+        }
+
+            .navbar-search-dark .form-control::placeholder {
+                color: rgba(0, 0, 0, .9);
+            }
+
+        .navbar-search-dark .focused .input-group {
+            border-color: rgba(0, 0, 0, .9);
+            background-color: #fff
+        }
+
+        .breadcrumb-dark .breadcrumb-item + .breadcrumb-item::before {
+            color: #fff;
+        }
+
+        .breadcrumb-dark .breadcrumb-item a {
+            color: #f6f9fc !important;
+        }
+
+        .breadcrumb-dark .breadcrumb-item.active {
+            color: #dee2e6 !important;
+        }
+
+        nav.navbar-top .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, .95) !important;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Delete</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Archive</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">SOT</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Delete</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="Index">Back to List</a>
+                    <a class="btn btn-sm btn-neutral" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header">
+            <h3 class="mb-0">Delete SOT</h3>
+            <h3 class="text-danger mb-0">Are you sure you want to delete this?</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="SotModel" class="control-label"></label>
+                        <input class="form-control" disabled value="@Model.SotModel.Name" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">DIPL</label>
+                        <input class="form-control" disabled value="@Model.SotModel.Dipl" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">Process</label>
+                        <input class="form-control" disabled value="@Model.SotModel.Process.Name" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">Sign Sport</label>
+                        <input class="form-control" disabled value="@Model.SotModel.SignSport.Name" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div>
+                        <a class="example-image-link" href="~/files/sot_models/@Model.SotModel.Photo" data-lightbox="example-1">
+                            <img asp-append-version="true" class="d-block example-image" style="width: 100px" src="~/files/sot_models/@Model.SotModel.Photo" alt="" />
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <form class="delete-form" asp-action="Delete">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="button" value="Delete" class="btn btn-danger delete-button" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/lightbox/lightbox.min.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            $('input.delete-button').click(function () {
+                $.confirm({
+                    icon: 'fa fa-trash',
+                    theme: 'modern',
+                    animation: 'zoom',
+                    closeAnimation: 'zoom',
+                    backgroundDismiss: true,
+                    backgroundDismissAnimation: 'shake',
+                    closeIcon: true,
+                    html: true,
+                    title: 'Confirmation!',
+                    content: 'This cannot be undone.',
+                    backgroundDismiss: true,
+                    typeAnimated: true,
+                    smoothContent: true,
+                    type: 'red',
+                    buttons: {
+                        delete: {
+                            text: 'Delete',
+                            btnClass: 'btn-danger',
+                            action: function () {
+                                $(".delete-form").submit();
+                            },
+                        },
+                        cancel: {
+                            text: 'Cancel',
+                            btnClass: 'btn-success',
+                            action: function () {
+
+                            },
+                        },
+                    }
+                });
+            });
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

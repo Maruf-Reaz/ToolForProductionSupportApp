@@ -1,0 +1,541 @@
+﻿@model IEnumerable<Dynamo.Model.Sot.StandardOperationTime>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+}
+
+@{
+    ViewData["Title"] = "SOT | Index";
+}
+
+@section Css {
+    @{await Html.RenderPartialAsync("_DataTablesCssPartial");}
+    <link asp-append-version="true" type="text/css" rel="stylesheet" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+    <link asp-append-version="true" type="text/css" rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+}
+
+@section Sole {
+    <style>
+        .description {
+            min-width: 350px
+        }
+
+        td select {
+            height: 35px !important;
+            border-radius: 3px !important;
+            padding: .2rem .2rem !important;
+        }
+
+        .table-responsive-on-hover {
+            overflow: auto !important;
+        }
+
+        .card .table td {
+            padding-top: .2rem !important;
+            padding-bottom: .2rem !important;
+            vertical-align: middle;
+        }
+
+        .card .table th {
+            text-align: center;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">SOT</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">SOT</li>
+                        </ol>
+                    </nav>
+                </div>
+                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                {
+                    <div class="col-lg-6 col-5 text-right">
+                        <a class="btn btn-sm btn-neutral" asp-action="Create">New</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card animated fadeIn overflow-hidden">
+                <div class="card-header py-2">
+                    <div class="row">
+                        <div class="col-8 m-auto">
+                            <h3 class="mb-0">SOT List</h3>
+                        </div>
+                        <div class="col-4">
+                            <div class="">
+                                <select id="processId" class="form-control" data-toggle="select">
+                                    @if (ViewBag.ProcessId == null)
+                                    {
+                                        <option selected value="0">-Select Process-</option>
+                                        @foreach (var process in ViewBag.Processes)
+                                        {
+                                            <option value="@process.Id">@process.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @foreach (var process in ViewBag.Processes)
+                                        {
+                                            @if (process.Id == ViewBag.ProcessId)
+                                            {
+                                                <option selected value="@process.Id">@process.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@process.Id">@process.Name</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (ViewBag.ProcessId != null)
+                {
+                    @if (Model.Any())
+                    {
+                        <div class="card-body px-0 pb-2 pt-3">
+                            <table class="table align-items-center table-hover table-striped table-bordered" id="datatable-basic2">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th rowspan="2" class="align-middle">
+                                            @Html.DisplayNameFor(model => model.SotModel.Dipl)
+                                        </th>
+                                        <th rowspan="2" class="align-middle">
+                                            @Html.DisplayNameFor(model => model.SotModel)
+                                        </th>
+                                        <th rowspan="2" class="align-middle">
+                                            @Html.DisplayNameFor(model => model.SotModel.Process)
+                                        </th>
+                                        <th rowspan="2" class="align-middle">
+                                            @Html.DisplayNameFor(model => model.SotModel.SignSport)
+                                        </th>
+                                        <th colspan="@ViewBag.Sections.Count" class="text-center border-bottom">
+                                            Sections
+                                        </th>
+                                        <th class="text-center align-middle" rowspan="2">
+                                            Total
+                                        </th>
+                                        <th colspan="2" class="text-center border-bottom">
+                                            Status
+                                        </th>
+                                        @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                     await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                     await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+                     await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                                        {
+                                            <th class="text-center align-middle" rowspan="2">
+                                                Action
+                                            </th>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        @foreach (var section1 in ViewBag.Sections)
+                                        {
+                                            <th class="text-center sh-name" data-toggle="popover" data-content="@section1.Name">
+                                                @section1.ShortName
+                                            </th>
+                                        }
+                                        <th class="text-center">Calculation</th>
+                                        <th class="text-center sh-name border-right">Validation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <input class="sotId" type="hidden" value="@item.Id" />
+                                            <td class="align-middle">
+                                                @Html.DisplayFor(modelItem => item.SotModel.Dipl)
+                                            </td>
+                                            <td class="align-middle">
+                                                @Html.DisplayFor(modelItem => item.SotModel.Name)
+                                            </td>
+                                            <td class="align-middle">
+                                                @Html.DisplayFor(modelItem => item.SotModel.Process.Name)
+                                            </td>
+                                            <td class="align-middle">
+                                                @Html.DisplayFor(modelItem => item.SotModel.SignSport.Name)
+                                            </td>
+                                            @{ double? total = 0; }
+                                            @foreach (var section2 in ViewBag.Sections)
+                                            {
+                                                int count = 0;
+
+                                                foreach (var sectionStandardOperationTime in item.SectionStandardOperationTimes)
+                                                {
+                                                    if (section2.Id == sectionStandardOperationTime.SectionId)
+                                                    {
+                                                        <td class="text-center align-middle"><a asp-action="AddSection" asp-route-sotId="@item.Id" asp-route-sectionId="@sectionStandardOperationTime.SectionId">@System.Math.Round(sectionStandardOperationTime.SotValue, 3)</a></td>
+                                                        count++;
+                                                        total += sectionStandardOperationTime.SotValue;
+                                                        break;
+                                                    }
+                                                }
+                                                if (count == 0)
+                                                {
+                                                    <td class="text-center align-middle"><a class="btn btn-success btn-sm" asp-action="AddSection" asp-route-sotId="@item.Id" asp-route-sectionId="@section2.Id">Calculate</a></td>
+                                                }
+                                            }
+                                            <td class="align-middle text-center">@System.Math.Round(Convert.ToDouble(total), 3)</td>
+                                            <td class="pl-0 pr-0">
+                                                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                              await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                              await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+                              await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                                                {
+                                                    <select class="form-control calculationStatusId border-radius-0">
+                                                        @if (item.CalculationStatusId == null)
+                                                        {
+                                                            <option selected value="0">-SELECT-</option>
+                                                            foreach (var calculationStatus in ViewBag.CalculationStatuses)
+                                                            {
+                                                                <option value="@calculationStatus.Id">@calculationStatus.Name</option>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            foreach (var calculationStatus in ViewBag.CalculationStatuses)
+                                                            {
+                                                                if (item.CalculationStatusId == calculationStatus.Id)
+                                                                {
+                                                                    <option selected value="@calculationStatus.Id">@calculationStatus.Name</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@calculationStatus.Id">@calculationStatus.Name</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                }
+                                                else
+                                                {
+                                                    <select class="form-control calculationStatusId border-radius-0 disabled">
+                                                        @if (item.CalculationStatusId == null)
+                                                        {
+                                                            <option selected value="0">-SELECT-</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            foreach (var calculationStatus in ViewBag.CalculationStatuses)
+                                                            {
+                                                                if (item.CalculationStatusId == calculationStatus.Id)
+                                                                {
+                                                                    <option selected value="@calculationStatus.Id">@calculationStatus.Name</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                }
+                                            </td>
+                                            <td class="pl-0 pr-0">
+                                                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                              await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                              await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+                              await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                                                {
+                                                    <select class="form-control validationStatusId border-radius-0">
+                                                        @if (item.ValidationStatusId == null)
+                                                        {
+                                                            <option selected value="0">-SELECT-</option>
+                                                            foreach (var validationStatus in ViewBag.ValidationStatuses)
+                                                            {
+                                                                <option value="@validationStatus.Id">@validationStatus.Name</option>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            foreach (var validationStatus in ViewBag.ValidationStatuses)
+                                                            {
+                                                                if (item.ValidationStatusId == validationStatus.Id)
+                                                                {
+                                                                    <option selected value="@validationStatus.Id">@validationStatus.Name</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@validationStatus.Id">@validationStatus.Name</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                }
+                                                else
+                                                {
+                                                    <select class="form-control validationStatusId border-radius-0 disabled">
+                                                        @if (item.ValidationStatusId == null)
+                                                        {
+                                                            <option selected value="0">-SELECT-</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            foreach (var validationStatus in ViewBag.ValidationStatuses)
+                                                            {
+                                                                if (item.ValidationStatusId == validationStatus.Id)
+                                                                {
+                                                                    <option selected value="@validationStatus.Id">@validationStatus.Name</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                }
+                                            </td>
+                                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                          await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                          await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+                          await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                                            {
+                                                <td class="text-center align-middle">
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-default btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                                        @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                                        {
+                                                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                                        }
+                                                    </div>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-12 py-3" id="nosot">
+                            <div class="text-center">
+                                <span class="badge badge-danger">** No SOT Of this section has been calculated yet.</span>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/datatables.net/js/jquery.dataTables.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons/js/dataTables.buttons.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-select/js/dataTables.select.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/sweetalert2/dist/sweetalert2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-notify/bootstrap-notify.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script>
+        $("#datatable-basic2").DataTable({
+            initComplete: function (settings, json) {
+                $("table").addClass("border-left-0 border-right-0");
+                $(".dt-bootstrap4 > .row:nth-child(2)").addClass("table-responsive-on-hover mx-0");
+                $(".dt-bootstrap4 > .row:nth-child(2) > .col-sm-12").addClass("px-0");
+            },
+            drawCallback: function (settings) {
+                $('.calculationStatusId > option:selected[value="1"]').parent().addClass("bg-danger text-white");
+                $('.calculationStatusId > option:selected[value="2"]').parent().addClass("bg-success text-white");
+                $('.calculationStatusId > option:selected[value="3"]').parent().addClass("bg-primary text-white");
+
+                $('.validationStatusId > option:selected[value="1"]').parent().addClass("bg-success text-white");
+                $('.validationStatusId > option:selected[value="2"]').parent().addClass("bg-danger text-white");
+                $('.validationStatusId > option:selected[value="3"]').parent().addClass("bg-primary text-white");
+            },
+            colReorder: {
+                allowReorder: !0
+            },
+            responsive: !0,
+            //scrollX: !0,
+            order: [],
+            language: {
+                paginate: {
+                    previous: "<i class='fas fa-angle-left'>",
+                    next: "<i class='fas fa-angle-right'>",
+                }
+            },
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            autoWidth: !1,
+            stateSave: !0,
+            stateDuration: 365 * 60 * 60 * 24,
+            stateSaveParams: function (settings, data) {
+                delete data.order;
+            },
+            processing: !0,
+            paging: !0,
+            columnDefs: [
+                { "searchable": false, "targets": [-1,] },
+                { "orderable": false, "targets": [-1,] },
+            ],
+        })
+
+        $(document).ready(function () {
+            $("#processId").on('change', function () {
+                var processId = $(this).val();
+                if (processId != 0) {
+                    location.href = '/StandardOperationTimes/Index?processId=' + processId;
+                }
+            });
+
+            //$('.calculationStatusId > option:selected[value="1"]').parent().addClass("bg-danger text-white");
+            //$('.calculationStatusId > option:selected[value="2"]').parent().addClass("bg-success text-white");
+            //$('.calculationStatusId > option:selected[value="3"]').parent().addClass("bg-primary text-white");
+
+            //$('.validationStatusId > option:selected[value="1"]').parent().addClass("bg-success text-white");
+            //$('.validationStatusId > option:selected[value="2"]').parent().addClass("bg-danger text-white");
+            //$('.validationStatusId > option:selected[value="3"]').parent().addClass("bg-primary text-white");
+
+            $("#datatable-basic2").on('change', '.calculationStatusId', function () {
+                $('.calculationStatusId > option:selected[value="1"]').parent().removeClass("bg-primary bg-success").addClass("bg-danger text-white");
+                $('.calculationStatusId > option:selected[value="2"]').parent().removeClass("bg-primary bg-danger").addClass("bg-success text-white");
+                $('.calculationStatusId > option:selected[value="3"]').parent().removeClass("bg-danger bg-success").addClass("bg-primary text-white");
+                var row = $(this).closest('tr');
+                var sotId = row.find('.sotId').val();
+                var calculationStatusId = row.find('.calculationStatusId').val();
+                if (calculationStatusId != 0) {
+                    var url = '@Url.Action("UpdateCalculationStatus", "StandardOperationTimes")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            sotId: sotId,
+                            calculationStatusId: calculationStatusId,
+                        },
+                        cache: false,
+                        success: function (result) {
+                            if (result) {
+                                $.notify({
+                                    title: 'Success!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Calculation Status Updated Successfully!'
+                                }, {
+                                        type: 'success',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                            else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something went wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    });
+                }
+            });
+
+            $("#datatable-basic2").on('change', '.validationStatusId', function () {
+                $('.validationStatusId > option:selected[value="1"]').parent().removeClass("bg-primary bg-danger").addClass("bg-success text-white");
+                $('.validationStatusId > option:selected[value="2"]').parent().removeClass("bg-primary bg-success").addClass("bg-danger text-white");
+                $('.validationStatusId > option:selected[value="3"]').parent().removeClass("bg-danger bg-success").addClass("bg-primary text-white");
+
+                var row = $(this).closest('tr');
+                var sotId = row.find('.sotId').val();
+                var validationStatusId = row.find('.validationStatusId').val();
+                if (validationStatusId != 0) {
+                    var url = '@Url.Action("UpdateValidationStatus", "StandardOperationTimes")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            sotId: sotId,
+                            validationStatusId: validationStatusId,
+                        },
+                        cache: false,
+                        success: function (result) {
+                            if (result) {
+                                $.notify({
+                                    title: 'Success!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Validation Status Updated Successfully!'
+                                }, {
+                                        type: 'success',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                            else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something went wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    });
+                }
+            });
+        })
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -1,0 +1,223 @@
+.form-control {
+    color: #333;
+}
+
+.table td, .table th {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.jobinfocreate {
+    width: 50px;
+}
+
+.container.pt-2.pb-2 {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+input.addJobBtn {
+    flex: 1
+}
+
+span.select2 {
+    flex: 2;
+}
+
+.unit-row {
+    text-align: center;
+}
+
+tr[class*="jobTypeHeading"] th {
+    color: #fff;
+    background: #355C7D;
+}
+
+[id*="jobTypeTbody"] tr:not(:first-child) td {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/*[id*="jobTypeTbody"] tr td {
+            min-width: 100px !important;
+        }
+        [id*="jobTypeTbody"] tr td.unit-row {
+            min-width: 40px !important;
+        }*/
+[id*="jobTypeTbody"] tr td .select2-selection {
+    border: 0;
+}
+
+tfoot[id*="subTotal"] tr td {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+tfoot[id*="subTotal"] tr {
+    background-color: #E9ECEF;
+}
+
+[id*="table"] [id*="jobTypeTbody"] {
+    border-top: 0 !important;
+}
+
+    [id*="table"] [id*="jobTypeTbody"] tr:first-child {
+        background: #5E72E4;
+        color: #fff;
+    }
+
+        [id*="table"] [id*="jobTypeTbody"] tr:first-child td {
+            border-bottom: 0 !important;
+        }
+
+    [id*="table"] [id*="jobTypeTbody"] tr:nth-child(2) th {
+        border-top: 0 !important;
+    }
+
+input.totalFinalAmount {
+    padding: .7rem !important;
+}
+
+table {
+    empty-cells: hide;
+}
+
+.d-flex > input.btn {
+    flex: 1;
+}
+
+.d-flex > span.select2 {
+    flex: 2;
+}
+
+#skillMatrixTbody tr td:not(:last-child) input {
+    width: 100%;
+    text-align: center;
+}
+
+.noSkillMatrix td {
+    border-top-width: 2px;
+    border-top-width: 2px;
+}
+
+.rowComment {
+    min-width: 150px !important;
+}
+
+#allTableDiv .table tbody tr td.rowDate {
+    padding: .3rem !important;
+}
+
+#allTableDiv .table tbody tr td .actionGroup {
+    padding-left: .7rem !important;
+    padding-right: .7rem !important;
+}
+
+#allTableDiv .table tbody tr td input.form-control {
+    border-radius: 0;
+    border: 0;
+    font-weight: bold;
+    height: 35px;
+    padding: .3rem;
+}
+
+
+#mainTable .thead-light tr th {
+    border-color: #555;
+}
+
+#allTableDiv .table tfoot tr td {
+    border-color: #555;
+}
+
+#allTableDiv .table tbody tr td {
+    padding: 0 !important;
+    border-color: #555;
+}
+
+#allTableDiv .table tbody tr td:last-child {
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+}
+
+#allTableDiv .table thead tr th {
+    border-color: #555;
+    padding: .3rem;
+}
+
+.bg-yellow {
+    background-color: #f5f50a !important;
+}
+
+.bg-target {
+    background-color: #e6c7c5 !important;
+}
+
+.bg-points {
+    background-color: #C4BD97 !important;
+}
+
+.bg-comments {
+    background-color: #0070C0 !important;
+    color: #fff !important;
+}
+
+.select2-container--default.select2-container--disabled .select2-selection--single {
+    background-color: #eee !important;
+}
+
+/*th.thead-date {
+    background-color: #00695C !important;
+    color: #fff!important;
+}
+th.thead-target {
+    background-color: #0D47A1 !important;
+    color: #fff !important;
+}
+th.thead-achieved {
+    background-color: #00695C !important;
+    color: #fff !important;
+}*/
+
+/*#allTableDiv .table tbody tr td {
+    padding: 0 !important;
+    border-color: #8697A6;
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
+#allTableDiv .table thead tr th {
+    border-color: #ddd;
+}
+
+#mainTable .thead-light tr th {
+    border-color: #ddd;
+}
+
+#allTableDiv .table tfoot tr td {
+    border-color: #ddd;
+}
+
+.bg-target {
+    background-color: #5A758C !important;
+    color: #fff !important;
+}
+
+.bg-yellow {
+    background-color: #023059 !important;
+    color: #fff !important;
+}
+
+.bg-points {
+    background-color: #5A758C !important;
+    color: #fff !important;
+}
+
+.bg-danger {
+    background-color: #023859 !important;
+}*/
+
+/*.bg-comments {
+    background-color: #0070C0 !important;
+    color: #fff !important;
+}*/

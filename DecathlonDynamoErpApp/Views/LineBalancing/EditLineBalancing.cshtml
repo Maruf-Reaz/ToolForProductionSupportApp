@@ -1,0 +1,90 @@
+﻿@model Dynamo.Model.LineBalancing.ParticularLineBalancing
+
+@{
+    ViewData["Title"] = "EditLineBalancing";
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-10 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Edit Particular</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Domain</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">Line Balancing</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-2 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" href="/LineBalancing/AllLines">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header">
+            <h3 class="mb-0">Edit Particular</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="EditLineBalancing">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ActualLineBalancingRatio" class="form-control" />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Line Number</label>
+                            <input type="hidden" asp-for="LineId" class="form-control" />
+                            <input class="form-control" type="text" disabled name="name" value="@ViewBag.ParticularLineBalancing.Line.LineNumber" />
+                            <span asp-validation-for="LineId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Conception</label>
+                            <select asp-for="StandardOperationTimeId" class="form-control d-none" data-toggle="select">
+                                @foreach (var sot in ViewBag.StandardOperationTimes)
+                                {
+                                    if (sot.Id == @ViewBag.ParticularLineBalancing.StandardOperationTime.Id)
+                                    {
+                                        <option selected value="@sot.Id">@sot.SotModel.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@sot.Id">@sot.SotModel.Name</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="StandardOperationTimeId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Who" class="control-label"></label>
+                            <input asp-for="Who" class="form-control" />
+                            <span asp-validation-for="Who" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

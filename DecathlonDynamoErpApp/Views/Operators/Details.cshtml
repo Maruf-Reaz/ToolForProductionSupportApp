@@ -1,0 +1,116 @@
+﻿@model Dynamo.Model.Operations.Operator
+
+@{
+    ViewData["Title"] = "Operators | Details";
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Details</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Archive</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">Operators</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Details</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="Index">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header">
+            <h3 class="mb-0">Details Operator</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="LineId" class="control-label"></label>
+                        <select class="form-control d-none" data-toggle="select" disabled>
+                            <option selected>
+                                @Html.DisplayFor(model => model.Line.LineNumber)
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="SectionId" class="control-label"></label>
+                        <select class="form-control d-none" data-toggle="select" disabled>
+                            <option selected>
+                                @Html.DisplayFor(model => model.Section.Name)
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" disabled />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="IdCardNumber" class="control-label"></label>
+                        <input asp-for="IdCardNumber" class="form-control" disabled />
+                        <span asp-validation-for="IdCardNumber" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="JoiningDate" class="control-label"></label>
+                        <input value="@Html.DisplayFor(model => model.JoiningDate)" disabled class="form-control datepicker" />
+                        <span asp-validation-for="JoiningDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Address" class="control-label"></label>
+                        <input asp-for="Address" class="form-control" disabled />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber" class="control-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" disabled />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        var initial_url = $(location).attr('href');
+        var splitted_url = initial_url.split('/');
+        var new_url = document.location.origin + '/' + splitted_url[3];
+        $('.label2 ul li > a.nav-link').filter(function () {
+            return this.href == new_url;
+        }).addClass('active').parent().parent().parent().addClass('show').parent().addClass('nav-color-active');
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

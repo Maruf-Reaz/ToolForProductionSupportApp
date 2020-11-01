@@ -1,0 +1,619 @@
+﻿@{
+    ViewData["Title"] = "Conversation";
+}
+@section Css {
+    <link rel="stylesheet" href="~/css/conversation.css">
+}
+@section Sole {
+    <style>
+        .view-more {
+            cursor: pointer;
+        }
+
+        .animated {
+            -webkit-animation-duration: .5s;
+            animation-duration: .5s;
+        }
+
+        table thead th:last-child {
+            width: 150px;
+        }
+
+        #send_message {
+            width: 95%;
+        }
+
+        .table td, .table th {
+            padding: .7rem;
+        }
+
+        .card-body.members {
+            border-right: 1px solid #eee;
+        }
+
+        .chatsearch.input-group {
+            box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
+        }
+
+        .chat-count {
+            background-color: #ff3c7e;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 12px;
+            line-height: 1;
+            padding: 3px 6px;
+            position: absolute;
+            right: 20px;
+            top: -16px;
+        }
+
+        .chat-time {
+            position: absolute;
+            right: 15px;
+            width: 95px;
+            top: 5px;
+            text-align: right
+        }
+
+        .send-button {
+            right: 5%;
+            top: 1px;
+            border-radius: 2rem;
+            padding: 10px 14px;
+            box-shadow: unset;
+        }
+
+            .send-button:hover {
+                transform: none;
+                background-color: #00BCD4;
+                border-color: #00BCD4;
+            }
+
+        .att-button {
+            right: 1px;
+            top: 1px;
+            border-radius: 2rem;
+            padding: 10px 14px;
+            box-shadow: unset;
+        }
+
+        #chat-canvas {
+            margin-right: 2.5rem;
+        }
+
+        .message-body {
+            height: 415px;
+            right: -15px;
+        }
+
+            .message-body.scrollbar-inner .scroll-element.scroll-y {
+                width: 8px !important;
+            }
+
+            .message-body .scroll-element_outer .scroll-bar {
+                height: 84px !important;
+            }
+
+        #chat-member-list {
+            height: 415px;
+            margin-right: 2.5rem;
+        }
+
+        ul.list-group-flush {
+            padding-right: 1.5rem;
+        }
+
+        #chat-canvas .media-comment:last-child .media-body {
+            margin-bottom: 5rem;
+        }
+
+        .card-body.members.pr-0, .card-body.members.pr-0 ul > li {
+            background: #f8f9fe;
+        }
+
+        .navbar-search .focused .input-group .form-control {
+            width: 280px;
+        }
+
+
+        .w-80 {
+            width: 80%;
+        }
+
+        .att-file {
+            opacity: 0.0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .att-file {
+            opacity: 0.0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .receiver img {
+            position: absolute;
+            right: 3rem;
+        }
+
+        .receiver .media-comment-text {
+            margin-left: 1.5rem;
+            border-top-left-radius: 0.4375rem;
+            background-color: #0183FC;
+            color: #fff;
+        }
+
+            .receiver .media-comment-text h6 {
+                color: #ddd;
+            }
+
+        .sender .media-comment-text {
+            background-color: #484a5e;
+        }
+
+            .sender .media-comment-text h6 {
+                color: #ddd;
+            }
+
+            .sender .media-comment-text p {
+                color: #fff;
+            }
+
+        .chat_user {
+            cursor: pointer;
+        }
+
+        .receiver {
+            width: 90%;
+            float: right;
+        }
+
+        .sender {
+            width: 90%;
+            float: left;
+        }
+
+        .media-comment:hover .media-comment-avatar {
+            transform: none;
+        }
+
+        .media-comment {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Conversations</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">App</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Conversations</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt--6">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="card w-100 conversation">
+                <div class="row">
+                    <div class="col-5 pr-0">
+                        <div class="card-header background-dark">
+                            <h5 class="h3 mb-0">Recent</h5>
+                        </div>
+                        <div class="card-body members pr-0">
+                            <ul class="navbar-search navbar-search-dark form-inline pl-0 mb-4">
+                                <li class="form-group mb-0">
+                                    <div class="input-group input-group-alternative input-group-merge search-dark">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        </div>
+                                        <input id="conversation-search" class="form-control" placeholder="Search" type="text">
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="scrollbar-inner">
+                                <ul id="chat-member-list" class="list-group list-group-flush list mb--3"></ul>
+                                <input type="hidden" class="send_to_id" id="send_to_id" name="name" value="@ViewBag.LastChatUser.UserId" />
+                                <input type="hidden" class="current_user" id="current_user" name="name" value="@ViewBag.CurrentUser" />
+                            </div>
+                        </div>
+                        <div class="card-footer">
+
+                        </div>
+                    </div>
+                    <div class="col-7 pl-0 background-dark">
+                        <div class="card-header background-dark">
+                            <h5 class="h3 mb-0" id="header_name"> @ViewBag.LastChatUser.UserName</h5>
+                        </div>
+                        <div class="card-body background">
+                            <div class="scrollbar-inner message-body" id="message-body" style="overflow:scroll">
+                                <div class="text-center mb-4 view-more">
+                                    <span class="small" id="allChats">Click to see more...</span>
+                                </div>
+                                <div id="chat-canvas">
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="media align-items-center" id="chat-sender">
+                                @if (ViewBag.LastChatUser.PhotoName.ToLower() == "no file")
+                                {
+                                    <img alt="..." class="avatar avatar-lg rounded-circle mr-4"
+                                         src="~/img/svg/user-profiles.png">
+                                }
+                                else
+                                {
+                                    <img alt="..." class="avatar avatar-lg rounded-circle mr-4"
+                                         src="~/files/user_profiles/@ViewBag.LastChatUser.PhotoName">
+                                }
+                                <div class="media-body position-relative">
+                                    <input placeholder="Type something to send..." type="text" id="send_message" class="form-control rounded-pill" name="name" value="" autocomplete="off" />
+                                    <button class="btn btn-primary position-absolute send-button"><span class="fa fa-paper-plane"></span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $("#conversation-search").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#chat-member-list li").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        var messageBody = document.querySelector('#message-body');
+        //messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+
+        $(function () {
+            var send_to_id = $("#send_to_id").val();
+            var current_user = $("#current_user").val();
+            var url = '@Url.Action("GetChats", "Chat")';
+            $.when(
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: url,
+                    data: {
+                        otherUserId: send_to_id,
+                    },
+                    cache: false,
+                    success: function (result) {
+                        $("#chat-canvas").empty();
+                        $.each(result, function (index, value) {
+                            var chatSide = "sender";
+                            if (value.sentBy == current_user) {
+                                chatSide = "receiver";
+                            }
+                            $("#chat-canvas").append('<div class="media media-comment ' + chatSide + '">'
+                                + ' <img alt="..." class="avatar avatar-lg media-comment-avatar rounded-circle"  src="/img/svg/running.svg">'
+                                + ' <div class="media-body"> <div class="media-comment-text "> <h6 class="h5 mt-0">' + value.sentByUserName + '</h6><p class="text-sm lh-160"> ' + value.message + ''
+                                + ' </p> </div> </div >'
+                            );
+                        });
+                    }
+                })).then(function () { // location.reload();
+                    updateUsers();
+                    getChatNumber();
+                });
+
+            $('.send-button').on('click', function () {
+                var send_to_id = $("#send_to_id").val();
+                var send_message = $("#send_message").val();
+                if (send_message != "") {
+                    var url = '@Url.Action("AddMessage", "Chat")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            sendToId: send_to_id,
+                            messageBody: send_message,
+                        },
+                        cache: false,
+                        success: function (result) {
+                            connection.invoke("SendMessage").catch(function (err) {
+                                return console.error(err.toString());
+                            });
+                            connection.invoke("Send").catch(function (err) {
+                                return console.error(err.toString());
+                            });
+                            connectionStart();
+                        }
+                    });
+                }
+
+                $('#send_message').val('');
+                $('#send_message').focus();
+
+                //$('#chat-member-list li:first-child .chat_user').click();
+
+                $("#message-body").animate({
+                    scrollTop: $('#message-body')[0].scrollHeight - $('#message-body')[0].clientHeight
+                }, 300);
+
+                //$('#message-body').scrollTop($('#message-body')[0].scrollHeight)
+            });
+
+
+            $('#allChats').on('click', function () {
+                var send_to_id = $("#send_to_id").val();
+                var current_user = $("#current_user").val();
+                var url = '@Url.Action("GetAllChats", "Chat")';
+
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: url,
+                    data: {
+                        otherUserId: send_to_id,
+                    },
+                    cache: false,
+                    success: function (result) {
+                        $("#chat-canvas").empty();
+
+                        $.each(result, function (index, value) {
+                            var chatSide ="sender";
+                            if (value.sentBy==current_user) {
+                                chatSide = "receiver";
+                            }
+
+                            $("#chat-canvas").append('<div class="media media-comment animated fadeInUp ' + chatSide + '">'
+                                + ' <img alt="..." class="avatar avatar-lg media-comment-avatar rounded-circle"  src="/img/svg/running.svg">'
+                                + ' <div class="media-body"> <div class="media-comment-text "> <h6 class="h5 mt-0">' + value.sentByUserName + '</h6><p class="text-sm lh-160"> ' + value.message + ''
+                                +' </p> </div> </div >'
+                            );
+                        });
+                    }
+                });
+            });
+
+            function getChatNumber() {
+                 var url = '@Url.Action("GetChatNumber", "Chat")';
+                $.ajax({
+                    type: "GET",
+                    dataType: 'json',
+                    url: url,
+                    success: function (result) {
+                        document.getElementById("chat_count").textContent = result;
+                    }
+                });
+            }
+
+            function getChats() {
+                var send_to_id = $("#send_to_id").val();
+                var current_user = $("#current_user").val();
+                var url = '@Url.Action("GetChats", "Chat")';
+
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: url,
+                    data: {
+                        otherUserId: send_to_id,
+                    },
+                    cache: false,
+                    success: function (result) {
+                        $("#chat-canvas").empty();
+
+                        $.each(result, function (index, value) {
+                            var chatSide ="sender";
+                            if (value.sentBy==current_user) {
+                                chatSide = "receiver";
+                            }
+
+                            $("#chat-canvas").append('<div class="media media-comment animated fadeInUp ' + chatSide + '">'
+                                + ' <img alt="..." class="avatar avatar-lg media-comment-avatar rounded-circle"  src="/img/svg/running.svg">'
+                                + ' <div class="media-body"> <div class="media-comment-text "> <h6 class="h5 mt-0">' + value.sentByUserName + '</h6><p class="text-sm lh-160"> ' + value.message + ''
+                                +' </p> </div> </div >'
+                            );
+                        });
+
+                    }
+                });
+            }
+
+            function updateUsers() {
+                var url = '@Url.Action("UpdateUsers", "Chat")';
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: url,
+                    data: {
+                    },
+                    cache: false,
+                    success: function (result) {
+
+                        $("#chat-member-list").empty();
+                        $.each(result, function (index, value) {
+                            var chatClass = "";
+                            var chatNumber = "";
+                            var chatTime = "";
+
+                            if (value.unReadChatNumber != 0) {
+                                chatClass = "counter chat-count";
+                                chatNumber = value.unReadChatNumber;
+                             }
+                            if (value.lastChatTime != null) {
+                                var str = value.lastChatTime;
+                                var chatDate = new Date(str);
+                                var chatDay = chatDate.getDate();
+                                var chatMonth = chatDate.getMonth();
+                                var chatYear = chatDate.getFullYear();
+                                var chatHour = chatDate.getHours();
+                                var chatMinute = chatDate.getMinutes();
+
+                                var nowDate = new Date((Date.now()));
+                                var nowDay = nowDate.getDate();
+                                var nowMonth = nowDate.getMonth();
+                                var nowYear = nowDate.getFullYear();
+                                var nowHour = nowDate.getHours();
+                                var nowMinute = nowDate.getMinutes();
+                                if (chatDay == nowDay && chatMonth == nowMonth && chatYear == nowYear) {
+
+                                    if (chatHour == nowHour) {
+
+                                        if (chatMinute != nowMinute) {
+                                            var minute = eval(nowMinute - chatMinute);
+                                            var showTime = minute + " minutes ago";
+                                        }
+
+                                        else {
+                                            showTime = "just now";
+                                        }
+                                    }
+                                    else if (chatHour == nowHour - 1) {
+                                        var temp = 60 - chatMinute + nowMinute;
+                                             if (temp < 60) {
+                                                 var showTime = temp + " minutes ago";
+                                        }
+
+                                        else {
+                                            var showTime = " 1 hour ago";
+
+                                        }
+                                    }
+                                    else {
+                                        var hour = eval(nowHour - chatHour);
+                                        var showTime = hour + " hours ago";
+                                    }
+                                }
+                                else if (chatDay == nowDay-1 && chatMonth == nowMonth && chatYear == nowYear) {
+                                    var showTime = "yesterday";
+
+                                }
+                                else {
+                                    var showTime = chatDate;
+                                }
+
+                                chatTime = showTime;
+                            }
+
+                            $("#chat-member-list").append('<li class="list-group-item px-0" > <div class="row align-items-center chat_user"> '
+                                 + '<input type = "hidden" class= "send_to_user_id" id = "send_to_user_id" name = "name" value = "' + value.userId + '" /> '
+                                 + '  <div class="col-auto">  <a href="#" class="avatar rounded-circle"> <img alt="Image placeholder" src="/img/svg/running.svg"> </a> </div>  <div class="col ml--2">'
+                                 + '<h4 class="mb-0">' + value.userName + ' </h4></div>  <div class="col-auto"><span class="' + chatClass + '">' + chatNumber + '</span><span '
+                                 + 'class="small chat-time text-gray-50">' + chatTime + '</span> </div> </div></li>'
+                            );
+                        });
+
+                        $('.chat_user').on('click', function () {
+                            setTimeout(goToBottom, 500);
+                            var send_to_user_id = $(this).closest("div").find(".send_to_user_id").val();
+                            $("#send_to_id").val(send_to_user_id);
+                            var send_to_id = $("#send_to_id").val();
+                            var url = '@Url.Action("GetSendToUserName", "Chat")';
+                            $.ajax({
+                                type: "POST",
+                                dataType: 'json',
+                                url: url,
+                                data: {
+                                    sendToId: send_to_id,
+                                },
+                                cache: false,
+                                success: function (result) {
+                                    $("#header_name").text(result.userName);
+                                    //getChats();
+                                    //getChatNumber();
+                                    var send_to_id = $("#send_to_id").val();
+                                    var current_user = $("#current_user").val();
+                                    var url = '@Url.Action("GetChats", "Chat")';
+                                    $.when(
+                                        $.ajax({
+                                            type: "POST",
+                                            dataType: 'json',
+                                            url: url,
+                                            data: {
+                                                otherUserId: send_to_id,
+                                            },
+                                            cache: false,
+                                            success: function (result) {
+                                                $("#chat-canvas").empty();
+                                                $.each(result, function (index, value) {
+                                                    var chatSide = "sender";
+                                                    if (value.sentBy == current_user) {
+                                                        chatSide = "receiver";
+                                                    }
+                                                    $("#chat-canvas").append('<div class="media media-comment ' + chatSide + '">'
+                                                        + ' <img alt="..." class="avatar avatar-lg media-comment-avatar rounded-circle"  src="/img/svg/running.svg">'
+                                                        + ' <div class="media-body"> <div class="media-comment-text "> <h6 class="h5 mt-0">' + value.sentByUserName + '</h6><p class="text-sm lh-160"> ' + value.message + ''
+                                                        + ' </p> </div> </div >'
+                                                    );
+                                                });
+                                            }
+
+                                        })).then(function () { // location.reload();
+                                        updateUsers();
+                                        getChatNumber();
+                                        });
+                                }
+                            });
+                        });
+                     }
+                });
+            }
+
+            var connection = new signalR.HubConnectionBuilder().withUrl("/signalServer").build();
+            connection.on("ReceiveMessage", function (user, message) {
+                getChats();
+                updateUsers();
+                getChatNumber();
+            });
+            connection.start().then(function () {
+
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+        });
+
+        document.addEventListener("keyup", function (e) {
+            var key = e.which || e.keyCode;
+            switch (key) {
+                //enter key
+                case 13:
+                    $('.send-button').click();
+                    break;
+            }
+        });
+
+        $(document).ready(function () {
+            setTimeout(goToBottom, 500);
+        });
+
+        function goToBottom() {
+            $("#message-body").animate({
+                scrollTop: $('#message-body')[0].scrollHeight - $('#message-body')[0].clientHeight
+            }, 300);
+        }
+    </script>
+}

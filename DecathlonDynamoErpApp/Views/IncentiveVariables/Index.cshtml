@@ -1,0 +1,435 @@
+﻿@model IEnumerable<Dynamo.Model.Incentives.IncentiveVariable>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+}
+
+@{
+    ViewData["Title"] = "Incentive Variables | Index";
+}
+
+@section Css {
+    @{await Html.RenderPartialAsync("_DataTablesCssPartial");}
+}
+
+@section Sole {
+    <style>
+        .td-details {
+            width: 50% !important
+        }
+        .card .table td {
+            padding-top: .2rem !important;
+            padding-bottom: .2rem !important;
+            vertical-align: middle;
+        }
+
+        .card .table th {
+            text-align: center;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Incentive Variables</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Domain</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Incentive Variables</li>
+                        </ol>
+                    </nav>
+                </div>
+                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                  await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                  await UserManager.IsInRoleAsync(user, "KSIUserOfArchive") || await UserManager.IsInRoleAsync(user, "YSSUserOfArchive") || await UserManager.IsInRoleAsync(user, "MAFUserOfArchive") ||
+                  await UserManager.IsInRoleAsync(user, "RFLUserOfArchive") || await UserManager.IsInRoleAsync(user, "APEXUserOfArchive") || await UserManager.IsInRoleAsync(user, "EDISONUserOfArchive"))
+                {
+                    <div class="col-lg-6 col-5 text-right">
+                        <a class="btn btn-sm btn-neutral" asp-action="Create">New</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card animated fadeIn">
+                <div class="card-header py-2">
+                    <h3 class="mb-0">Incentive Variable</h3>
+                </div>
+                <div class="card-body px-0 pb-2 pt-3">
+                    <table class="table align-items-center table-hover table-striped table-bordered" id="test-registers"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div class="container-fluid mt--6">
+        <div class="row">
+            <div class="col">
+                <div class="card animated fadeIn">
+                    <div class="card-header">
+                        <h3 class="mb-0">Incentive Variable</h3>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-hover table-striped table-bordered" id="datatable-basic">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.Name)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.FullName)
+                                        </th>
+                                        <th class="text-center">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Name)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.FullName)
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    @if (
+        await UserManager.IsInRoleAsync(user, "SuperAdmin") ||
+        await UserManager.IsInRoleAsync(user, "KSIAdmin") ||
+        await UserManager.IsInRoleAsync(user, "YSSADMIN") ||
+        await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+        await UserManager.IsInRoleAsync(user, "RFLAdmin") ||
+        await UserManager.IsInRoleAsync(user, "APEXAdmin") ||
+        await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+        await UserManager.IsInRoleAsync(user, "KSIUserOfArchive") ||
+        await UserManager.IsInRoleAsync(user, "YSSUserOfArchive") ||
+        await UserManager.IsInRoleAsync(user, "MAFUserOfArchive") ||
+        await UserManager.IsInRoleAsync(user, "RFLUserOfArchive") ||
+        await UserManager.IsInRoleAsync(user, "APEXUserOfArchive") ||
+        await UserManager.IsInRoleAsync(user, "EDISONUserOfArchive"))
+                                                    {
+                                                        <a class="btn btn-default btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                                    }
+                                                    @if (
+        await UserManager.IsInRoleAsync(user, "SuperAdmin") ||
+        await UserManager.IsInRoleAsync(user, "KSIAdmin") ||
+        await UserManager.IsInRoleAsync(user, "YSSADMIN") ||
+        await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+        await UserManager.IsInRoleAsync(user, "RFLAdmin") ||
+        await UserManager.IsInRoleAsync(user, "APEXAdmin") ||
+        await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                                    {
+                                                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_DataTablesJsPartial");}
+    @if (
+await UserManager.IsInRoleAsync(user, "SuperAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIAdmin") ||
+await UserManager.IsInRoleAsync(user, "YSSADMIN") ||
+await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") ||
+await UserManager.IsInRoleAsync(user, "APEXAdmin") ||
+await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfArchive") ||
+await UserManager.IsInRoleAsync(user, "YSSUserOfArchive") ||
+await UserManager.IsInRoleAsync(user, "MAFUserOfArchive") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfArchive") ||
+await UserManager.IsInRoleAsync(user, "APEXUserOfArchive") ||
+await UserManager.IsInRoleAsync(user, "EDISONUserOfArchive")
+)
+    {
+
+        @if (
+await UserManager.IsInRoleAsync(user, "SuperAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIAdmin") ||
+await UserManager.IsInRoleAsync(user, "YSSADMIN") ||
+await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") ||
+await UserManager.IsInRoleAsync(user, "APEXAdmin") ||
+await UserManager.IsInRoleAsync(user, "EDISONAdmin")
+)
+
+        {
+            <script type="text/javascript">
+                $("#test-registers").DataTable({
+                    initComplete: function (settings, json) {
+                        $("table thead").addClass("thead-light");
+                        $("table").addClass("border-left-0 border-right-0");
+                        $(".dt-bootstrap4 > .row:nth-child(2)").addClass("table-responsive-on-hover mx-0");
+                        $(".dt-bootstrap4 > .row:nth-child(2) > .col-sm-12").addClass("px-0");
+                    },
+                    dom: "<'row mx-0 before-table-responsive'<'col-sm-12 col-md-8 px-lg-0'B<'d-inline-flex'l>><'col-sm-12 col-md-4'f>>" +
+                        "<'row mx-0'<'col-md-6'><'col-md-6'>>" +
+                        "<'row mx-0 table-responsive-on-hover'<'col-md-12 px-0'tr>><'row after-table-responsive'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                    colReorder: {
+                        allowReorder: !0
+                    },
+                    responsive: !0,
+                    //scrollX: !0,
+                    order: [],
+                    language: {
+                        paginate: {
+                            previous: "<i class='fas fa-angle-left'>",
+                            next: "<i class='fas fa-angle-right'>",
+                        }
+                    },
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    autoWidth: !1,
+                    stateSave: !0,
+                    stateSaveParams: function (settings, data) {
+                        delete data.order;
+                    },
+                    processing: !0,
+                    serverSide: !0,
+                    paging: true,
+                    searching: { regex: true },
+                    ajax: {
+                        url: "/IncentiveVariables/LoadTable",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        }
+                    },
+                    columns: [
+                        {
+                            title: "Name",
+                            data: "name",
+                        },
+                        {
+                            title: "Full Name",
+                            data: "fullName"
+                        },
+                        {
+                            title: "Action",
+                            data: "id",
+                            className: "text-center optionActions",
+                            render: function (data, type, row, meta) {
+                                return '<div class="btn-group">' +
+                                    '<a class="btn btn-default btn-sm" href="/IncentiveVariables/Edit/' + data + '">Edit</a>' +
+                                    '<a class="btn btn-danger btn-sm" href="/IncentiveVariables/Delete/' + data + '">Delete</a>' +
+                                    '</div>';
+                            }
+                        }
+                    ],
+                    columnDefs: [
+                        //{ className: "my_class", "targets": [0] },
+                        { targets: "no-sort", orderable: false },
+                        { targets: "no-search", searchable: false },
+                        {
+                            targets: "trim",
+                            render: function (data, type, full, meta) {
+                                if (type === "display") {
+                                    data = strtrunc(data, 10);
+                                }
+
+                                return data;
+                            }
+                        },
+                        { targets: "date-type", type: "date-eu" },
+                        //{ "searchable": false, "targets": [-1,] },
+                        //{ "orderable": false, "targets": [-1,] },
+
+                    ],
+                });
+            </script>
+        }
+
+        else
+        {
+            <script type="text/javascript">
+                $("#test-registers").DataTable({
+                    initComplete: function (settings, json) {
+                        $("table thead").addClass("thead-light");
+                        $("table").addClass("border-left-0 border-right-0");
+                        $(".dt-bootstrap4 > .row:nth-child(2)").addClass("table-responsive-on-hover mx-0");
+                        $(".dt-bootstrap4 > .row:nth-child(2) > .col-sm-12").addClass("px-0");
+                    },
+                    dom: "<'row mx-0 before-table-responsive'<'col-sm-12 col-md-8 px-lg-0'B<'d-inline-flex'l>><'col-sm-12 col-md-4'f>>" +
+                        "<'row mx-0'<'col-md-6'><'col-md-6'>>" +
+                        "<'row mx-0 table-responsive-on-hover'<'col-md-12 px-0'tr>><'row after-table-responsive'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                    colReorder: {
+                        allowReorder: !0
+                    },
+                    responsive: !0,
+                    //scrollX: !0,
+                    order: [],
+                    language: {
+                        paginate: {
+                            previous: "<i class='fas fa-angle-left'>",
+                            next: "<i class='fas fa-angle-right'>",
+                        }
+                    },
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    autoWidth: !1,
+                    stateSave: !0,
+                    stateSaveParams: function (settings, data) {
+                        delete data.order;
+                    },
+                    processing: !0,
+                    serverSide: !0,
+                    paging: true,
+                    searching: { regex: true },
+                    ajax: {
+                        url: "/IncentiveVariables/LoadTable",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        }
+                    },
+                    columns: [
+                        {
+                            title: "Name",
+                            data: "name",
+                        },
+                        {
+                            title: "Full Name",
+                            data: "fullName"
+                        },
+                        {
+                            title: "Action",
+                            data: "id",
+                            className: "text-center optionActions",
+                            render: function (data, type, row, meta) {
+                                return '<div class="btn-group">' +
+                                    '<a class="btn btn-default btn-sm" href="/IncentiveVariables/Edit/' + data + '">Edit</a>' +
+                                    '</div>';
+                            }
+                        }
+                    ],
+                    columnDefs: [
+                        //{ className: "my_class", "targets": [0] },
+                        { targets: "no-sort", orderable: false },
+                        { targets: "no-search", searchable: false },
+                        {
+                            targets: "trim",
+                            render: function (data, type, full, meta) {
+                                if (type === "display") {
+                                    data = strtrunc(data, 10);
+                                }
+
+                                return data;
+                            }
+                        },
+                        { targets: "date-type", type: "date-eu" },
+                        //{ "searchable": false, "targets": [-1,] },
+                        //{ "orderable": false, "targets": [-1,] },
+
+                    ],
+                });
+            </script>
+        }
+    }
+
+    else
+    {
+        <script type="text/javascript">
+            $("#test-registers").DataTable({
+                initComplete: function (settings, json) {
+                    $("table thead").addClass("thead-light");
+                    $("table").addClass("border-left-0 border-right-0");
+                    $(".dt-bootstrap4 > .row:nth-child(2)").addClass("table-responsive-on-hover mx-0");
+                    $(".dt-bootstrap4 > .row:nth-child(2) > .col-sm-12").addClass("px-0");
+                },
+                dom: "<'row mx-0 before-table-responsive'<'col-sm-12 col-md-8 px-lg-0'B<'d-inline-flex'l>><'col-sm-12 col-md-4'f>>" +
+                    "<'row mx-0'<'col-md-6'><'col-md-6'>>" +
+                    "<'row mx-0 table-responsive-on-hover'<'col-md-12 px-0'tr>><'row after-table-responsive'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                colReorder: {
+                    allowReorder: !0
+                },
+                responsive: !0,
+                //scrollX: !0,
+                order: [],
+                language: {
+                    paginate: {
+                        previous: "<i class='fas fa-angle-left'>",
+                        next: "<i class='fas fa-angle-right'>",
+                    }
+                },
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                autoWidth: !1,
+                stateSave: !0,
+                stateSaveParams: function (settings, data) {
+                    delete data.order;
+                },
+                processing: !0,
+                serverSide: !0,
+                paging: true,
+                searching: { regex: true },
+                ajax: {
+                    url: "/IncentiveVariables/LoadTable",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: function (d) {
+                        return JSON.stringify(d);
+                    }
+                },
+                columns: [
+                    {
+                        title: "Name",
+                        data: "name",
+                    },
+                    {
+                        title: "Full Name",
+                        data: "fullName"
+                    },
+                ],
+                columnDefs: [
+                    //{ className: "my_class", "targets": [0] },
+                    { targets: "no-sort", orderable: false },
+                    { targets: "no-search", searchable: false },
+                    {
+                        targets: "trim",
+                        render: function (data, type, full, meta) {
+                            if (type === "display") {
+                                data = strtrunc(data, 10);
+                            }
+
+                            return data;
+                        }
+                    },
+                    { targets: "date-type", type: "date-eu" },
+                    //{ "searchable": false, "targets": [-1,] },
+                    //{ "orderable": false, "targets": [-1,] },
+
+                ],
+            });
+        </script>
+    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

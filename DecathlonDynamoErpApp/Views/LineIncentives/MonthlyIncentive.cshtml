@@ -1,0 +1,730 @@
+﻿@model IEnumerable<Dynamo.Model.Incentives.ViewModels.LineIncentiveViewModel>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+}
+@{
+    ViewData["Title"] = "Monthly Incentive";
+}
+
+@section Sole {
+    <link href="~/css/incentive.css" rel="stylesheet" />
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+}
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Line Incentive</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Incentive</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">Line Incentive</a></li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header border-bottom-0 py-2">
+            <h3 class="mb-0">Line Incentive</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                @*Operator information table*@
+                <table class="table table-classic table-bordered table-hover table-striped">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center font-weight-bold" colspan="4">
+                                Incentive Line :
+                                <span class="text-lighter font-weight-bold">@ViewBag.Line.LineNumber</span>
+                                @if (ViewBag.MonthlyVariableValues.Count != 0)
+                                {
+                                    @foreach (var monthlyVariableValue in ViewBag.MonthlyVariableValues)
+                                    {
+                                        <input type="hidden" class="lineVariableId" value="@monthlyVariableValue.IncentiveVariable.Id" />
+                                        <input type="hidden" class="lineVariable" value="@monthlyVariableValue.Value" />
+                                    }
+                                }
+                                <input type="hidden" id="lineId" name="lineId" class="" value="@ViewBag.Line.Id" />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="shipInformationTbody">
+                        <tr>
+                            <td>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="d-flex">
+                                                <a href="#" id="prevButton" class="btn-lg" value="Previous"
+                                                   data-original-title="Previous Month">
+                                                    <i class="fa fa-angle-double-left fa-lg text-default"></i>
+                                                </a>
+
+                                                <input type="hidden" id="prev_month"
+                                                       value="@ViewBag.Date.AddMonths(-1).ToString("MM-yyyy")">
+                                                <!--Month-->
+                                                <!--Dates-->
+                                                <input id="monthpicker" name="monthpicker"
+                                                       class="docs-date monthpicker form-control text-center" type="text"
+                                                       value="@ViewBag.Date.ToString("MM-yyyy")"
+                                                       autocomplete="off">
+
+
+                                                <!--Next Button-->
+                                                <a href="#" id="nextButton" class="btn-lg" value="Next"
+                                                   data-original-title="Next Month">
+                                                    <i class="fa fa-angle-double-right fa-lg text-default"></i>
+                                                </a>
+
+                                                <input type="hidden" id="next_month"
+                                                       value="@ViewBag.Date.AddMonths(1).ToString("MM-yyyy")">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <select id="lineSelect" class="form-control d-none" data-toggle="select">
+                                                @foreach (var line in ViewBag.Lines)
+                                                {
+                                                    if (line.Id == ViewBag.Line.Id)
+                                                    {
+                                                        <option selected value="@line.Id">@line.LineNumber</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@line.Id">@line.LineNumber</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <input type="button" id="showReportButton" class="btn btn-primary" name="date" value="Show Report" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                @if (ViewBag.MonthlyVariableValues.Count != 0)
+                {
+                    int total = 0;
+                    int rowCount = 1;
+                    <table id="" class="table table-classic table-bordered table-hover table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th colspan="15" class="text-center">Incentive Variable Values</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <table id="" class="table table-classic table-bordered table-hover table-striped">
+                        <thead class="thead-custom">
+                            <tr>
+                                <th class="text-center">Sl</th>
+                                <th class="text-center">Variable Name</th>
+                                <th class="text-center">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var monthlyVariableValue in ViewBag.MonthlyVariableValues)
+                            {
+                                total += monthlyVariableValue.Value;
+                                <tr>
+                                    <input type="hidden" class="lineVariableId" value="@monthlyVariableValue.IncentiveVariable.Id" />
+                                    <input type="hidden" class="lineVariable" value="@monthlyVariableValue.Value" />
+                                    <td class="text-center">@rowCount @{ rowCount++;}</td>
+                                    <td>@monthlyVariableValue.IncentiveVariable.Name</td>
+                                    <td class="text-center">@monthlyVariableValue.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="font-weight-bold">
+                                <td colspan="2" class="text-right">Total</td>
+                                <td class="text-center">@total</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                }
+
+
+                @*First Table*@
+                <table id="mainTable" class="table table-classic table-bordered table-hover table-striped">
+                    <thead class="thead-light">
+                        <tr>
+                            <th colspan="15" class="text-center">Incentive of @ViewBag.Date.ToString("Y")</th>
+                        </tr>
+                    </thead>
+                </table>
+                @if (ViewBag.MonthlyVariableValues.Count == 0)
+                {
+                    <div class="col-lg-12">
+                        <div class="text-center my-2">
+                            <a class="badge badge-danger" target="_blank" href="/MonthlyVariableValues/Assign/@ViewBag.Line.SectionId/@ViewBag.Date.Month/@ViewBag.Date.Year">There are no incentive variable values. Click here to assign value. <i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @* --------------------------------------------------------------------------- *@
+                    <div id="allTableDiv">
+                        <div id="lineIncentiveTable">
+                            <div class="table-responsive">
+                                <table class="table table-classic table-bordered">
+                                    <thead class="thead-custom">
+                                        <tr>
+                                            @*<th>Sl</th>*@
+                                            <th class="text-center thead-date align-middle">Date</th>
+                                            @foreach (var monthlyVariableValues in ViewBag.MonthlyVariableValues)
+                                            {
+                                                <th class="text-center thead-target">Target<br /> @monthlyVariableValues.IncentiveVariable.Name</th>
+                                            }
+                                            @foreach (var monthlyVariableValues in ViewBag.MonthlyVariableValues)
+                                            {
+                                                <th class="text-center thead-achieved">Achieved<br /> @monthlyVariableValues.IncentiveVariable.Name</th>
+                                            }
+                                            @foreach (var monthlyVariableValues in ViewBag.MonthlyVariableValues)
+                                            {
+                                                <th class="text-center thead-points">Points <br /> @monthlyVariableValues.IncentiveVariable.Name</th>
+                                            }
+
+                                            <th class="text-center align-middle">Total</th>
+                                            <th class="text-center align-middle">Enable</th>
+                                            <th class="text-center align-middle">Comments</th>
+                                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                                         await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                                         await UserManager.IsInRoleAsync(user, "KSIUserOfIncentive") || await UserManager.IsInRoleAsync(user, "YSSUserOfIncentive") || await UserManager.IsInRoleAsync(user, "MAFUserOfIncentive") ||
+                                         await UserManager.IsInRoleAsync(user, "RFLUserOfIncentive") || await UserManager.IsInRoleAsync(user, "APEXUserOfIncentive") || await UserManager.IsInRoleAsync(user, "EDISONUserOfIncentive"))
+                                            {
+                                                <th class="text-center align-middle">Action</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody id="skillMatrixTbody">
+                                        @foreach (var lineIncentive in Model)
+                                        {
+                                            <tr>
+                                                @if (lineIncentive.LineIncentive != null)
+                                                {
+                                                    <input type="hidden" class="rowId form-control" value="@lineIncentive.LineIncentive.Id" />
+                                                    <td class="rowDate bg-yellow">@lineIncentive.DateString</td>
+                                                    @if (lineIncentive.TargetValues != null)
+                                                    {
+                                                        @foreach (var targetValues in lineIncentive.TargetValues)
+                                                        {
+                                                            <td class="rowTarget-td"><input disabled type="number" class="rowTarget bg-target text-dark form-control" value="@targetValues.Value" /></td>
+                                                        }
+                                                    }
+                                                    @if (lineIncentive.AchievedValues != null)
+                                                    {
+                                                        @foreach (var achievedValues in lineIncentive.AchievedValues)
+                                                        {
+                                                            <td class="rowAchieved-td"><input disabled type="number" class="rowAchieved bg-yellow text-dark form-control" value="@achievedValues.Value" /></td>
+                                                        }
+                                                    }
+                                                    @if (lineIncentive.PointValues != null)
+                                                    {
+                                                        @foreach (var pointValues in lineIncentive.PointValues)
+                                                        {
+                                                            <td class="rowPoint-td"><input disabled type="number" class="rowPoint bg-points text-white form-control" value="@pointValues.Value" /></td>
+                                                        }
+                                                    }
+
+                                                    <td><input disabled type="number" class="rowTotal form-control bg-danger text-white" value="@lineIncentive.LineIncentive.Total" /></td>
+
+                                                    <td>
+                                                        <label class="custom-toggle custom-toggle-success m-auto">
+                                                            <input disabled class="rowEnable" type="checkbox" @(lineIncentive.LineIncentive.Enable ? "checked" : " ")>
+                                                            <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                                        </label>
+                                                    </td>
+                                                    @if (lineIncentive.LineIncentive.Comments != null)
+                                                    {
+                                                        <td><input disabled type="text" class="rowComment bg-comments text-white form-control" value="@lineIncentive.LineIncentive.Comments" /></td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td><input disabled type="text" class="rowComment bg-comments text-white form-control" value="" /></td>
+                                                    }
+
+                                                    <td>
+                                                        <div class="btn-group actionGroup">
+                                                            <input disabled type="button" class="btn btn-default btn-sm rowCalculateBtn" value="Calculate" />
+                                                            <input disabled type="button" class="btn btn-success btn-sm rowSaveBtn" value="Save" />
+                                                            <input type="button" class="btn btn-primary btn-sm rowEditBtn" value="Edit" />
+                                                            <input disabled type="button" class="btn btn-danger btn-sm rowDeleteBtn" value="Delete" />
+                                                        </div>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <input type="hidden" class="rowId form-control" value="-1" />
+                                                    <input type="hidden" class="rowEnable form-control" value="0" />
+                                                    <td class="rowDate bg-yellow">@lineIncentive.DateString</td>
+                                                    //Target
+                                                    @foreach (var monthlyVariableValues in ViewBag.MonthlyVariableValues)
+                                                    {
+                                                        <td class="rowTarget-td"><input type="number" class="rowTarget bg-target text-dark form-control" value="90" /></td>
+                                                    }
+                                                    //Achieved
+                                                    @foreach (var monthlyVariableValues in ViewBag.MonthlyVariableValues)
+                                                    {
+                                                        <td class="rowAchieved-td"><input type="number" class="rowAchieved bg-yellow text-dark form-control" value="" /></td>
+                                                    }
+                                                    //Point
+                                                    @foreach (var monthlyVariableValues in ViewBag.MonthlyVariableValues)
+                                                    {
+                                                        <td class="rowPoint-td"><input disabled type="number" class="rowPoint bg-points text-white form-control" value="" /></td>
+                                                    }
+
+                                                    <td><input disabled type="number" class="rowTotal bg-danger text-white form-control" value="" /></td>
+                                                    <td>
+                                                        <label class="custom-toggle custom-toggle-success m-auto">
+                                                            <input class="rowEnable" type="checkbox" checked>
+                                                            <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                                        </label>
+                                                    </td>
+                                                    <td><input type="text" class="rowComment bg-comments text-white form-control" value="" /></td>
+                                                    @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                                                 await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                                                 await UserManager.IsInRoleAsync(user, "KSIUserOfIncentive") || await UserManager.IsInRoleAsync(user, "YSSUserOfIncentive") || await UserManager.IsInRoleAsync(user, "MAFUserOfIncentive") ||
+                                                 await UserManager.IsInRoleAsync(user, "RFLUserOfIncentive") || await UserManager.IsInRoleAsync(user, "APEXUserOfIncentive") || await UserManager.IsInRoleAsync(user, "EDISONUserOfIncentive"))
+                                                    {
+                                                        <td>
+                                                            <div class="btn-group actionGroup">
+                                                                <input type="button" class="btn btn-default btn-sm rowCalculateBtn" value="Calculate" />
+                                                                <input type="button" class="btn btn-success btn-sm rowSaveBtn" value="Save" />
+                                                                <input type="button" class="btn btn-primary btn-sm rowEditBtn" value="Edit" />
+                                                                @*<input disabled type="button" class="btn btn-danger btn-sm rowDeleteBtn" value="Delete" />*@
+                                                            </div>
+                                                        </td>
+                                                    }
+
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="@(ViewBag.MonthlyVariableValues.Count*3 +1)" class="text-right">Average Point</td>
+                                            <td id="totalPoint" class="text-center">@ViewBag.AverageTotal</td>
+                                            <td colspan="3"></td>
+                                        </tr>
+                                        @if (ViewBag.LineEarningPoint != null)
+                                        {
+                                            double earnedPoint = (ViewBag.AverageTotal - ViewBag.LineEarningPoint.TargetPoint) < 0 ? 0 : (ViewBag.AverageTotal - ViewBag.LineEarningPoint.TargetPoint);
+                                            double earnedMoney = ViewBag.LineEarningPoint.MoneyPerPoint * earnedPoint;
+                                            <tr>
+                                                <td colspan="@(ViewBag.MonthlyVariableValues.Count*3 +1)" class="text-right">Target Point</td>
+                                                <td id="targetPoint" class="text-center">@ViewBag.LineEarningPoint.TargetPoint</td>
+                                                <td colspan="3"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="@(ViewBag.MonthlyVariableValues.Count*3 +1)" class="text-right">Money Per Point</td>
+                                                <td id="moneyPerPoint" class="text-center">@ViewBag.LineEarningPoint.MoneyPerPoint</td>
+                                                <td colspan="3"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="@(ViewBag.MonthlyVariableValues.Count*3 +1)" class="text-right">Earned Point</td>
+                                                <td id="earnedPoint" class="text-center">@earnedPoint</td>
+                                                <td colspan="3"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="@(ViewBag.MonthlyVariableValues.Count*3 +1)" class="text-right">Earned Money</td>
+                                                <td id="earnedMoney" class="text-center">@earnedMoney</td>
+                                                <td colspan="3"></td>
+                                            </tr>
+                                        }
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    @* --------------------------------------------------------------------------- *@
+
+                    @* Last Table *@
+                    <table class="table table-classic table-bordered table-hover table-striped">
+                        @* Add to main table *@
+                        @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                     await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                     await UserManager.IsInRoleAsync(user, "KSIUserOfIncentive") || await UserManager.IsInRoleAsync(user, "YSSUserOfIncentive") || await UserManager.IsInRoleAsync(user, "MAFUserOfIncentive") ||
+                     await UserManager.IsInRoleAsync(user, "RFLUserOfIncentive") || await UserManager.IsInRoleAsync(user, "APEXUserOfIncentive") || await UserManager.IsInRoleAsync(user, "EDISONUserOfIncentive"))
+                        {
+                            <tfoot>
+                                <tr>
+                                    <td colspan="20" class="text-center">
+                                        <button id="saveAllBtn" class="btn btn-success">
+                                            <i class="fa fa-save mr-2"></i> Save All
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        }
+
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/sweetalert2/dist/sweetalert2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-notify/bootstrap-notify.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.monthpicker').datepicker({
+                autoclose: true,
+                setDate: new Date(),
+                format: "mm-yyyy",
+                startView: "months",
+                minViewMode: "months",
+
+            });
+            $("#showReportButton").click(function () {
+                var date = $("#monthpicker").val();
+                var lineId = $("#lineSelect :selected").val();
+                var res = date.split("-");
+                var month = res[0];
+                var year = res[1];
+                var url = '/LineIncentives/MonthlyIncentive/' + lineId + '/' + month + '/' + year;
+                $(location).attr("href", url);
+            });
+            $("#prevButton").click(function () {
+                var date = $("#prev_month").val();
+                var lineId = $("#lineId").val();
+                var res = date.split("-");
+                var month = res[0];
+                var year = res[1];
+                var url = '/LineIncentives/MonthlyIncentive/' + lineId + '/' + month + '/' + year;
+                $(location).attr("href", url);
+            });
+            $("#nextButton").click(function () {
+                var date = $("#next_month").val();
+                var lineId = $("#lineId").val();
+                var res = date.split("-");
+                var month = res[0];
+                var year = res[1];
+                var url = '/LineIncentives/MonthlyIncentive/' + lineId + '/' + month + '/' + year;
+                $(location).attr("href", url);
+            });
+            $('#sectioId').select2({
+                placeholder: 'Please Select Section'
+            });
+            $('#operationId').select2({
+                placeholder: 'Please Select'
+            });
+            $("#skillMatrixTbody").on('click', '.rowCalculateBtn', function () {
+                var row = $(this).closest('tr');
+                calculateScore(row);
+                calculateTotal();
+            });
+            $("#lineIncentiveTable").on('click', '.rowSaveBtn', function () {
+                var lineId = $('#lineId').val();
+                var row = $(this).closest('tr');
+                var rowId = row.find('.rowId').val();
+                var date = row.find('.rowDate').text();
+                var lineVariable = $(".lineVariable").toArray().map(item => item.value);
+                var rowTarget = row.find(".rowTarget").toArray().map(item => item.value);
+                var rowAchieved = row.find(".rowAchieved").toArray().map(item => item.value);
+                var rowPoint = row.find(".rowPoint").toArray().map(item => item.value);
+
+                var inputValidation = true;
+                var targets = [];
+                var achieved = [];
+                var points = [];
+
+                $.each(rowTarget, function (index, value) {
+                    if (value == "") {
+                        inputValidation = false;
+                    }
+                    targets.push({
+                        incentiveVariableId: lineVariable[index],
+                        value: value,
+                    });
+                });
+                $.each(rowAchieved, function (index, value) {
+                    if (value == "") {
+                        inputValidation = false;
+                    }
+                    achieved.push({
+                        incentiveVariableId: lineVariable[index],
+                        value: value,
+                    });
+                });
+                $.each(rowPoint, function (index, value) {
+                    if (value == "") {
+                        inputValidation = false;
+                    }
+                    points.push({
+                        incentiveVariableId: lineVariable[index],
+                        value: value,
+                    });
+                });
+                var enable = row.find('.rowEnable');
+                var comment = row.find('.rowComment').val();
+                var total = row.find('.rowTotal').val();
+
+                if (!inputValidation) {
+                    $.notify({
+                        title: 'Warning!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Fill up all the required data!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                } else {
+
+                $.when(
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("Save", "LineIncentives")',
+                        data: {
+                            data: JSON.stringify({
+                                rowId: (rowId) ? rowId : null,
+                                lineId: (lineId) ? lineId : null,
+                                date: (date) ? date : null,
+                                targetValues: (targets) ? targets : null,
+                                achievedValues: (achieved) ? achieved : null,
+                                pointValues: (points) ? points : null,
+                                enable: (enable.is(":checked")) ? true : false,
+                                comments: (comment) ? comment : null,
+                                total: (total) ? total : null,
+                            })
+                        },
+                        cache: false,
+                        success: function (objects) {
+                        if (objects) {
+                            row.find('.rowId').val(objects);
+                            row.find('.rowDeleteBtn').remove();
+                            row.find('.actionGroup').append('<input disabled type="button" class="btn btn-danger btn-sm rowDeleteBtn" value="Delete" />');
+                            row.find('input:not(.rowEditBtn)').prop('disabled', true);
+                            $.notify({
+                                title: 'Success!',
+                                icon: 'fa fa-check',
+                                html: true,
+                                message: 'Successfully Updated.'
+                            }, {
+                                    type: 'success',
+                                    animate: {
+                                        enter: 'animated fadeInDown'
+                                    },
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    spacing: 10,
+                                    z_index: 1031,
+                                    delay: 2000,
+                                    template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                });
+                        }}
+                    }),
+                ).then(function () {});
+                }
+            });
+            $("#lineIncentiveTable").on('click', '.rowEditBtn', function () {
+                var row = $(this).closest('tr');
+                row.find('input:not(.rowEditBtn):not(.rowOwePoint):not(.rowRftPoint):not(.rowAttendancePoint):not(.rowFiveSPoint):not(.rowTotal)').prop('disabled', false);
+            });
+            $("#lineIncentiveTable").on('click', '.rowDeleteBtn', function () {
+                var row = $(this).closest('tr');
+                var rowId = row.find('.rowId').val();
+                swal({
+                        title: "Are you sure?",
+                        text: "The operation will be updated",
+                        type: "warning",
+                        showCancelButton: !0,
+                        useRejections: true,
+                        buttonsStyling: !1,
+                        confirmButtonClass: "btn btn-primary",
+                        confirmButtonText: "Yes",
+                        cancelButtonClass: "btn btn-secondary"
+                    }).then(
+                        value => {
+                            $.when(
+                            $.ajax({
+                                type: "POST",
+                                dataType: 'json',
+                                url: '@Url.Action("Delete", "LineIncentives")',
+                                data: {
+                                    id: rowId
+                                },
+                                cache: false,
+                                success: function (objects) {
+                                    if (objects) {
+                                        row.find('.rowId').val("-1");
+                                        var rowTarget = row.find('.rowTarget').toArray();
+                                        var rowAchieved = row.find('.rowAchieved').toArray();
+                                        var rowPoint = row.find('.rowPoint').toArray();
+                                        $.each(rowTarget, function (index, element) {
+                                            $(element).val(95);
+                                        });
+                                        $.each(rowAchieved, function (index, element) {
+                                            $(element).val("");
+                                        });
+                                        $.each(rowPoint, function (index, element) {
+                                            $(element).val("");
+                                        });
+                                        row.find('.rowEnable').prop("checked","true");
+                                        row.find('.rowComment').val("");
+                                        row.find('.rowTotal').val("");
+                                        row.find('.rowDeleteBtn').remove();
+                                        $.notify({
+                                            title: 'Success!',
+                                            icon: 'fa fa-check',
+                                            html: true,
+                                            message: 'Successfully Deleted.'
+                                        }, {
+                                                type: 'success',
+                                                animate: {
+                                                    enter: 'animated fadeInDown'
+                                                },
+                                                placement: {
+                                                    from: "top",
+                                                    align: "center"
+                                                },
+                                                spacing: 10,
+                                                z_index: 1031,
+                                                delay: 2000,
+                                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                            });
+                                        updateRowSerialNumber();
+                                    } else {
+                                        $.notify({
+                                            title: 'Something went wrong!',
+                                            icon: 'fa fa-check',
+                                            html: true,
+                                            message: 'Not Deleted.'
+                                        }, {
+                                                type: 'danger',
+                                                animate: {
+                                                    enter: 'animated fadeInDown'
+                                                },
+                                                placement: {
+                                                    from: "top",
+                                                    align: "center"
+                                                },
+                                                spacing: 10,
+                                                z_index: 1031,
+                                                delay: 2000,
+                                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                            });
+                                    }
+                                }
+                            }),
+                            ).then(function () {
+
+                            });
+                        },
+                        dismiss => {
+                        });
+            });
+            $("#allTableDiv").on('change', '.rowTarget ', function () { calculateScore($(this).closest('tr')); calculateTotal(); });
+            $("#allTableDiv").on('change', '.rowAchieved ', function () { calculateScore($(this).closest('tr')); calculateTotal();});
+            $("#allTableDiv").on('change', '.rowEnable ', function () { calculateScore($(this).closest('tr')); calculateTotal();});
+
+            function calculateScore(row) {
+                var lineVariable = $(".lineVariable").toArray().map(item => item.value);
+                var rowTarget = row.find(".rowTarget").toArray().map(item => item.value);
+                var rowAchieved = row.find(".rowAchieved").toArray().map(item => item.value);
+                var rowPoints = row.find(".rowPoint").toArray();
+                var Total100 = 0;
+                $.each(rowPoints, function (index, rowPoint) {
+                    var point = MathUtils.roundToPrecision((eval(lineVariable[index]) * (eval(rowAchieved[index]))) / eval(rowTarget[index]), 2);
+                    if (point) {
+                        $(rowPoint).val(point);
+                        Total100 += eval(point);
+                    }
+                });
+
+                row.find('.rowTotal').val(MathUtils.roundToPrecision(Total100,2));
+            }
+
+            function calculateTotal() {
+                var targetPoint = $('#targetPoint').text();
+                var moneyPerPoint = $('#moneyPerPoint').text();
+                var rows = $(".rowId").toArray();
+                var totalPoint = 0;
+                var totalIncentive = 0;
+                var numberOfIncentive = 0;
+                $.each(rows, function (index, element) {
+                    var row = $(element).closest('tr');
+                    var rowId = row.find('.rowId').val();
+                    var enable = (row.find('.rowEnable').is(":checked")) ? true : false;
+                    var total = row.find('.rowTotal').val();
+                    if (enable && total != "" && total !=0) {
+                        totalIncentive += eval(total);
+                        numberOfIncentive++;
+                    }
+                });
+                totalPoint = MathUtils.roundToPrecision((eval(totalIncentive)) / eval(numberOfIncentive), 2);
+                var earnedPoint = (eval(totalPoint) - eval(targetPoint));
+                if (earnedPoint < 0) {
+                    earnedPoint = 0;
+                }
+                $('#totalPoint').text(totalPoint);
+                $('#earnedPoint').text(MathUtils.roundToPrecision(earnedPoint, 2));
+                $('#earnedMoney').text(MathUtils.roundToPrecision((eval(earnedPoint) * eval(moneyPerPoint)),2));
+            }
+
+            MathUtils = {
+                roundToPrecision: function (subject, precision) {
+                    return +((+subject).toFixed(precision));
+                }
+            }
+
+            function updateRowSerialNumber() {
+
+                var count = 0;
+                var rowSerials = $('#skillMatrixTbody').find(".rowSl").toArray();
+                $.each(rowSerials, function (index, value) {
+                    count += eval(1);
+                    value.innerHTML = count;
+                });
+
+            }
+
+            Date.prototype.toShortFormat = function () {
+
+                var month_names = ["Jan", "Feb", "Mar",
+                    "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep",
+                    "Oct", "Nov", "Dec"];
+
+                var day = this.getDate();
+                var month_index = this.getMonth();
+                var year = this.getFullYear();
+
+                return "" + day + " " + month_names[month_index] + " " + year;
+            }
+        });
+    </script>
+}

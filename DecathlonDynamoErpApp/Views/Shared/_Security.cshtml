@@ -1,0 +1,66 @@
+﻿@using Microsoft.AspNetCore.Identity
+<!DOCTYPE html>
+@inject SignInManager<Dynamo.Model.Common.Authentication.ApplicationUser> SignInManager
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>@ViewData["Title"] - Tool for Production Support (TPS) | Dynamo ERP</title>
+
+    <link rel="icon" href="~/img/tps/fav.png" type="image/png">
+
+    @* fonts *@
+    <link href="~/vendor/fonts/roboto/css.css" rel="stylesheet">
+    <link href="~/vendor/fonts/roboto/css300.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/vendor/nucleo/css/nucleo.css">
+    <link rel="stylesheet" href="~/vendor/fontawesome/css/all.min.css">
+
+    @* Page Plugin *@
+
+    @RenderSection("Css", required: false)
+
+    @*
+        <link rel="stylesheet" href="~/vendor/animate.css/animate.min.css">
+        <link rel="stylesheet" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+        <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+        <link rel="stylesheet" href="~/vendor/quill/dist/quill.core.css">
+        <link rel="stylesheet" href="~/vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+        <link rel="stylesheet" href="~/vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css">
+        <link rel="stylesheet" href="~/vendor/datatables.net-select-bs4/css/select.bootstrap4.min.css">
+        <link rel="stylesheet" href="~/vendor/fullcalendar/dist/fullcalendar.min.css">
+    *@
+
+    @* Style *@
+    <link rel="stylesheet" href="~/vendor/animate.css/animate.min.css">
+    <link rel="stylesheet" href="~/css/dynamo.css" type="text/css">
+    <link rel="stylesheet" href="~/css/style.css" type="text/css">
+
+    @RenderSection("Sole", required: false)
+</head>
+<body class="bg-default">
+
+    <div class="main-content" id="panel">
+
+        <partial name="_CookieConsentPartial" />
+
+        @RenderBody()
+
+        <partial name="_Footer" />
+
+    </div>
+
+    <script src="~/vendor/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/js-cookie/js.cookie.js" asp-append-version="true"></script>
+
+    @RenderSection("datetimepicker", required: false)
+
+    <script src="~/vendor/jquery.scrollbar/jquery.scrollbar.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js" asp-append-version="true"></script>
+    <script src="~/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/argon.min.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

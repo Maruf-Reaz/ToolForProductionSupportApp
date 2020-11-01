@@ -1,0 +1,127 @@
+﻿@model Dynamo.Model.Sot.ViewModels.SotModelViewModel
+
+@{
+    ViewData["Title"] = "Conceptions | Edit";
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" href="~/vendor/lightbox/lightbox.min.css">
+
+    <style>
+        .custom-file-label {
+            line-height: 1.9 !important;
+            padding-top: 8px !important;
+            color: #525f7f !important;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Edit</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Archive</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">Conceptions</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="Index">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header">
+            <h3 class="mb-0">Edit Conception</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="FactoryId" />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Dipl" class="control-label"></label>
+                            <input asp-for="Dipl" class="form-control" />
+                            <span asp-validation-for="Dipl" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="ProcessId" class="control-label"></label>
+                            <select asp-for="ProcessId" class="form-control" data-toggle="select" asp-items="ViewBag.ProcessId"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="SignSportId" class="control-label"></label>
+                            <select asp-for="SignSportId" class="form-control" data-toggle="select" asp-items="ViewBag.SignSportId"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Photo" class="control-label"></label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" asp-for="Photo" data-toggle="popover" data-html="true" data-title="Old File" data-content=" <b class='text-danger'> @Html.DisplayFor(model => model.OldPhoto)</b>">
+                                <label class="custom-file-label overflow-hidden" for="Photo">@Html.DisplayFor(model => model.OldPhoto)</label>
+                                <input type="hidden" asp-for="OldPhoto" />
+                                <span asp-validation-for="Photo" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div>
+                                <a class="example-image-link" href="~/files/sot_models/@Html.DisplayFor(model => model.OldPhoto)" data-lightbox="example-1">
+                                    <img class="d-block example-image" style="width: 100px" src="~/files/sot_models/@Html.DisplayFor(model => model.OldPhoto)" alt="..." />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/lightbox/lightbox.min.js" asp-append-version="true"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+    <script type="text/javascript">
+        var initial_url = $(location).attr('href');
+        var splitted_url = initial_url.split('/');
+        var new_url = document.location.origin + '/' + splitted_url[3];
+        $('.label2 ul li > a.nav-link').filter(function () {
+            return this.href == new_url;
+        }).addClass('active').parent().parent().parent().addClass('show').parent().addClass('nav-color-active');
+    </script>
+}

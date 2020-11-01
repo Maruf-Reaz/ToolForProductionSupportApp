@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Dynamo.Model.Common.Authentication.ApplicationRole>
+
+@{
+    ViewData["Title"] = "Roles | Index";
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables.net-select-bs4/css/select.bootstrap4.min.css">
+    <link href="~/vendor/jquery-confirm/css/jquery-confirm.css" rel="stylesheet" type="text/css" />
+}
+
+<style>
+    table thead th:last-child {
+        width: 150px;
+    }
+
+    .card .table td {
+        padding-top: .4rem !important;
+        padding-bottom: .4rem !important;
+        vertical-align: middle;
+    }
+
+    .card .table th {
+        text-align: center;
+    }
+</style>
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Roles</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Master Setup</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Roles</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="Create">New</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card animated fadeIn">
+                <div class="card-header py-2">
+                    <h3 class="mb-0">Roles</h3>
+                </div>
+                <div class="card-body px-0 pb-2 pt-3">
+                    <div class="table-responsive">
+                        <table class="table align-items-center table-hover table-striped table-bordered" id="datatable-basic">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Name)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Description)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.CreatedOn)
+                                    </th>
+                                    @*<th class="text-center">
+                                            Action
+                                        </th>*@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Description)
+                                        </td>
+                                        <td class="text-center">
+                                            @String.Format("{0:d-M-yyyy}", item.CreatedOn)
+                                        </td>
+                                        @*<td class="text-center">
+                                                <div class="btn-group">
+                                                    <a class="btn btn-default btn-sm" asp-action="Edit" asp-controller="Roles" asp-route-id="@item.Id">Edit</a>
+                                                </div>
+                                            </td>*@
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/datatables.net/js/jquery.dataTables.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons/js/dataTables.buttons.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-select/js/dataTables.select.min.js" asp-append-version="true"></script>
+
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

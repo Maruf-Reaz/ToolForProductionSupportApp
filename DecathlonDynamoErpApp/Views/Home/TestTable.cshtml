@@ -1,0 +1,170 @@
+﻿
+@{
+    ViewData["Title"] = "TestTable";
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/vendor/datatables.net-select-bs4/css/select.bootstrap4.min.css">
+}
+
+@section Sole {
+    <link href="~/css/datatable-table-responsive.css" rel="stylesheet" />
+    <style>
+        table thead th:last-child {
+            width: 150px;
+        }
+
+        .card, .footer {
+            display: none;
+        }
+
+        table.table-bordered.dataTable td:last-child,
+        table.table-bordered.dataTable td:last-child {
+            border-right-width: 1px;
+        }
+
+        table tbody td {
+            vertical-align: middle !important;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">SOT</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Domain</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Sot</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card animated fadeIn">
+                <div class="card-header">
+                    <h3 class="mb-0">Factories</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        @*<table class="display table align-items-center table-hover table-striped table-bordered" id="datatable-basic" style="width:100%">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>
+                                        th 1
+                                    </th>
+                                    <th>
+                                        th 2
+                                    </th>
+                                    <th>
+                                        th 3
+                                    </th>
+                                    <th>
+                                        th 4
+                                    </th>
+                                    <th colspan="2">
+                                        th 5
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        td 1
+                                    </td>
+                                    <td>
+                                        td 2
+                                    </td>
+                                    <td>
+                                        td 3
+                                    </td>
+                                    <td>
+                                        td 4
+                                    </td>
+                                    <td>
+                                        td 5
+                                    </td>
+                                    <td>
+                                        td 6
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>*@
+
+                        <table id="datatable-basic" class="table align-items-center table-hover table-striped table-bordered">
+                            <thead class="thead-custom">
+                                <tr>
+                                    <th>Name</th>
+                                    <th colspan="2">HR Information</th>
+                                    <th colspan="3">Contact</th>
+                                </tr>
+                                <tr>
+                                    <th class="d-none"></th>
+                                    <th class="d-none"></th>
+                                    <th class="d-none"></th>
+                                    <th class="d-none"></th>
+                                    <th class="d-none"></th>
+                                    <th class="d-none"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Tiger Nixon</td>
+                                    <td>System Architect</td>
+                                    <td>$320,800</td>
+                                    <td>Edinburgh</td>
+                                    <td>5421</td>
+                                    <td>t.nixon@datatables.net</td>
+                                </tr>
+                                <tr>
+                                    <td>Garrett Winters</td>
+                                    <td>Accountant</td>
+                                    <td>$170,750</td>
+                                    <td>Tokyo</td>
+                                    <td>8422</td>
+                                    <td>g.winters@datatables.net</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/datatables.net/js/jquery.dataTables.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-bs4/js/dataTables.bootstrap4.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons/js/dataTables.buttons.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons/js/buttons.html5.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons/js/buttons.flash.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-buttons/js/buttons.print.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/datatables.net-select/js/dataTables.select.min.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            setTimeout(showDiv, 200);
+            $('.dt-bootstrap4 .row:nth-child(3)').insertAfter('.table-responsive').addClass('dt-altered pb-4');
+            $('.dt-bootstrap4 .row:nth-child(1)').insertBefore('.table-responsive').addClass('dt-altered2 pt-4 ml-0 mr-0');
+        })
+        function showDiv() {
+            $('.card, .footer').css('display', 'block');
+        }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

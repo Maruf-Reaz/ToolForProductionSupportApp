@@ -1,0 +1,332 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject SignInManager<Dynamo.Model.Common.Authentication.ApplicationUser> SignInManager
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+@inject Dynamo.Data.ApplicationDbContext ApplicationDbContext
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+    var userProfile = ApplicationDbContext.UserProfiles.Where(m => m.ApplicationUserId == user.Id).FirstOrDefault();
+    var users = UserManager.Users.Include(m => m.UserProfile).Where(m => m.FactoryId == user.FactoryId && m.Id != "9cd7ff85-f36c-69b6-ea27-dbb23cbfb508").ToList();
+    var userName = Context.User.Identity.Name;
+}
+
+<nav class='navbar navbar-top navbar-expand navbar-dark bg-custom
+     @if (HttpContextAccessor.HttpContext.Request.Cookies["sidebarstyle"] != null) {
+                            var sidebarstyle = HttpContextAccessor.HttpContext.Request.Cookies["sidebarstyle"].ToString();
+                            if (sidebarstyle == "Regular"){ sidebarstyle = ""; @sidebarstyle }
+                            if (sidebarstyle == "Rounded"){ sidebarstyle = "radius-switch"; @sidebarstyle } }
+                else { var sidebarstyle = ""; @sidebarstyle }'>
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <form id="navbar-search-main" class='navbar-search form-inline mr-sm-3
+                  @if (HttpContextAccessor.HttpContext.Request.Cookies["theme"] != null) {
+                            var theme = HttpContextAccessor.HttpContext.Request.Cookies["theme"].ToString();
+                            if (theme == "Default"){ theme = "navbar-search-light"; @theme }
+                            if (theme == "Dark Mode"){ theme = "navbar-search-light"; @theme }
+                            if (theme == "Light Mode"){ theme = "navbar-search-dark"; @theme } }
+                else { var theme = "navbar-search-light"; @theme }'>
+                <div class="form-group mb-0">
+                    <div class="input-group input-group-alternative input-group-merge">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        </div>
+                        <input id="searchText" class="form-control" placeholder="Search" type="text">
+                    </div>
+                </div>
+                <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </form>
+
+            <ul class="navbar-nav align-items-center ml-md-auto">
+                <li class="nav-item d-xl-none">
+                    <div class="pr-3 sidenav-toggler sidenav-toggler-dark" data-action="sidenav-pin"
+                         data-target="#sidenav-main">
+                        <div class="sidenav-toggler-inner">
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item d-sm-none">
+                    <a class="nav-link" href="#" data-action="search-show" data-target="#navbar-search-main">
+                        <i class="ni ni-zoom-split-in"></i>
+                    </a>
+                </li>
+
+                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin"))
+                {
+                    if (user.FactoryId == 1)
+                    {
+                        <li class="d-none d-lg-block">
+                            <a asp-controller="Home" asp-action="SuperAdminIndex">
+                                <div class="card mb-0 bg-white mr-2">
+                                    <img asp-append-version="true" data-toggle="popover" data-content="KSI" style="width: 168px;" class="p-2" src="~/img/factory/top/images.png" alt="" />
+                                </div>
+                            </a>
+                        </li>
+                    }
+                    if (user.FactoryId == 2)
+                    {
+                        <li class="d-none d-lg-block">
+                            <a asp-controller="Home" asp-action="SuperAdminIndex">
+                                <div class="card mb-0 bg-white mr-2">
+                                    <img asp-append-version="true" data-toggle="popover" data-content="YSS" style="width: 168px;" class="p-2" src="~/img/factory/top/images.png" alt="" />
+                                </div>
+                            </a>
+                        </li>
+                    }
+                    if (user.FactoryId == 3)
+                    {
+                        <li class="d-none d-lg-block">
+                            <a asp-controller="Home" asp-action="SuperAdminIndex">
+                                <div class="card mb-0 bg-white mr-2">
+                                    <img asp-append-version="true" style="width: 95px;" class="p-2" src="~/img/factory/top/MAF.png" alt="" />
+                                </div>
+                            </a>
+                        </li>
+                    }
+                    if (user.FactoryId == 4)
+                    {
+                        <li class="d-none d-lg-block">
+                            <a asp-controller="Home" asp-action="SuperAdminIndex">
+                                <div class="card mb-0 bg-white mr-2">
+                                    <img asp-append-version="true" style="width: 110px;" class="p-2" src="~/img/factory/top/RFL2.png" alt="" />
+                                </div>
+                            </a>
+                        </li>
+                    }
+                    if (user.FactoryId == 5)
+                    {
+                        <li class="d-none d-lg-block">
+                            <a asp-controller="Home" asp-action="SuperAdminIndex">
+                                <div class="card mb-0 bg-white mr-2">
+                                    <img asp-append-version="true" style="width: 67px;" class="p-2" src="~/img/factory/top/APEX.png" alt="" />
+                                </div>
+                            </a>
+                        </li>
+                    }
+                    if (user.FactoryId == 6)
+                    {
+                        <li class="d-none d-lg-block">
+                            <a asp-controller="Home" asp-action="SuperAdminIndex">
+                                <div class="card mb-0 bg-white mr-2">
+                                    <img asp-append-version="true" style="width: 67px;" class="p-2" src="~/img/factory/top/edison-group.png" alt="" />
+                                </div>
+                            </a>
+                        </li>
+                    }
+                }
+
+                else
+                {
+                    if (user.FactoryId == 1)
+                    {
+                        <li class="d-none d-lg-block">
+                            <div class="card mb-0 bg-white mr-2">
+                                <img asp-append-version="true" data-toggle="popover" data-content="KSI" style="width: 168px;" class="p-2" src="~/img/factory/top/images.png" alt="" />
+                            </div>
+                        </li>
+                    }
+                    if (user.FactoryId == 2)
+                    {
+                        <li class="d-none d-lg-block">
+                            <div class="card mb-0 bg-white mr-2">
+                                <img asp-append-version="true" data-toggle="popover" data-content="YSS" style="width: 168px;" class="p-2" src="~/img/factory/top/images.png" alt="" />
+                            </div>
+                        </li>
+                    }
+                    if (user.FactoryId == 3)
+                    {
+                        <li class="d-none d-lg-block">
+                            <div class="card mb-0 bg-white mr-2">
+                                <img asp-append-version="true" style="width: 95px;" class="p-2" src="~/img/factory/top/MAF.png" alt="" />
+                            </div>
+                        </li>
+                    }
+                    if (user.FactoryId == 4)
+                    {
+                        <li class="d-none d-lg-block">
+                            <div class="card mb-0 bg-white mr-2">
+                                <img asp-append-version="true" style="width: 110px;" class="p-2" src="~/img/factory/top/RFL2.png" alt="" />
+                            </div>
+                        </li>
+                    }
+                    if (user.FactoryId == 5)
+                    {
+                        <li class="d-none d-lg-block">
+                            <div class="card mb-0 bg-white mr-2">
+                                <img asp-append-version="true" style="width: 67px;" class="p-2" src="~/img/factory/top/APEX.png" alt="" />
+                            </div>
+                        </li>
+                    }
+                    if (user.FactoryId == 6)
+                    {
+                        <li class="d-none d-lg-block">
+                            <div class="card mb-0 bg-white mr-2">
+                                <img asp-append-version="true" style="width: 67px;" class="p-2" src="~/img/factory/top/edison-group.png" alt="" />
+                            </div>
+                        </li>
+                    }
+                }
+
+                <li class="nav-item position-relative d-none d-lg-block ml-2">
+                    <div class="d-flex align-items-center justify-content-sm-end">
+                        <div class="avatar-group">
+                            @for (int i = 0; i < users.Count(); i++)
+                            {
+                                if (i <= 3)
+                                {
+                                    <div class="avatar avatar-sm rounded-circle overflow-hidden" data-toggle="tooltip" data-original-title="@users[i].UserName">
+                                        @if (users[i].UserProfile.PhotoName.ToLower() == "no file")
+                                        {
+                                            <img asp-append-version="true" class="position-absolute" alt="" src="~/img/svg/user-profiles.png">
+                                        }
+                                        else
+                                        {
+                                            <img asp-append-version="true" class="position-absolute" alt="" src="~/files/user_profiles/@users[i].UserProfile.PhotoName">
+                                        }
+
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </li>
+
+                @if (users.Count() > 4)
+                {
+                    <li class="nav-item dropdown d-none d-lg-block">
+                        <a class="nav-link pl-1 pb-2 pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <small class="font-weight-bold text-light">@(users.Count() - 4)+</small>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-dark bg-default dropdown-menu-right">
+                            <div class="row shortcuts px-4">
+                                @for (int i = 4; i < users.Count(); i++)
+                                {
+                                    <div class="col-4 shortcut-item position-relative" data-toggle="tooltip" data-original-title="@users[i].UserName">
+                                        <div class="avatar rounded-circle overflow-hidden">
+                                            @if (users[i].UserProfile.PhotoName.ToLower() == "no file")
+                                            {
+                                                <img asp-append-version="true" alt="" src="~/img/svg/user-profiles.png">
+                                            }
+                                            else
+                                            {
+                                                <img asp-append-version="true" alt="" src="~/files/user_profiles/@users[i].UserProfile.PhotoName">
+                                            }
+                                        </div>
+                                        <small class="text-white position-absolute mt-0" style="top: 70px;">
+                                            @if (users[i].UserName.Length > 8)
+                                            {
+                                                @string.Concat(users[i].UserName.Substring(0, 8), " ", "...");
+                                            }
+                                            else
+                                            {
+                                                @users[i].UserName
+                                            }
+                                        </small>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </li>
+                }
+
+                <li class="nav-item position-relative">
+                    <span class="counter chat-counter" id="chat_count">0</span>
+                    <a class="nav-link" asp-controller="Home" asp-action="Conversation" role="button">
+                        <i class="fa fa-comments position-relative"></i>
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <div class="position-relative">
+                        <span class="counter notify-counter" id="noti_count">0</span>
+                    </div>
+                    <a id="notificationCount" class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="false">
+                        <i class="ni ni-bell-55"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-xl dropdown-menu-right py-0 overflow-hidden">
+                        <div class="px-3 py-3">
+                            <h6 class="text-sm text-muted m-0">
+                                You have <span id="notinfication-number" class="text-primary"></span> new notifications
+                            </h6>
+                        </div>
+                        <!-- List group -->
+                        <div class="list-group list-group-flush" id="notification-list-viewer">
+
+                        </div>
+                        <!-- View all -->
+                        <a href="/Notification/Show" class="dropdown-item text-center text-primary font-weight-bold py-3">
+                            View all
+                        </a>
+                    </div>
+                </li>
+
+                <li class="nav-item position-relative">
+                    <a class="nav-link" asp-controller="CICalendar" asp-action="Index" role="button">
+                        <i class="fa fa-calendar-check position-relative"></i>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="false">
+                        <div class="media align-items-center">
+                            <span class="avatar avatar-sm bg-white overflow-hidden position-relative">
+                                @if (userProfile.PhotoName.ToLower() == "no file")
+                                {
+                                    <img asp-append-version="true" class="position-absolute" alt="" src="~/img/svg/user-profiles.png">
+                                }
+                                else
+                                {
+                                    <img asp-append-version="true" class="position-absolute" alt="" src="~/files/user_profiles/@userProfile.PhotoName">
+                                }
+                            </span>
+                            <div class="media-body ml-2 d-none d-lg-block">
+                                <span class="mb-0 text-sm  font-weight-bold">@user.UserName</span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <div class="dropdown-header noti-title">
+                            <h6 class="text-overflow m-0">Welcome!</h6>
+                        </div>
+                        <a asp-controller="Account" asp-action="UpdateProfile" asp-route-userId="@user.Id" class="dropdown-item">
+                            <i class="fa fa-bell"></i>
+                            <span>Update Profile</span>
+                        </a>
+                        @if (userName == "NeuroStorm")
+                        {
+                            <a asp-controller="AppSettings" asp-action="Index" class="dropdown-item">
+                                <i class="fa fa-cog"></i>
+                                <span>Settings</span>
+                            </a>
+                        }
+                        <div class="dropdown-divider"></div>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <form asp-action="Logout" id="logoutForm" asp-controller="Account" method="post">
+                                <a href="javascript:document.getElementById('logoutForm').submit()" class="dropdown-item logout-confirm">
+                                    <i class="fa fa-sign-out-alt"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </form>
+                        }
+                        else
+                        {
+
+                            <a asp-controller="Account" asp-action="Login" class="dropdown-item">
+                                <i class="fa fa-sign-in-alt"></i>
+                                <span>Login</span>
+                            </a>
+                        }
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

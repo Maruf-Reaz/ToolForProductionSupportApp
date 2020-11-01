@@ -1,0 +1,1556 @@
+﻿@model Dynamo.Model.Sot.StandardOperationTimeItem
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+}
+
+@{
+    ViewData["Title"] = "SOT | Add Item";
+}
+
+@section Css {
+    <link rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+}
+
+@section Sole {
+    <style>
+        #manual_job_table.table tr td {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            height: 36px;
+            vertical-align: middle;
+        }
+
+        #manual_job_table.table tr th,
+        #sot_sub_item_table.table tr th {
+            padding-top: 7px;
+            padding-bottom: 7px;
+        }
+
+        #manual_job_table.table tr td input.form-control,
+        #sot_sub_item_table.table tr td input.form-control {
+            border: 0;
+            height: 35px !important;
+        }
+
+        #manual_job_table.table .select2-selection {
+            height: 35px !important;
+        }
+
+        #manual_job_table.table .select2-selection__rendered {
+            font-size: .875rem;
+            line-height: 1.5 !important;
+        }
+
+        #manual_job_table.table thead tr th:first-child {
+            min-width: 160px;
+        }
+
+        #manual_job_table.table tbody tr td .select2-selection {
+            border: 0;
+            border-radius: 0;
+        }
+
+        #sot_sub_item_table.table .thead-light th {
+            border-bottom: 1px solid #ddd;
+        }
+
+        #sot_sub_item_table.table tr td {
+            padding: 0;
+            height: 35px;
+            vertical-align: middle;
+        }
+
+            #sot_sub_item_table.table tr td input {
+                border: 0;
+            }
+
+        .elsediv .d-flex .select2-container,
+        .elsediv .d-flex input.form-control {
+            flex-basis: 70%;
+        }
+
+        .elsediv .d-flex input.form-control,
+        .form-control.float-right,
+        .elsediv .d-flex .select2-selection {
+            height: 35px !important;
+        }
+
+        .elsediv .d-flex .select2-selection__rendered {
+            font-size: .875rem;
+            line-height: 1.5 !important;
+        }
+
+        .table tr.bg-danger input {
+            background: transparent !important;
+            color: #fff !important;
+            font-weight: bold !important;
+        }
+
+        .table tr td:first-child,
+        .table tr th:first-child {
+            border-left: 0;
+        }
+
+        .table tr td:last-child,
+        .table tr th:last-child {
+            border-right: 0;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-11 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Calculation</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Archive</a></li>
+                            <li class="breadcrumb-item"><a href="#">SOT</a></li>
+                            <li class="breadcrumb-item"><a href="#">@ViewBag.Sot.SotModel.Name</a></li>
+                            <li class="breadcrumb-item"><a href="#">@ViewBag.Section.ShortName</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Calculation</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-1 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="AddSection" asp-controller="StandardOperationTimes" asp-route-sotId="@ViewBag.SotId" asp-route-sectionId="@ViewBag.SectionId">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="sotId" name="sotId" value="@ViewBag.SotId" />
+<input type="hidden" id="dataSourceId" name="dataSourceId" value="@ViewBag.DataSourceId" />
+<input type="hidden" id="sectionId" name="sectionId" value="@ViewBag.SectionId" />
+
+<div class="container-fluid mt--6">
+    <div class="row">
+        @if (ViewBag.SotItem == null)
+        {
+            <div class="col-lg-4">
+                <div class="card animated fadeIn elsediv">
+                    <div class="card-header pt-2 pb-2 pl-3">
+                        <h3 class="mb-0">SOT Item</h3>
+                    </div>
+                    <input type="hidden" name="sotItemId" id="sotItemId" value="0" />
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-md-12 mb-2">
+                                <div class="d-flex align-items-end justify-content-end flex-wrap">
+                                    <label class="control-label mt-auto mb-auto mr-2">Operation</label>
+                                    <select id="operationId" name="operationId" class="form-control d-none" data-toggle="select" asp-items="ViewBag.OperationId">
+                                        <option selected value="0">-- SELECT --</option>
+                                    </select>
+                                    <span id="operationIdAlert" class="badge badge-danger mt-2"></span>
+                                </div>
+                            </div>
+                            @if (ViewBag.DataSourceId == 1)
+                            {
+                                <div class="col-md-12 mb-2">
+                                    <div class="d-flex align-items-end justify-content-end flex-wrap">
+                                        <label class="control-label mt-auto mb-auto mr-2">Size</label>
+                                        <input name="size" id="size" class="form-control" />
+                                        <span id="sizeAlert" class="badge badge-danger mt-2"></span>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-12 mb-1">
+                                <div class="">
+                                    <label class="control-label mt-2 mr-2 d-inline-block align-middle">Opt. Code/Desc.</label>
+                                    <input style="width: calc(100% - 130px);" name="operationCode" id="operationCode" class="form-control d-inline-block align-middle float-right" />
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <div class="d-flex align-items-end justify-content-end">
+                                    <label class="control-label mt-auto mb-auto mr-2">Machine</label>
+                                    <input name="machineName" id="machineName" disabled class="form-control" />
+                                </div>
+                            </div>
+                            @if (ViewBag.DataSourceId == 1)
+                            {
+                                <div class="col-md-12 mb-2">
+                                    <div class="d-flex align-items-end justify-content-end flex-wrap">
+                                        <label class="control-label mt-auto mb-auto mr-2">Rating</label>
+                                        <input type="number" step="any" name="rating" id="rating" class="form-control" />
+                                        <span id="ratingAlert" class="badge badge-danger mt-2"></span>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-12 mb-2">
+                                <div class="d-flex align-items-end justify-content-end">
+                                    <label class="control-label mt-auto mb-auto mr-2">Allowance</label>
+                                    <input name="allowance" id="allowance" disabled class="form-control" />
+                                </div>
+                            </div>
+                            @if (ViewBag.DataSourceId == 2)
+                            {
+                                <div class="col-md-12 mb-2">
+                                    <div class="d-flex align-items-end justify-content-end flex-wrap">
+                                        <label class="control-label mt-auto mb-auto mr-2">PACE Time</label>
+                                        <input type="number" step="any" name="cycleTimeForSecondDataSource" id="cycleTimeForSecondDataSource" class="form-control" />
+                                        <span id="cycleTimeForSecondDataSourceAlert" class="badge badge-danger mt-2"></span>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-12 mb-1">
+                                <div class="">
+                                    <label class="control-label mt-2 mr-2 d-inline-block align-middle">Number of Cycle Per Pair</label>
+                                    <input style="width: calc(100% - 190px);" type="number" step="any" name="cyclePerPair" id="cyclePerPair" class="form-control d-inline-block align-middle float-right" />
+                                    <div class="text-right">
+                                        <span id="cyclePerPairAlert" class="badge badge-danger mb-1"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <div class="d-flex align-items-end justify-content-end">
+                                    <label class="control-label mt-auto mb-auto mr-1">Video Link</label>
+                                    <input type="text" name="videoLink" id="videoLink" class="form-control" />
+                                </div>
+                            </div>
+                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                            {
+                                <div class="col-md-12">
+                                    <div class="form-group mb-0">
+                                        @if (ViewBag.DataSourceId == 1)
+                                        {
+                                            <div class="text-center">
+                                                <input class="btn btn-primary btn-sm pt-2 pb-2 pl-3 pr-3" type="button" name="save_sot_item_button" id="save_sot_item_button" value="Save" />
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center">
+                                                <input class="btn btn-primary btn-sm pt-2 pb-2 pl-3 pr-3" type="button" name="save_and_update_sot_item_button" id="save_and_update_sot_item_button" value="Update" />
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-lg-4">
+                <div class="card animated fadeIn elsediv">
+                    <div class="card-header pt-2 pb-2 pl-3">
+                        <h3 class="mb-0">SOT Item</h3>
+                    </div>
+                    <input type="hidden" name="sotItemId" id="sotItemId" value="@ViewBag.SotItem.Id" />
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-md-12 mb-2">
+                                <div class="d-flex align-items-end justify-content-end">
+                                    <label class="control-label mt-auto mb-auto mr-2">Operation</label>
+                                    <select id="operationId" name="operationId" class="form-control d-none" data-toggle="select" asp-items="ViewBag.OperationId"></select>
+                                    <span id="operationIdAlert" class="text-danger"></span>
+                                </div>
+                            </div>
+                            @if (ViewBag.DataSourceId == 1)
+                            {
+                                <div class="col-md-12 mb-2">
+                                    <div class="d-flex align-items-end justify-content-end flex-wrap">
+                                        <label class="control-label mt-auto mb-auto mr-2">Size</label>
+                                        <input name="size" id="size" class="form-control" value="@ViewBag.SotItem.Size" />
+                                        <span id="sizeAlert" class="badge badge-danger mt-2"></span>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-12 mb-1">
+                                <div class="">
+                                    <label class="control-label mt-2 mr-2 d-inline-block align-middle">Opt. Code/Desc.</label>
+                                    <input style="width: calc(100% - 130px);" name="operationCode" id="operationCode" class="form-control d-inline-block align-middle float-right" value="@ViewBag.SotItem.OperationCode" />
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <div class="d-flex align-items-end justify-content-end">
+                                    <label class="control-label mt-auto mb-auto mr-2">Machine</label>
+                                    <input name="machineName" id="machineName" disabled class="form-control" value="@ViewBag.SotItem.Operation.Machine.Name" />
+                                </div>
+                            </div>
+                            @if (ViewBag.DataSourceId == 1)
+                            {
+                                <div class="col-md-12 mb-2">
+                                    <div class="d-flex align-items-end justify-content-end flex-wrap">
+                                        <label class="control-label mt-auto mb-auto mr-2">Rating</label>
+                                        <input type="number" step="any" name="rating" id="rating" class="form-control" value="@ViewBag.SotItem.Rating" />
+                                        <span id="ratingAlert" class="badge badge-danger mt-2"></span>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-12 mb-2">
+                                <div class="d-flex align-items-end justify-content-end">
+                                    <label class="control-label mt-auto mb-auto mr-2">Allowance</label>
+                                    <input name="allowance" id="allowance" disabled class="form-control" value="@ViewBag.SotItem.Operation.Machine.Total" />
+                                </div>
+                            </div>
+                            @if (ViewBag.DataSourceId == 2)
+                            {
+                                <div class="col-md-12 mb-2">
+                                    <div class="d-flex align-items-end justify-content-end flex-wrap">
+                                        <label class="control-label mt-auto mb-auto mr-2">PACE Time</label>
+                                        <input type="number" step="any" name="cycleTimeForSecondDataSource" id="cycleTimeForSecondDataSource" class="form-control" value="@ViewBag.SotItem.CycleTime" />
+                                        <span id="cycleTimeForSecondDataSourceAlert" class="badge badge-danger mt-2"></span>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-12 mb-1">
+                                <div class="">
+                                    <label class="control-label mt-2 mr-2 d-inline-block align-middle">Number of Cycle Per Pair</label>
+                                    <input style="width: calc(100% - 190px);" type="number" step="any" name="cyclePerPair" id="cyclePerPair" class="form-control d-inline-block align-middle float-right" value="@ViewBag.SotItem.Cycle" />
+                                    <div class="text-right">
+                                        <span id="cyclePerPairAlert" class="badge badge-danger mb-1"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (ViewBag.DataSourceId == 2)
+                            {
+                                <div class="col-md-12 mb-2">
+                                    <div class="d-flex align-items-end justify-content-end">
+                                        <label class="control-label mt-auto mb-auto mr-2">SAM/SOT</label>
+                                        <input id="sotValueForPace" name="sotValueForPace" type="number" step="any" disabled class="form-control" value="@ViewBag.SotItem.SotValue" />
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-12 mb-2">
+                                <div class="d-flex align-items-end justify-content-end">
+                                    <label class="control-label mt-auto mb-auto mr-1">Video Link</label>
+                                    <input type="text" name="videoLink" id="videoLink" class="form-control" value="@ViewBag.SotItem.VideoLink" />
+                                </div>
+                            </div>
+                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                            {
+                                <div class="col-md-12">
+                                    <div class="form-group mb-0">
+                                        @if (ViewBag.DataSourceId == 1)
+                                        {
+                                            <div class="text-center">
+                                                <input class="btn btn-primary btn-sm pt-2 pb-2 pl-3 pr-3" type="button" name="save_sot_item_button" id="save_sot_item_button" value="Save" />
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center">
+                                                <input class="btn btn-primary btn-sm pt-2 pb-2 pl-3 pr-3" type="button" name="save_and_update_sot_item_button" id="save_and_update_sot_item_button" value="Update" />
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (ViewBag.SotItem != null && ViewBag.DataSourceId != 2)
+        {
+            <div class="col-lg-8" id="manual_job_div">
+                <div class="card pb-3 animated fadeIn">
+                    <div class="card-header pt-2 pb-2 pl-3">
+                        <h3 class="mb-0">Manual Jobs</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-bordered" id="manual_job_table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>
+                                            Manual Job
+                                        </th>
+                                        <th>
+                                            Time
+                                        </th>
+                                        <th>
+                                            Quantity
+                                        </th>
+                                        <th>
+                                            Average
+                                        </th>
+                                        @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                                        {
+                                            <th class="text-center">
+                                                Action
+                                            </th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{double totalManualJobAverageTime = 0;}
+                                    @foreach (var manualJobStandardOperationTimeItem in ViewBag.SotItem.ManualJobStandardOperationTimeItems)
+                                    {
+                                        <tr>
+                                            <td class="pl-0 pr-0">
+                                                <select class="form-control manualJobId d-none" name="manualJobId" disabled data-toggle="select">
+                                                    @foreach (var manualJob in ViewBag.ManualJobs)
+                                                    {
+                                                        if (manualJob.Id == manualJobStandardOperationTimeItem.ManualJobId)
+                                                        {
+                                                            <option selected value="@manualJob.Id">@manualJob.Name</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td class="pl-0 pr-0">
+                                                <input class="form-control time border-radius-0" type="number" step="any" name="time" value="@System.Math.Round(manualJobStandardOperationTimeItem.Time, 3)" />
+                                            </td>
+                                            <td class="pl-0 pr-0">
+                                                <input class="form-control quantity border-radius-0" type="number" step="any" name="quantity" value="@manualJobStandardOperationTimeItem.Quantity" />
+                                            </td>
+                                            <td class="pl-0 pr-0">
+                                                @{
+                                                    var averageTime = manualJobStandardOperationTimeItem.Time / manualJobStandardOperationTimeItem.Quantity;
+                                                    totalManualJobAverageTime += averageTime;
+                                                }
+                                                <input class="form-control averageTime border-radius-0" type="text" disabled name="averageTime" value="@System.Math.Round(averageTime, 3)" />
+                                            </td>
+                                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                           await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                           await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+                           await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                                            {
+                                                <td class="text-center">
+                                                    <div class="btn-group">
+                                                        <input class="btn btn-success btn-sm save_manual_job_button" type="button" disabled name="save_manual_job_button" value="Saved" />
+                                                        <input class="btn btn-default btn-sm edit_manual_job_button" type="button" name="edit_manual_job_button" value="Edit" />
+                                                        @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                                        {
+                                                            <input class="btn btn-danger btn-sm delete_manual_job_button" type="button" name="delete_manual_job_button" value="Delete" />
+                                                        }
+                                                    </div>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="font-weight-bold text-right" colspan="3">Total</td>
+                                        <td class="font-weight-bold">@System.Math.Round(totalManualJobAverageTime, 3)</td>
+                                        <td><input type="hidden" id="totalManualJobAverageTime" name="totalManualJobAverageTime" value="@System.Math.Round(totalManualJobAverageTime, 3)" /></td>
+                                    </tr>
+                                    <tr style="display:none">
+                                        <td>
+                                            <input type="hidden" class="status" name="status" value="1" />
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                        {
+                            <div class="text-center">
+                                <input class="btn btn-primary btn-sm pt-2 pb-2 pl-3 pr-3 mt-2 add_new_manual_job_button" type="button" name="add_new_manual_job_button" value="Add New Row">
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (ViewBag.SotItem != null && ViewBag.DataSourceId != 2)
+    {
+        <div id="CalculationItemsDiv" class="card pb-3 mb-4 animated fadeIn">
+            <div class="card-header pt-2 pb-2 pl-3">
+                <h3 class="mb-0">Calculation Items</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-items-center table-bordered" id="sot_sub_item_table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th rowspan="2" class="align-middle">
+                                    Cycle Number
+                                </th>
+                                <th colspan="2" class="text-center">
+                                    Cycle Time
+                                </th>
+                                <th colspan="2" class="text-center">
+                                    Wastage 1
+                                </th>
+                                <th colspan="2" class="text-center">
+                                    Wastage 2
+                                </th>
+                                <th colspan="2" class="text-center">
+                                    Wastage 3
+                                </th>
+                                <th rowspan="2" class="align-middle">
+                                    Final Time
+                                </th>
+                                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                                {
+                                    <th rowspan="2" class="align-middle text-center">
+                                        Action
+                                    </th>
+                                }
+                            </tr>
+                            <tr>
+                                <th>
+                                    Start Time
+                                </th>
+                                <th>
+                                    End Time
+                                </th>
+                                <th>
+                                    Start Time
+                                </th>
+                                <th>
+                                    End Time
+                                </th>
+                                <th>
+                                    Start Time
+                                </th>
+                                <th>
+                                    End Time
+                                </th>
+                                <th>
+                                    Start Time
+                                </th>
+                                <th>
+                                    End Time
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int sotSubItemCount = 0;
+                                double sotSubItemCountForAverage = 0;
+                                double totalSotSubItemFinalTime = 0;
+                                var values = new List<double>();
+                                double stability = 0;
+                            }
+                            @foreach (var standardOperationTimeSubItem in ViewBag.SotItem.StandardOperationTimeSubItems)
+                            {
+                                <tr>
+                                    <td class="pl-3 pr-3">@(++sotSubItemCount)</td>
+                                    <td>
+                                        <input class="form-control cycleStartTime border-radius-0 border-0" type="number" step="any" name="cycleStartTime" value="@standardOperationTimeSubItem.CycleStartTime" />
+                                        <input type="hidden" class="sotSubItemId" name="sotSubItemId" value="@standardOperationTimeSubItem.Id" />
+                                    </td>
+                                    <td>
+                                        <input class="form-control cycleEndTime border-radius-0 border-0" type="number" step="any" name="cycleEndTime" value="@standardOperationTimeSubItem.CycleEndTime" />
+                                        @{ var cycleTime = standardOperationTimeSubItem.CycleEndTime - standardOperationTimeSubItem.CycleStartTime; }
+                                    </td>
+                                    <td>
+                                        <input class="form-control wastage1StartTime border-radius-0 border-0" type="number" step="any" name="wastage1StartTime" value="@standardOperationTimeSubItem.Wastage1StartTime" />
+                                    </td>
+                                    <td>
+                                        <input class="form-control wastage1EndTime border-radius-0 border-0" type="number" step="any" name="wastage1EndTime" value="@standardOperationTimeSubItem.Wastage1EndTime" />
+                                        @{ var wastage1Time = standardOperationTimeSubItem.Wastage1EndTime - standardOperationTimeSubItem.Wastage1StartTime; }
+                                    </td>
+                                    <td>
+                                        <input class="form-control wastage2StartTime border-radius-0 border-0" type="number" step="any" name="wastage2StartTime" value="@standardOperationTimeSubItem.Wastage2StartTime" />
+                                    </td>
+                                    <td>
+                                        <input class="form-control wastage2EndTime border-radius-0 border-0" type="number" step="any" name="wastage2EndTime" value="@standardOperationTimeSubItem.Wastage2EndTime" />
+                                        @{ var wastage2Time = standardOperationTimeSubItem.Wastage2EndTime - standardOperationTimeSubItem.Wastage2StartTime; }
+                                    </td>
+                                    <td>
+                                        <input class="form-control wastage3StartTime border-radius-0 border-0" type="number" step="any" name="wastage3StartTime" value="@standardOperationTimeSubItem.Wastage3StartTime" />
+                                    </td>
+                                    <td>
+                                        <input class="form-control wastage3EndTime border-radius-0 border-0" type="number" step="any" name="wastage3EndTime" value="@standardOperationTimeSubItem.Wastage3EndTime" />
+                                        @{ var wastage3Time = standardOperationTimeSubItem.Wastage3EndTime - standardOperationTimeSubItem.Wastage3StartTime; }
+                                    </td>
+                                    <td>
+                                        @{
+                                            if (wastage1Time == null)
+                                            {
+                                                wastage1Time = 0;
+                                            }
+                                            if (wastage2Time == null)
+                                            {
+                                                wastage2Time = 0;
+                                            }
+                                            if (wastage3Time == null)
+                                            {
+                                                wastage3Time = 0;
+                                            }
+                                            var finalTime = cycleTime - (wastage1Time + wastage2Time + wastage3Time);
+                                        }
+                                        <input class="form-control finalTime border-radius-0 border-0" type="text" disabled name="finalTime" value="@finalTime" />
+                                    </td>
+                                    @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+                   await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+                   await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+                   await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                                    {
+                                        <td class="pl-3 pr-3 text-center">
+                                            <div class="btn-group">
+                                                <input class="btn btn-success btn-sm save_sot_sub_item_button" type="button" disabled name="save_sot_sub_item_button" value="Saved" />
+                                                <input class="btn btn-default btn-sm edit_sot_sub_item_button" type="button" name="edit_sot_sub_item_button" value="Edit" />
+                                                @if (standardOperationTimeSubItem.IsNeglected == false)
+                                                {
+                                                    <input class="btn btn-info btn-sm neglect_sot_sub_item_button" type="button" name="neglect_sot_sub_item_button" value="Neglect" />
+                                                }
+                                                else
+                                                {
+                                                    <input class="btn btn-warning btn-sm neglect_sot_sub_item_button" type="button" disabled name="neglect_sot_sub_item_button" value="Neglected" />
+                                                }
+                                                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                                {
+                                                    <input class="btn btn-danger btn-sm delete_sot_sub_item_button" type="button" name="delete_sot_sub_item_button" value="Delete" />
+                                                }
+                                            </div>
+                                        </td>
+                                    }
+                                </tr>
+                                if (standardOperationTimeSubItem.IsNeglected == false)
+                                {
+                                    sotSubItemCountForAverage++;
+                                    totalSotSubItemFinalTime += finalTime;
+                                    values.Add(finalTime);
+                                }
+                            }
+                            <input type="hidden" id="sotSubItemCount" name="sotSubItemCount" value="@sotSubItemCount" />
+                        </tbody>
+                        @{
+                            if (sotSubItemCountForAverage == 0)
+                            {
+                                sotSubItemCountForAverage = 1;
+                            }
+                            double averageFinalTime = totalSotSubItemFinalTime / sotSubItemCountForAverage;
+                            if (values.Count != 0)
+                            {
+                                //Compute the Stability
+                                stability = (Math.Sqrt((values.Sum(d => Math.Pow(d - averageFinalTime, 2))) / (values.Count() - 1)) / averageFinalTime) * 100;
+                            }
+                        }
+                        <tfoot>
+                            <tr>
+                                <td class="pl-3 pr-3 text-right font-weight-bold" colspan="9">Average</td>
+                                <td class="pl-3 pr-3 font-weight-bold">@System.Math.Round(averageFinalTime, 3)</td>
+                                <td><input type="hidden" id="averageFinalTime" name="averageFinalTime" value="@System.Math.Round(averageFinalTime, 3)" /></td>
+                            </tr>
+                            <tr>
+                                <td class="pl-3 pr-3 text-right font-weight-bold" colspan="9">Stability</td>
+                                <td class="pl-3 pr-3 font-weight-bold">
+                                    @{
+                                        if (!double.IsNaN(stability))
+                                        {
+                                            <label>@System.Math.Round(stability, 3)%</label>
+                                        }
+                                        @*else
+                                            {
+                                                <label>@stability</label>
+                                            }*@
+                                    }
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr style="display:none">
+                                <td>
+                                    <input type="hidden" class="status" name="status" value="1" />
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+   await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+   await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+   await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                {
+                    <div class="text-center">
+                        <input style="width: 150px;" class="btn btn-primary btn-sm pt-2 pb-2 pl-3 pr-3 mt-2 add_new_sot_sub_item_button" type="button" name="add_new_sot_sub_item_button" value="Add New Row">
+                        <input style="width: 150px;" id="calculate_button" class="btn btn-success btn-sm pt-2 pb-2 pl-3 pr-3 mt-2" type="button" value="Calculate">
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card mb-4 animated fadeIn">
+            <div class="card-body pb-0">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="d-inline-block align-middle mb-0 mt-1">Total Cycle Time (s)</label>
+                        <input style="width: calc(100% - 150px)" type="number" step="any" class="form-control totalCycleTime d-inline-block align-middle float-right" name="totalCycleTime" disabled />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="d-inline-block align-middle mb-0 mt-1">SOT Per Cycle</label>
+                        <input style="width: calc(100% - 120px)" type="number" step="any" class="form-control d-inline-block align-middle float-right sotPerCycle" name="sotPerCycle" disabled />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="d-inline-block align-middle mb-0 mt-1">SOT Per Pair</label>
+                        <input style="width: calc(100% - 120px)" type="number" step="any" class="form-control d-inline-block align-middle float-right sotValueForSupplierVideo" name="sotValueForSupplierVideo" disabled />
+                    </div>
+                    @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                    {
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-primary btn-sm pt-2 pb-2 btn-block update_cycle_time_button" name="update_cycle_time_button" value="Update" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/sweetalert2/dist/sweetalert2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-notify/bootstrap-notify.min.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.table tr td .btn-group input:disabled[value="Neglected"]').parent().parent().parent().addClass("bg-danger");
+            var sotId = $('#sotId').val();
+            var dataSourceId = $('#dataSourceId').val();
+            var sectionId = $('#sectionId').val();
+            var sotItemId = $('#sotItemId').val();
+
+            var totalManualJobAverageTime = $('#totalManualJobAverageTime').val();
+            var averageFinalTime = $('#averageFinalTime').val();
+            var totalCycleTime = parseFloat(totalManualJobAverageTime) + parseFloat(averageFinalTime);
+
+            var cyclePerPair = parseFloat($('#cyclePerPair').val());
+            var rating = parseFloat($('#rating').val());
+            var allowance = parseFloat($('#allowance').val());
+
+            var sotPerCycle = parseFloat(((totalCycleTime * eval(rating / 100)) * (eval(1) + eval(allowance / 100))) / 60).toFixed(3);
+            var sotPerPair = parseFloat((((totalCycleTime * eval(rating / 100)) * (eval(1) + eval(allowance / 100))) * cyclePerPair) / 60).toFixed(3);
+
+            $('.totalCycleTime').val(totalCycleTime);
+            $('.sotPerCycle').val(sotPerCycle);
+            $('.sotValueForSupplierVideo').val(sotPerPair);
+
+            $("#calculate_button").on('click', function () {
+                location.reload();
+            });
+
+            $(".update_cycle_time_button").on('click', function () {
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: '@Url.Action("UpdateCycleTimeOfSotItem", "StandardOperationTimes")',
+                    data: {
+                        sotItemId: sotItemId,
+                        totalCycleTime: totalCycleTime,
+                        rating: rating,
+                        allowance: allowance,
+                        cyclePerPair: cyclePerPair,
+                    },
+                    cache: false,
+                    success: function (result) {
+                        if (result) {
+                            location.href = '/StandardOperationTimes/AddSection?sotId=' + sotId + '&sectionId=' + sectionId;
+                        }
+                        else {
+                            $.notify({
+                                title: 'Warning!',
+                                icon: 'fa fa-check',
+                                html: true,
+                                message: 'Something Went Wrong!'
+                            }, {
+                                    type: 'warning',
+                                    animate: {
+                                        enter: 'animated fadeInDown'
+                                    },
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    spacing: 10,
+                                    z_index: 1031,
+                                    delay: 2000,
+                                    template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                });
+                        }
+                    }
+                });
+            });
+
+            $("#operationId").on('change', function () {
+                var operationId = $(this).val();
+                if (operationId != 0) {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("GetMachineDetails", "Operations")',
+                        data: {
+                            id: operationId,
+                        },
+                        cache: false,
+                        success: function (data) {
+                            $('#machineName').val(data.name);
+                            $('#allowance').val(data.total);
+                        }
+                    });
+                }
+                else {
+                    $('#machineName').val("");
+                    $('#allowance').val("");
+                }
+            });
+
+            $("#save_sot_item_button").on('click', function () {
+                var operationId = $('#operationId').val();
+                var operationCode = $('#operationCode').val();
+                var size = $('#size').val();
+                var rating = $('#rating').val();
+                var cyclePerPair = $('#cyclePerPair').val();
+                var videoLink = $('#videoLink').val();
+
+                if (operationId == 0 || size == "" || rating == "" || cyclePerPair == "") {
+                    if (operationId == 0) {
+                        $('#operationIdAlert').html("Please Select an Operation");
+                    }
+                    else {
+                        $('#operationIdAlert').html("");
+                    }
+                    if (size == "") {
+                        $('#sizeAlert').html("Please Enter the Size");
+                    }
+                    else {
+                        $('#sizeAlert').html("");
+                    }
+                    if (rating == "") {
+                        $('#ratingAlert').html("Please Enter the Rating");
+                    }
+                    else {
+                        $('#ratingAlert').html("");
+                    }
+                    if (cyclePerPair == "") {
+                        $('#cyclePerPairAlert').html("Please Enter the Number of Cycle Per Pair");
+                    }
+                    else {
+                        $('#cyclePerPairAlert').html("");
+                    }
+                } else {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("AddSotItem", "StandardOperationTimes")',
+                        data: {
+                            id: sotItemId,
+                            standardOperationTimeId: sotId,
+                            dataSourceId: dataSourceId,
+                            sectionId: sectionId,
+                            operationId: operationId,
+                            operationCode: operationCode,
+                            size: size,
+                            rating: rating,
+                            cycle: cyclePerPair,
+                            videoLink: videoLink
+                        },
+                        cache: false,
+                        success: function (sotItemId) {
+                            if (sotItemId != null) {
+                                location.href = '/StandardOperationTimes/AddSotItem?sotId=' + sotId + '&dataSourceId=' + dataSourceId + '&sectionId=' + sectionId + '&sotItemId=' + sotItemId;
+                            } else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something Went Wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    })
+                }
+            });
+
+            $("#save_and_update_sot_item_button").on('click', function () {
+                var operationId = $('#operationId').val();
+                var operationCode = $('#operationCode').val();
+                var cycleTimeForSecondDataSource = $('#cycleTimeForSecondDataSource').val();
+                var cyclePerPair = $('#cyclePerPair').val();
+                var videoLink = $('#videoLink').val();
+
+                if (operationId == 0 || cycleTimeForSecondDataSource == "" || cyclePerPair == "") {
+                    if (operationId == 0) {
+                        $('#operationIdAlert').html("Please Select an Operation");
+                    }
+                    else {
+                        $('#operationIdAlert').html("");
+                    }
+                    if (cycleTimeForSecondDataSource == "") {
+                        $('#cycleTimeForSecondDataSourceAlert').html("Please Enter the PACE Time");
+                    }
+                    else {
+                        $('#cycleTimeForSecondDataSourceAlert').html("");
+                    }
+                    if (cyclePerPair == "") {
+                        $('#cyclePerPairAlert').html("Please Enter the Number of Cycle Per Pair");
+                    }
+                    else {
+                        $('#cyclePerPairAlert').html("");
+                    }
+                } else {
+                    var sotValue = parseFloat(cycleTimeForSecondDataSource) * parseFloat(cyclePerPair);
+                    $('#sotValueForPace').val(sotValue);
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: '@Url.Action("AddSotItem", "StandardOperationTimes")',
+                        data: {
+                            id: sotItemId,
+                            standardOperationTimeId: sotId,
+                            dataSourceId: dataSourceId,
+                            sectionId: sectionId,
+                            operationId: operationId,
+                            operationCode: operationCode,
+                            cycleTime: cycleTimeForSecondDataSource,
+                            cycle: cyclePerPair,
+                            sotValue: sotValue,
+                            videoLink: videoLink,
+                        },
+                        cache: false,
+                        success: function (sotItemId) {
+                            if (sotItemId != null) {
+                                location.href = '/StandardOperationTimes/AddSection?sotId=' + sotId + '&sectionId=' + sectionId;
+                            } else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something Went Wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    })
+                }
+            });
+
+            $(".add_new_manual_job_button").on('click', function () {
+                var table = $('#manual_job_table');
+                var lastRowStatus = table.find('tr:last input.status').val();
+                if (lastRowStatus == 0) {
+                    $.notify({
+                        title: 'Warning!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Fill up and Save the last row before adding new one!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                } else {
+                    var manualJobs = "";
+                    $.when(
+                        $.ajax({
+                            type: "GET",
+                            dataType: 'json',
+                            url: '@Url.Action("GetManualJobs", "StandardOperationTimes")',
+                            data: {
+                                sotItemId: sotItemId,
+                            },
+                            cache: false,
+                            success: function (objects) {
+                                manualJobs += '<option selected value="0">Select</option>';
+                                $.each(objects, function (index, object) {
+                                    if (objects != null) {
+                                        manualJobs += '<option value="' + object.id + '">' + object.name + ' </option>'
+                                    }
+                                });
+                            }
+                        })
+                    ).then(function () {
+                        table.find('tr:last input.status').val(0);
+                        table.append(
+                            '<tr>' +
+                            '<td class="pl-0 pr-0"><select class="form-control manualJobId js-single">' + manualJobs + '</select></td>' +
+                            '<td class="pl-0 pr-0"><input class="form-control time border-radius-0 border-0" type="number" step="any" name="time" value="" /></td>' +
+                            '<td class="pl-0 pr-0">'+
+                            '<input class="form-control quantity border-radius-0 border-0" type="number" step="any" name="quantity" value ="" />'+
+                            '</td >' +
+                            '<td class="pl-0 pr-0"><input class="form-control averageTime border-radius-0 border-0" type="text" disabled name="averageTime" value="" /></td>' +
+                            '<td>' +
+                            '<input class="btn btn-success btn-sm save_manual_job_button" type="button" name="save_manual_job_button" value = "Save" /> ' +
+                            '</td>' +
+                            '</tr>'
+                        );
+                        $('.js-single').select2({
+                            placeholder: 'Select an option'
+                        });
+                    });
+                }
+            });
+
+            $("#manual_job_table").on('click', '.save_manual_job_button', function () {
+                var row = $(this).closest('tr');
+                var manualJobId = row.find('.manualJobId').val();
+                var time = row.find('.time').val();
+                var quantity = row.find('.quantity').val();
+                if (manualJobId == 0 || time == "" || quantity == "") {
+                    if (quantity == "") {
+                        $.notify({
+                            title: 'Warning!',
+                            icon: 'fa fa-check',
+                            html: true,
+                            message: 'Fill up Quantity Before Saving!'
+                        }, {
+                                type: 'warning',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 2000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                    }
+                    if (time == "") {
+                        $.notify({
+                            title: 'Warning!',
+                            icon: 'fa fa-check',
+                            html: true,
+                            message: 'Fill up Time Before Saving!'
+                        }, {
+                                type: 'warning',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 2000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                    }
+                    if (manualJobId == 0) {
+                        $.notify({
+                            title: 'Warning!',
+                            icon: 'fa fa-check',
+                            html: true,
+                            message: 'Select Manual Job Before Saving!'
+                        }, {
+                                type: 'warning',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 2000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                    }
+                }
+                else {
+                    row.find('.averageTime').val(time / quantity);
+                    $(this).val('Saved');
+                    $(this).attr("disabled", true);
+                    var url = '@Url.Action("AddManualJob", "StandardOperationTimes")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            standardOperationTimeItemId: sotItemId,
+                            manualJobId: manualJobId,
+                            time: time,
+                            quantity: quantity,
+                        },
+                        cache: false,
+                        success: function (result) {
+                            if (result) {
+                                var table = $('#manual_job_table');
+                                table.find('tr:last input.status').val(1);
+                                //row.find('.status').val(1);
+                                row.find('.time').attr("disabled", true);
+                                row.find('.quantity').attr("disabled", true);
+                                row.find('.manualJobId').attr("disabled", true);
+                                $.notify({
+                                    title: 'Success!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Manual Job Added Successfully!'
+                                }, {
+                                        type: 'success',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                                location.href = '/StandardOperationTimes/AddSotItem?sotId=' + sotId + '&dataSourceId=' + dataSourceId + '&sectionId=' + sectionId + '&sotItemId=' + sotItemId;
+                            }
+                            else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something went wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    });
+                }
+            });
+
+            $("#manual_job_table").on('click', '.edit_manual_job_button', function () {
+                var row = $(this).closest('tr');
+                row.find('.save_manual_job_button').val('Save');
+                row.find('.save_manual_job_button').attr("disabled", false);
+            });
+
+            $("#manual_job_table").on('click', '.delete_manual_job_button', function () {
+                var row = $(this).closest('tr');
+                var manualJobId = row.find('.manualJobId').val();
+                swal({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    type: "error",
+                    showCancelButton: !0,
+                    buttonsStyling: !1,
+                    useRejections: true,
+                    confirmButtonClass: "btn btn-danger",
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonClass: "btn btn-secondary"
+                }).then(function () {
+                    var url = '@Url.Action("DeleteManualJob", "StandardOperationTimes")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            sotItemId: sotItemId,
+                            manualJobId: manualJobId,
+                        },
+                        cache: false,
+                        success: function (result) {
+                            if (result) {
+                                location.href = '/StandardOperationTimes/AddSotItem?sotId=' + sotId + '&dataSourceId=' + dataSourceId + '&sectionId=' + sectionId + '&sotItemId=' + sotItemId;
+                            }
+                            else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something went wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    });
+                });
+            });
+
+            var sotSubItemCount = $('#sotSubItemCount').val();
+            $(".add_new_sot_sub_item_button").on('click', function () {
+                var table = $('#sot_sub_item_table');
+                var lastRowStatus = table.find('tr:last input.status').val();
+                if (lastRowStatus == 0) {
+                    $.notify({
+                        title: 'Warning!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Fill up and Save the last row before adding new one!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                } else {
+                    table.find('tr:last input.status').val(0);
+                    table.append(
+                        '<tr>' +
+                        '<td class="pl-3 pr-3">' + parseInt(++sotSubItemCount) + '</td>' +
+                        '<td>'+
+                        '<input class="form-control cycleStartTime border-radius-0 border-0" type="number" step="any" name="cycleStartTime" value="0" />' +
+                        '<input type="hidden" class="sotSubItemId" name="sotSubItemId" value="0" />' +
+                        '</td > ' +
+                        '<td>' +
+                        '<input class= "form-control cycleEndTime border-radius-0 border-0" type = "number" step = "any" name = "cycleEndTime" value = "0" />' +
+                        '<input type="hidden" class="status" name="status" value="0" />' +
+                        '</td >' +
+                        //'<td><input class="form-control cycleTime" type="number" step="any" name="cycleTime" value="" /></td>' +
+                        '<td><input class="form-control wastage1StartTime border-radius-0 border-0" type="number" step="any" name="wastage1StartTime" value="0" /></td>' +
+                        '<td><input class="form-control wastage1EndTime border-radius-0 border-0" type="number" step="any" name="wastage1EndTime" value="0" /></td>' +
+                        //'<td><input class="form-control wastage1Time" type="number" step="any" name="wastage1Time" value="" /></td>' +
+                        '<td><input class="form-control wastage2StartTime border-radius-0 border-0" type="number" step="any" name="wastage2StartTime" value="0" /></td>' +
+                        '<td><input class="form-control wastage2EndTime border-radius-0 border-0" type="number" step="any" name="wastage2EndTime" value="0" /></td>' +
+                        //'<td><input class="form-control wastage2Time" type="number" step="any" name="wastage1Time" value="" /></td>' +
+                        '<td><input class="form-control wastage3StartTime border-radius-0 border-0" type="number" step="any" name="wastage3StartTime" value="0" /></td>' +
+                        '<td><input class="form-control wastage3EndTime border-radius-0 border-0" type="number" step="any" name="wastage3EndTime" value="0" /></td>' +
+                        //'<td><input class="form-control wastage3Time" type="number" step="any" name="wastage3Time" value="" /></td>' +
+                        '<td><input class="form-control finalTime border-radius-0 border-0" type="text" disabled name="finalTime" value="" /></td>' +
+                        '<td class="pl-3 pr-3">' +
+                        '<input class="btn btn-success btn-sm save_sot_sub_item_button" type="button" name="save_sot_sub_item_button" value = "Save" /> ' +
+                        '</td>' +
+                        '</tr>'
+                    );
+                }
+            });
+
+            $("#sot_sub_item_table").on('click', '.save_sot_sub_item_button', function () {
+                var row = $(this).closest('tr');
+                var sotSubItemId = row.find('.sotSubItemId').val();
+                var cycleStartTime = row.find('.cycleStartTime').val();
+                var cycleEndTime = row.find('.cycleEndTime').val();
+                var wastage1StartTime = row.find('.wastage1StartTime').val();
+                var wastage1EndTime = row.find('.wastage1EndTime').val();
+                var wastage2StartTime = row.find('.wastage2StartTime').val();
+                var wastage2EndTime = row.find('.wastage2EndTime').val();
+                var wastage3StartTime = row.find('.wastage3StartTime').val();
+                var wastage3EndTime = row.find('.wastage3EndTime').val();
+                if (cycleStartTime == 0 || cycleEndTime == 0) {
+                    if (cycleStartTime == 0) {
+                        $.notify({
+                            title: 'Warning!',
+                            icon: 'fa fa-check',
+                            html: true,
+                            message: 'Fill up Cycle Start Time Before Saving!'
+                        }, {
+                                type: 'warning',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 2000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                    }
+                    if (cycleEndTime == 0) {
+                        $.notify({
+                            title: 'Warning!',
+                            icon: 'fa fa-check',
+                            html: true,
+                            message: 'Fill up Cycle End Time Before Saving!'
+                        }, {
+                                type: 'warning',
+                                animate: {
+                                    enter: 'animated fadeInDown'
+                                },
+                                placement: {
+                                    from: "top",
+                                    align: "center"
+                                },
+                                spacing: 10,
+                                z_index: 1031,
+                                delay: 2000,
+                                template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                            });
+                    }
+                }
+                else {
+                    var cycleTime = parseFloat(cycleEndTime - cycleStartTime);
+                    var wastage1Time = parseFloat(wastage1EndTime - wastage1StartTime);
+                    var wastage2Time = parseFloat(wastage2EndTime - wastage2StartTime);
+                    var wastage3Time = parseFloat(wastage3EndTime - wastage3StartTime);
+                    var finalTime = parseFloat(cycleTime - (wastage1Time + wastage2Time + wastage3Time));
+                    //row.find('.cycleTime').val(cycleTime);
+                    //row.find('.wastage1Time').val(wastage1Time);
+                    //row.find('.wastage2Time').val(wastage2Time);
+                    //row.find('.wastage3Time').val(wastage3Time);
+                    row.find('.finalTime').val(finalTime);
+                    $(this).val('Saved');
+                    $(this).attr("disabled", true);
+
+                    var url = '@Url.Action("AddStandardOperationTimeSubItem", "StandardOperationTimes")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            id: sotSubItemId,
+                            standardOperationTimeItemId: sotItemId,
+                            cycleStartTime: cycleStartTime,
+                            cycleEndTime: cycleEndTime,
+                            wastage1StartTime: wastage1StartTime,
+                            wastage1EndTime: wastage1EndTime,
+                            wastage2StartTime: wastage2StartTime,
+                            wastage2EndTime: wastage2EndTime,
+                            wastage3StartTime: wastage3StartTime,
+                            wastage3EndTime: wastage3EndTime,
+                        },
+                        cache: false,
+                        success: function (result) {
+                            if (result) {
+                                var table = $('#sot_sub_item_table');
+                                table.find('tr:last input.status').val(1);
+                                //row.find('.status').val(1);
+                                row.find('.cycleStartTime').attr("disabled", true);
+                                row.find('.cycleEndTime').attr("disabled", true);
+                                row.find('.wastage1StartTime').attr("disabled", true);
+                                row.find('.wastage1EndTime').attr("disabled", true);
+                                row.find('.wastage2StartTime').attr("disabled", true);
+                                row.find('.wastage2EndTime').attr("disabled", true);
+                                row.find('.wastage3StartTime').attr("disabled", true);
+                                row.find('.wastage3EndTime').attr("disabled", true);
+                                $.notify({
+                                    title: 'Success!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Calculation Item Added Successfully!'
+                                }, {
+                                        type: 'success',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                            else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something Went Wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    });
+                }
+            });
+
+            $("#sot_sub_item_table").on('click', '.edit_sot_sub_item_button', function () {
+                var row = $(this).closest('tr');
+                row.find('.save_sot_sub_item_button').val('Save');
+                row.find('.save_sot_sub_item_button').attr("disabled", false);
+            });
+
+            $("#sot_sub_item_table").on('click', '.delete_sot_sub_item_button', function () {
+                var row = $(this).closest('tr');
+                var sotSubItemId = row.find('.sotSubItemId').val();
+                swal({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    type: "error",
+                    showCancelButton: !0,
+                    buttonsStyling: !1,
+                    useRejections: true,
+                    confirmButtonClass: "btn btn-danger",
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonClass: "btn btn-secondary"
+                }).then(function () {
+                    var url = '@Url.Action("DeleteStandardOperationTimeSubItem", "StandardOperationTimes")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            sotSubItemId: sotSubItemId,
+                        },
+                        cache: false,
+                        success: function (result) {
+                            if (result) {
+                                location.href = '/StandardOperationTimes/AddSotItem?sotId=' + sotId + '&dataSourceId=' + dataSourceId + '&sectionId=' + sectionId + '&sotItemId=' + sotItemId;
+                            }
+                            else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something Went Wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    });
+                });
+            });
+
+            $("#sot_sub_item_table").on('click', '.neglect_sot_sub_item_button', function () {
+                var row = $(this).closest('tr');
+                var sotSubItemId = row.find('.sotSubItemId').val();
+                swal({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    type: "error",
+                    showCancelButton: !0,
+                    buttonsStyling: !1,
+                    useRejections: true,
+                    confirmButtonClass: "btn btn-danger",
+                    confirmButtonText: "Yes, neglect it!",
+                    cancelButtonClass: "btn btn-secondary"
+                }).then(function () {
+                    var url = '@Url.Action("NeglectStandardOperationTimeSubItem", "StandardOperationTimes")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            sotSubItemId: sotSubItemId,
+                        },
+                        cache: false,
+                        success: function (result) {
+                            if (result) {
+                                location.href = '/StandardOperationTimes/AddSotItem?sotId=' + sotId + '&dataSourceId=' + dataSourceId + '&sectionId=' + sectionId + '&sotItemId=' + sotItemId;
+                            }
+                            else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something Went Wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

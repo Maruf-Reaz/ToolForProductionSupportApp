@@ -1,0 +1,254 @@
+﻿@model IEnumerable<Dynamo.Model.Factories.Factory>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+}
+
+@{
+    Layout = "~/Views/Shared/_SuperAdmin.cshtml";
+}
+
+@{
+    ViewData["Title"] = "Super Admin Dashboard";
+}
+
+@section Css {
+
+}
+
+@section Sole {
+    <style>
+        body {
+            background: linear-gradient(#1e1e2f,#1e1e24) !important;
+        }
+
+        .card {
+            min-height: 170px;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .card1 {
+            background-image: url('/img/factory/images.png');
+            background-size: 262px;
+        }
+
+        .card2 {
+            background-image: url('/img/factory/images.png');
+            background-size: 262px;
+        }
+
+        .card3 {
+            background-image: url('/img/factory/MAF.png');
+            background-size: 230px;
+        }
+
+        .card4 {
+            background-image: url('/img/factory/RFL2.png');
+            background-size: 236px;
+        }
+
+        .card5 {
+            background-image: url('/img/factory/APEX.png');
+            background-size: 166px;
+        }
+
+        .card6 {
+            background-image: url('/img/factory/edison-group.png');
+            background-size: 256px;
+        }
+
+        .logo-spin-tps {
+            width: 110px;
+            top: -25px;
+        }
+
+        .tps-outer {
+            width: 110px;
+            -webkit-animation: spin 10s linear infinite;
+            -moz-animation: spin 10s linear infinite;
+            animation: spin 10s linear infinite;
+        }
+
+        .tps-inner {
+            width: 109px;
+            left: 0;
+        }
+
+        .logo-header {
+            height: 120px;
+        }
+
+        @@-moz-keyframes spin {
+            100% {
+                -moz-transform: rotate(360deg);
+            }
+        }
+
+        @@-webkit-keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @@keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        .tps_message {
+            color: #eee;
+            text-align: center;
+            line-height: 17px;
+            margin: auto;
+            position: relative;
+            top: -20px;
+            padding-top: 15px;
+            font-family: "BAUHS93", verdana, helvetica, sans-serif;
+            font-size: 22px;
+        }
+
+        .card h4 {
+            position: absolute;
+            right: 7%;
+            top: 13px;
+        }
+
+        .logout-area {
+            height: 200px;
+            right: 0;
+            top: 0;
+        }
+
+        @@media screen and (min-width: 991px) {
+            #logoutForm {
+                opacity: 0;
+                transition: all .3s ease;
+            }
+
+            .logout-area:hover #logoutForm {
+                opacity: 1;
+                transition: all .3s ease;
+            }
+        }
+    </style>
+}
+
+<div class="container mt-5" id="home-setup">
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="text-center">
+                <div class="logo-spin-tps position-relative m-auto">
+                    <img class="tps-outer" src="~/img/new-logo/logo-outer2.png" alt="..." />
+                    <img class="position-absolute tps-inner" src="~/img/new-logo/whiteondark.png" alt="..." />
+                </div>
+                <div class="tps_message text-uppercase">Tool for Production Support</div>
+            </div>
+        </div>
+
+        <div class="col-lg-10 mt-3">
+            <div class="row">
+                @foreach (var factory in Model)
+                {
+
+                    if (factory.Id == 1)
+                    {
+                        <div class="col-lg-4">
+                            <div>
+                                <a asp-controller="Account" asp-action="FactoryLogin" asp-route-userId="@user.Id" asp-route-factoryId="@factory.Id">
+                                    <div class="card card1">
+                                        <h4>
+                                            @factory.Name
+                                        </h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    if (factory.Id == 2)
+                    {
+                        <div class="col-lg-4">
+                            <div>
+                                <a asp-controller="Account" asp-action="FactoryLogin" asp-route-userId="@user.Id" asp-route-factoryId="@factory.Id">
+                                    <div class="card card2">
+                                        <h4>
+                                            @factory.Name
+                                        </h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    if (factory.Id == 3)
+                    {
+                        <div class="col-lg-4">
+                            <div>
+                                <a asp-controller="Account" asp-action="FactoryLogin" asp-route-userId="@user.Id" asp-route-factoryId="@factory.Id">
+                                    <div class="card card3">
+                                        <h4>
+                                            @factory.Name
+                                        </h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    if (factory.Id == 4)
+                    {
+                        <div class="col-lg-4">
+                            <div>
+                                <a asp-controller="Account" asp-action="FactoryLogin" asp-route-userId="@user.Id" asp-route-factoryId="@factory.Id">
+                                    <div class="card card4">
+                                        <h4>
+                                            @factory.Name
+                                        </h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    if (factory.Id == 5)
+                    {
+                        <div class="col-lg-4">
+                            <div>
+                                <a asp-controller="Account" asp-action="FactoryLogin" asp-route-userId="@user.Id" asp-route-factoryId="@factory.Id">
+                                    <div class="card card5">
+                                        <h4>
+                                            @factory.Name
+                                        </h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    if (factory.Id == 6)
+                    {
+                        <div class="col-lg-4">
+                            <div>
+                                <a asp-controller="Account" asp-action="FactoryLogin" asp-route-userId="@user.Id" asp-route-factoryId="@factory.Id">
+                                    <div class="card card6">
+                                        <h4>
+                                            @factory.Name
+                                        </h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-3 logout-area position-absolute">
+    <form class="text-center" asp-action="Logout" id="logoutForm" asp-controller="Account" method="post">
+        <a class="nav-link pr-0 logout-confirm mt-5" href="javascript:document.getElementById('logoutForm').submit()">
+            <div><i class="fa fa-power-off mb-0 text-gray font-weight-bold"></i><h2 class="mb-0 text-gray font-weight-bold d-none d-lg-block">Logout</h2></div>
+        </a>
+    </form>
+</div>

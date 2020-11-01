@@ -1,0 +1,78 @@
+﻿<link asp-append-version="true" rel="stylesheet" href="~/vendor/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+<link asp-append-version="true" rel="stylesheet" href="~/vendor/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css">
+<link asp-append-version="true" rel="stylesheet" href="~/vendor/datatables.net-select-bs4/css/select.bootstrap4.min.css">
+<style>
+
+    table thead th.optionActions {
+        width: 50px;
+    }
+
+    .card .table td {
+        padding: .4rem !important;
+    }
+
+    .dt-buttons button {
+        font-size: .75rem;
+        letter-spacing: .025em;
+        line-height: 1.5;
+        padding: .25rem .5rem;
+        color: #fff !important;
+        font-weight: 600;
+    }
+
+        .dt-buttons button:first-child {
+            background-color: #5e72e4 !important;
+            border-color: #5e72e4 !important;
+        }
+
+        .dt-buttons button:nth-child(2),
+        .dt-buttons button:nth-child(3) {
+            border-color: #172b4d !important;
+            background-color: #172b4d !important;
+        }
+
+    .dt-buttons .btn-group .dropdown-toggle {
+        border-color: #f5365c !important;
+        background-color: #f5365c !important;
+    }
+
+    .buttons-columnVisibility.active {
+        background: #eee !important;
+    }
+
+    @@media screen and (max-width: 991px) {
+        .table-responsive .col-sm-12.col-md-6 {
+            padding-left: 15px !important;
+        }
+
+            .table-responsive .col-sm-12.col-md-6 .dt-buttons.btn-group {
+                padding-left: 0 !important;
+            }
+    }
+
+    .dt-buttons .btn::after {
+        content: none !important;
+    }
+
+    .table-responsive-on-hover {
+        overflow: hidden;
+    }
+
+    .card:hover .table-responsive-on-hover {
+        overflow: auto;
+    }
+
+    @@media screen and (max-width: 991px) {
+        .card .table-responsive-on-hover {
+            overflow: auto;
+        }
+
+        .table-responsive .col-sm-12.col-md-6 {
+            padding-left: 15px !important;
+        }
+
+            .table-responsive .col-sm-12.col-md-6 .dt-buttons.btn-group {
+                padding-left: 0 !important;
+            }
+    }
+</style>

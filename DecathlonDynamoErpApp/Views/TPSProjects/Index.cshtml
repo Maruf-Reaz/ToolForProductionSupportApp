@@ -1,0 +1,415 @@
+﻿@model IEnumerable<Dynamo.Model.TPSProjects.TPSProject>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+}
+
+@{
+    ViewData["Title"] = "Projects";
+}
+
+@section Css {
+    @{await Html.RenderPartialAsync("_DataTablesCssPartial");}
+}
+
+@section Sole {
+    <style>
+        .description {
+            min-width: 350px
+        }
+
+        .card .table td {
+            padding-top: .2rem !important;
+            padding-bottom: .2rem !important;
+            vertical-align: middle;
+        }
+
+        .card .table th {
+            text-align: center;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Projects</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Projects</li>
+                        </ol>
+                    </nav>
+                </div>
+                @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                {
+                    <div class="col-lg-6 col-5 text-right">
+                        <a class="btn btn-sm btn-neutral" asp-action="Create">New</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card animated fadeIn">
+                <div class="card-header py-2">
+                    <h3 class="mb-0">Projects</h3>
+                </div>
+                <div class="card-body px-0 pb-2 pt-3">
+                    <table class="table align-items-center table-hover table-striped table-bordered" id="test-registers"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div class="container-fluid mt--6">
+        <div class="row">
+            <div class="col">
+                <div class="card animated fadeIn">
+                    <div class="card-header">
+                        <h3 class="mb-0">Projects</h3>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-items-center table-hover table-striped table-bordered" id="datatable-basic">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.Description)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.DateOfUpload)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.ProjectFileName1)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.ProjectFileName2)
+                                        </th>
+                                        <th class="text-center">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td class="text-wrap" data-toggle="popover" data-content="@item.Description">
+                                                @if (item.Description.Length > 55)
+                                                {
+                                                    @string.Concat(item.Description.Substring(0, 55), " ", "...");
+                                                }
+                                                else
+                                                {
+                                                    @item.Description;
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                @String.Format("{0:d-M-yyyy}", item.DateOfUpload)
+                                            </td>
+                                            <td class="text-center">
+                                                @if (item.ProjectFileName1.ToLower() == "no file")
+                                                {
+                                                    <label class="btn btn-danger btn-sm disabled" data-toggle="popover" data-content="No attachment"><i class="fa fa-ban mr-2"></i>No File</label>
+                                                }
+                                                else
+                                                {
+                                                    <a class="btn btn-success btn-sm" href="~/files/e_learnings/@item.ProjectFileName1" download="@item.ProjectFileName1" data-toggle="popover" data-content="Download"><i class="fa fa-download mr-2"></i>Download</a>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                @if (item.ProjectFileName2.ToLower() == "no file")
+                                                {
+                                                    <label class="btn btn-danger btn-sm disabled" data-toggle="popover" data-content="No attachment"><i class="fa fa-ban mr-2"></i>No File</label>
+                                                }
+                                                else
+                                                {
+                                                    <a class="btn btn-success btn-sm" href="~/files/e_learnings/@item.ProjectFileName2" download="@item.ProjectFileName2" data-toggle="popover" data-content="Download"><i class="fa fa-download mr-2"></i>Download</a>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                                    {
+                                                        <a class="btn btn-default btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                                    }
+                                                    <a class="btn btn-default btn-sm" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                                    @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                                    {
+                                                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_DataTablesJsPartial");}
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/datatables.net/plugin/moment.min.js"></script>
+    <script asp-append-version="true" type="text/javascript" src="~/vendor/datatables.net/plugin/datetime-moment.js"></script>
+    @if (
+await UserManager.IsInRoleAsync(user, "SuperAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIAdmin") ||
+await UserManager.IsInRoleAsync(user, "YSSADMIN") ||
+await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") ||
+await UserManager.IsInRoleAsync(user, "APEXAdmin") ||
+await UserManager.IsInRoleAsync(user, "EDISONAdmin")
+)
+
+    {
+        <script type="text/javascript">
+            $.fn.dataTable.moment("DD/MM/YYYY HH:mm:ss");
+            $.fn.dataTable.moment("DD/MM/YYYY");
+            $("#test-registers").DataTable({
+                initComplete: function (settings, json) {
+                    $("table thead").addClass("thead-light");
+                    $("table").addClass("border-left-0 border-right-0");
+                    $(".dt-bootstrap4 > .row:nth-child(2)").addClass("table-responsive-on-hover mx-0");
+                    $(".dt-bootstrap4 > .row:nth-child(2) > .col-sm-12").addClass("px-0");
+                },
+                dom: "<'row mx-0 before-table-responsive'<'col-sm-12 col-md-8 px-lg-0'B<'d-inline-flex'l>><'col-sm-12 col-md-4'f>>" +
+                    "<'row mx-0'<'col-md-6'><'col-md-6'>>" +
+                    "<'row mx-0 table-responsive-on-hover'<'col-md-12 px-0'tr>><'row after-table-responsive'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                colReorder: {
+                    allowReorder: !0
+                },
+                responsive: !0,
+                //scrollX: !0,
+                order: [],
+                language: {
+                    paginate: {
+                        previous: "<i class='fas fa-angle-left'>",
+                        next: "<i class='fas fa-angle-right'>",
+                    }
+                },
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                autoWidth: !1,
+                stateSave: !0,
+                stateSaveParams: function (settings, data) {
+                    delete data.order;
+                },
+                processing: !0,
+                serverSide: !0,
+                paging: true,
+                searching: { regex: true },
+                ajax: {
+                    url: "/TPSProjects/LoadTable",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: function (d) {
+                        return JSON.stringify(d);
+                    }
+                },
+                columns: [
+                    {
+                        title: "Description",
+                        data: "description",
+                        className: "text-wrap description"
+                    },
+                    {
+                        title: "Date Of Upload",
+                        data: "dateOfUpload",
+                        className: "text-center",
+                        render: function (data, type, row) {
+                            if (type === "display" || type === "filter") {
+                                return moment(data).format("DD-MM-YYYY");
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        title: "Attachment 1",
+                        data: "projectFileName1",
+                        className: "text-center",
+                        render: function (data, type, row, meta) {
+                            if (data != "No File") {
+                                return '<a class="btn btn-success btn-sm" href="/files/tps_projects/' + data + '" download="' + data + '"><i class="fa fa-download mr-2"></i>Download</a>';
+                            }
+                            else {
+                                return null;
+                            }
+                        }
+                    },
+                    {
+                        title: "Attachment 2",
+                        data: "projectFileName2",
+                        className: "text-center",
+                        render: function (data, type, row, meta) {
+                            if (data != "No File") {
+                                return '<a class="btn btn-success btn-sm" href="/files/tps_projects/' + data + '" download="' + data + '"><i class="fa fa-download mr-2"></i>Download</a>';
+                            }
+                            else {
+                                return null;
+                            }
+                        }
+                    },
+                    {
+                        title: "Action",
+                        data: "id",
+                        className: "text-center optionActions",
+                        render: function (data, type, row, meta) {
+                            return '<div class="btn-group">' +
+                                '<a class="btn btn-default btn-sm" href="/TPSProjects/Edit/' + data + '">Edit</a>' +
+                                '<a class="btn btn-danger btn-sm" href="/TPSProjects/Delete/' + data + '">Delete</a>' +
+                                '</div>';
+                        }
+                    }
+                ],
+                columnDefs: [
+                    //{ className: "my_class", "targets": [0] },
+                    { targets: "no-sort", orderable: false },
+                    { targets: "no-search", searchable: false },
+                    {
+                        targets: "trim",
+                        render: function (data, type, full, meta) {
+                            if (type === "display") {
+                                data = strtrunc(data, 10);
+                            }
+
+                            return data;
+                        }
+                    },
+                    { targets: "date-type", type: "date-eu" },
+                    //{ "searchable": false, "targets": [-1,] },
+                    //{ "orderable": false, "targets": [-1,] },
+
+                ],
+            });
+        </script>
+    }
+
+    else
+    {
+        <script type="text/javascript">
+            $.fn.dataTable.moment("DD/MM/YYYY HH:mm:ss");
+            $.fn.dataTable.moment("DD/MM/YYYY");
+            $("#test-registers").DataTable({
+                initComplete: function (settings, json) {
+                    $("table thead").addClass("thead-light");
+                    $("table").addClass("border-left-0 border-right-0");
+                    $(".dt-bootstrap4 > .row:nth-child(2)").addClass("table-responsive-on-hover mx-0");
+                    $(".dt-bootstrap4 > .row:nth-child(2) > .col-sm-12").addClass("px-0");
+                },
+                dom: "<'row mx-0 before-table-responsive'<'col-sm-12 col-md-8 px-lg-0'B<'d-inline-flex'l>><'col-sm-12 col-md-4'f>>" +
+                    "<'row mx-0'<'col-md-6'><'col-md-6'>>" +
+                    "<'row mx-0 table-responsive-on-hover'<'col-md-12 px-0'tr>><'row after-table-responsive'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                colReorder: {
+                    allowReorder: !0
+                },
+                responsive: !0,
+                //scrollX: !0,
+                order: [],
+                language: {
+                    paginate: {
+                        previous: "<i class='fas fa-angle-left'>",
+                        next: "<i class='fas fa-angle-right'>",
+                    }
+                },
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                autoWidth: !1,
+                stateSave: !0,
+                stateSaveParams: function (settings, data) {
+                    delete data.order;
+                },
+                processing: !0,
+                serverSide: !0,
+                paging: true,
+                searching: { regex: true },
+                ajax: {
+                    url: "/TPSProjects/LoadTable",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: function (d) {
+                        return JSON.stringify(d);
+                    }
+                },
+                columns: [
+                    {
+                        title: "Description",
+                        data: "description",
+                        className: "text-wrap description"
+                    },
+                    {
+                        title: "Date Of Upload",
+                        data: "dateOfUpload",
+                        className: "text-center",
+                        render: function (data, type, row) {
+                            if (type === "display" || type === "filter") {
+                                return moment(data).format("DD-MM-YYYY");
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        title: "Attachment 1",
+                        data: "projectFileName1",
+                        className: "text-center",
+                        render: function (data, type, row, meta) {
+                            if (data != "No File") {
+                                return '<a class="btn btn-success btn-sm" href="/files/tps_projects/' + data + '" download="' + data + '"><i class="fa fa-download mr-2"></i>Download</a>';
+                            }
+                            else {
+                                return null;
+                            }
+                        }
+                    },
+                    {
+                        title: "Attachment 2",
+                        data: "projectFileName2",
+                        className: "text-center",
+                        render: function (data, type, row, meta) {
+                            if (data != "No File") {
+                                return '<a class="btn btn-success btn-sm" href="/files/tps_projects/' + data + '" download="' + data + '"><i class="fa fa-download mr-2"></i>Download</a>';
+                            }
+                            else {
+                                return null;
+                            }
+                        }
+                    },
+                ],
+                columnDefs: [
+                    //{ className: "my_class", "targets": [0] },
+                    { targets: "no-sort", orderable: false },
+                    { targets: "no-search", searchable: false },
+                    {
+                        targets: "trim",
+                        render: function (data, type, full, meta) {
+                            if (type === "display") {
+                                data = strtrunc(data, 10);
+                            }
+
+                            return data;
+                        }
+                    },
+                    { targets: "date-type", type: "date-eu" },
+                    //{ "searchable": false, "targets": [-1,] },
+                    //{ "orderable": false, "targets": [-1,] },
+
+                ],
+            });
+        </script>
+    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

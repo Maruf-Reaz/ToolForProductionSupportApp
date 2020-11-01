@@ -1,0 +1,39 @@
+.table-classic th {
+    text-align: center
+}
+
+.table-classic th, .table-classic td {
+    border: 1px solid #dee2e6
+}
+
+.table-classic .th-input {
+    height: 40px;
+    width: 46%;
+    text-align: center;
+    background: transparent;
+    font-size: 13px;
+}
+
+.table-classic .form-input {
+    height: 50px;
+    text-align: center;
+    width: 100%;
+}
+
+.table-classic td {
+    padding: 0 !important;
+}
+
+.table-classic th {
+    border-bottom: 1px solid #dee2e6 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+}
+
+.table-classic .width-small {
+    width: 250px
+}
+
+.table-classic .height-text {
+    height: 40px
+}

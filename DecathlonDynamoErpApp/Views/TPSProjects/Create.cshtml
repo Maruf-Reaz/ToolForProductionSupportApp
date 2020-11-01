@@ -1,0 +1,102 @@
+﻿@model Dynamo.Model.TPSProjects.ViewModels.TPSProjectViewModel
+
+@{
+    ViewData["Title"] = "Projects | Create";
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Create</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">Projects</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Create</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="Index">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-4 animated fadeIn">
+        <div class="card-header py-2">
+            <h3 class="mb-0">Create Project</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="DateOfUpload" class="control-label"></label>
+                            <input name="DateOfUpload" class="form-control datepicker" />
+                            <span asp-validation-for="DateOfUpload" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Attachment 1</label>
+                            <div class="custom-file">
+                                <input class="custom-file-input dfile1" asp-for="ProjectFile1" id="file1" lang="en">
+                                <label class="custom-file-label dlabel1" for="file1">Select file</label>
+                            </div>
+                            <span asp-validation-for="ProjectFile1" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Attachment 2</label>
+                            <div class="custom-file">
+                                <input class="custom-file-input dfile2" asp-for="ProjectFile2" id="file1" lang="en">
+                                <label class="custom-file-label dlabel2" for="file1">Select file</label>
+                            </div>
+                            <span asp-validation-for="ProjectFile2" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" asp-append-version="true"></script>
+    <script>
+        $('input.dfile1').change(function (e) {
+            var fileName = e.target.files[0].name;
+            $(e.target).siblings('.dlabel1').text(fileName);
+        });
+        $('input.dfile2').change(function (e) {
+            var fileName = e.target.files[0].name;
+            $(e.target).siblings('.dlabel2').text(fileName);
+        });
+    </script>
+    <script type="text/javascript">
+        var initial_url = $(location).attr('href');
+        var splitted_url = initial_url.split('/');
+        var new_url = document.location.origin + '/' + splitted_url[3];
+        $('.label0 > a.nav-link').filter(function () {
+            return this.href == new_url;
+        }).parent().addClass('nav-color-active');
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

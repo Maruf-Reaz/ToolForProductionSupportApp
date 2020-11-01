@@ -1,0 +1,659 @@
+﻿@model Dynamo.Model.Sot.StandardOperationTime
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Dynamo.Model.Common.Authentication.ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.FindByNameAsync(Context.User.Identity.Name);
+}
+
+@{
+    ViewData["Title"] = "SOT | Details";
+}
+
+@section Css {
+    <link asp-append-version="true" rel="stylesheet" href="~/vendor/select2/dist/css/select2.min.css">
+    <link asp-append-version="true" rel="stylesheet" href="~/vendor/sweetalert2/dist/sweetalert2.min.css">
+    <link asp-append-version="true" rel="stylesheet" href="~/vendor/lightbox/lightbox.min.css">
+}
+
+@section Sole {
+    <style>
+        .card .table th {
+            font-size: 11px;
+        }
+
+        .card .table td {
+            font-size: 14px;
+        }
+
+        .card .addsectionform .table td input.form-control {
+            border: 0;
+            height: 52px;
+        }
+
+        .card .addsectiontable .table td input.form-control {
+            border: 0;
+        }
+
+        .d-flex label.control-label {
+            flex-basis: 40%;
+            font-size: .875rem;
+            text-align: right;
+        }
+
+        .sotmodelimg {
+            height: 100px;
+        }
+
+        /*.form-control {
+            height: 50px !important;
+        }*/
+
+        .dipl-textbox.form-control {
+            height: 35px !important;
+        }
+
+        .select2-selection {
+            height: 35px !important;
+            padding-top: 6px !important;
+        }
+
+        .select2-selection__rendered {
+            font-size: .875rem;
+            line-height: 1.6 !important;
+        }
+
+        .card-header h3 {
+            font-size: 15px;
+        }
+
+        .card tr th.data-source {
+            min-width: 105px;
+        }
+
+        .card tr th.op-name {
+            min-width: 200px;
+        }
+
+        .card tr th.op-code {
+            min-width: 200px;
+        }
+
+        .form-control.form-control-sm {
+            height: calc(.45em + 1.25rem + 5px) !important;
+        }
+
+        .op-name-td,
+        .op-code-td,
+        .machine-name-td {
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+        }
+        /*.table-card, .footer, .update-sot {
+            display: none;
+        }*/
+        .machine-name {
+            padding-right: 8.5rem !important;
+        }
+
+        table.dataTable {
+            margin-top: 0 !important
+        }
+
+        .cycle_time {
+            min-width: 70px;
+        }
+
+        .card .table td:not(.p-0):not(.p-2) {
+            padding-top: .2rem !important;
+            padding-bottom: .2rem !important;
+            vertical-align: middle
+        }
+
+        .card .table th {
+            text-align: center;
+            padding: .4rem;
+        }
+
+        .table tr td .form-control {
+            height: 40px;
+        }
+    </style>
+}
+
+<div class="header bg-custom pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-10 col-7">
+                    <h6 class="h2 text-white d-inline-block mb-0">Section</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#">Archive</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index">SOT</a></li>
+                            <li class="breadcrumb-item"><a href="#">@Model.SotModel.Name</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">@ViewBag.Section.Name</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-2 col-5 text-right">
+                    <a class="btn btn-sm btn-neutral" asp-action="Index" asp-route-processId="@Model.SotModel.ProcessId">Back to List</a>
+                    <input type="hidden" id="processIdForRedirect" value="@Model.SotModel.ProcessId" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="card mb-2 animated fadeIn">
+        <div class="card-header pt-2 pb-2 pl-3">
+            <h3 class="mb-0">Add Section</h3>
+        </div>
+        <div class="card-body p-3 addsectionform">
+            @*<form>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>*@
+            <div class="row">
+                <div class="col-lg-10">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <div class="d-flex">
+                                <label class="control-label mt-auto mb-auto mr-2" style="flex-basis: 41%;">DIPL</label>
+                                <input class="form-control dipl-textbox" disabled value="@Model.SotModel.Dipl" />
+                                <input id="sotId" name="sotId" type="hidden" value="@Model.Id" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="d-flex">
+                                <label class="control-label mt-auto mb-auto mr-2">Conception Name</label>
+                                <select asp-for="SotModelId" class="form-control d-none" data-toggle="select" asp-items="ViewBag.SotModelId" disabled></select>
+                                <span asp-validation-for="SotModelId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="d-flex">
+                                <label class="control-label mt-auto mb-auto mr-2">Process</label>
+                                <select class="form-control d-none" data-toggle="select" asp-items="ViewBag.ProcessId" disabled></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="d-flex">
+                                <label class="control-label mt-auto mb-auto mr-2">Sign Sport</label>
+                                <select class="form-control d-none" data-toggle="select" asp-items="ViewBag.SignSportId" disabled></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex">
+                                <label class="control-label mt-auto mb-auto mr-2">Section</label>
+                                @if (ViewBag.Section == null)
+                                {
+                                    <select name="sectionId" id="sectionId" class="form-control d-none" data-toggle="select">
+                                        <option selected value="0">-- SELECT --</option>
+                                        @foreach (var sotSection in ViewBag.Sections)
+                                        {
+                                            <option value="@sotSection.Id">@sotSection.Name</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select name="sectionId" id="sectionId" class="form-control d-none" data-toggle="select" disabled>
+                                        @foreach (var sotSection in ViewBag.Sections)
+                                        {
+                                            if (sotSection.Id == ViewBag.Section.Id)
+                                            {
+                                                <option selected value="@sotSection.Id">@sotSection.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+
+                            </div>
+                            <div class="text-right">
+                                <span id="sectionIdAlert" class="badge badge-danger mt-2"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        @if (Model.SotModel.Photo != null)
+                        {
+                            <a class="example-image-link" href="/files/sot_models/@Model.SotModel.Photo" data-lightbox="example-1">
+                                <img class="example-image img-fluid rounded sotmodelimg border border-gray mt-2 mt-lg-0" src="/files/sot_models/@Model.SotModel.Photo" alt="" />
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+            @*</form>*@
+        </div>
+    </div>
+
+    <div class="card mb-2 animated fadeIn table-card">
+        <div class="card-header card-header py-2">
+            <div class="">
+                <div class="row">
+                    <div class="col-lg-6 pl-0 m-auto">
+                        <div class="d-flex">
+                            <h3 class="mb-0 pl-2">Items</h3>
+                        </div>
+                    </div>
+                    @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+               await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+               await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+               await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+                    {
+
+                        <div class="col-lg-6 pr-0">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <h3 class="mb-0 mr-2">Enable Serial Number </h3>
+                                <label class="custom-toggle custom-toggle-success">
+                                    <input id="checkboxForSerialNumberEnable" type="checkbox">
+                                    <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                </label>
+                                <button class="btn btn-facebook btn-sm ml-2" type="button" id="confirmSerialButton">
+                                    <i class="fa fa-check mr-1"></i>
+                                    Confirm Serial
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0 addsectiontable">
+            <div class="table-responsive">
+                <table class="table align-items-center table-bordered dt-table" id="sot_item_table">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="align-middle">
+                                S/N
+                            </th>
+                            <th class="data-source align-middle">
+                                Data Src
+                            </th>
+                            <th class="align-middle">
+                                Calculation File
+                            </th>
+                            <th class="align-middle">
+                                Video Link
+                            </th>
+                            <th class="op-name align-middle">
+                                Operation Name
+                            </th>
+                            <th class="op-code align-middle">
+                                Operation Code / <br /> Description
+                            </th>
+                            <th class="machine-name align-middle">
+                                Machine
+                            </th>
+                            <th>
+                                Cycle <br /> Time
+                            </th>
+                            <th>
+                                Pace <br /> Time
+                            </th>
+                            <th>
+                                No. of <br /> Cycle
+                            </th>
+                            <th class="align-middle align-middle">
+                                Ratings
+                            </th>
+                            <th class="align-middle align-middle">
+                                Allowance
+                            </th>
+                            <th class="align-middle align-middle">
+                                SAM/SOT
+                            </th>
+                            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                            {
+                                <th class="align-middle align-middle">
+                                    Action
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            double? totalSotValue = 0;
+                        }
+                        @if (Model.StandardOperationTimeItems.Count != 0)
+                        {
+                            foreach (var standardOperationTimeItem in Model.StandardOperationTimeItems.OrderBy(m => m.SerialNumber))
+                            {
+                                <tr>
+                                    <td class="p-0">
+                                        <input class="form-control serialNumber border-radius-0 text-center p-1" type="number" step="any" value="@standardOperationTimeItem.SerialNumber" disabled />
+                                    </td>
+                                    <td class="">
+                                        @standardOperationTimeItem.DataSource.Name
+                                        <input type="hidden" class="standardOperationTimeItemId" name="standardOperationTimeItemId" value="@standardOperationTimeItem.Id" />
+                                    </td>
+                                    <td class="align-middle pl-2 pr-2">
+                                        <a asp-action="AddSotItem" asp-controller="StandardOperationTimes" asp-route-sotId="@standardOperationTimeItem.StandardOperationTimeId" asp-route-dataSourceId="@standardOperationTimeItem.DataSourceId" asp-route-sectionId="@standardOperationTimeItem.SectionId" asp-route-sotItemId="@standardOperationTimeItem.Id">@standardOperationTimeItem.DataSource.CalculationFileName</a>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        @if (standardOperationTimeItem.VideoLink != null)
+                                        {
+                                            <a href="@standardOperationTimeItem.VideoLink" class="btn btn-primary btn-sm mr-0" target="_blank">View</a>
+                                        }
+                                    </td>
+                                    <td class="text-wrap op-name-td align-middle">
+                                        @standardOperationTimeItem.Operation.Name
+                                    </td>
+                                    <td class="text-wrap op-code-td align-middle">
+                                        @standardOperationTimeItem.OperationCode
+                                    </td>
+                                    <td class="text-wrap machine-name-td align-middle">
+                                        @standardOperationTimeItem.Operation.Machine.Name
+                                    </td>
+                                    <td class="cycle_time">
+                                        @if (standardOperationTimeItem.DataSourceId == 1)
+                                        {
+                                            @*<input class="form-control cycle_time" type="text" name="cycle_time" value="@standardOperationTimeItem.CycleTime" />*@
+                                            @standardOperationTimeItem.CycleTime
+                                        }
+                                    </td>
+                                    <td class="cycle_time">
+                                        @if (standardOperationTimeItem.DataSourceId == 2)
+                                        {
+                                            @*<input class="form-control text-center cycle_time" type="text" name="cycle_time" value="@standardOperationTimeItem.CycleTime" />*@
+                                            @standardOperationTimeItem.CycleTime
+                                        }
+                                    </td>
+                                    <td class="text-center cycle_time">
+                                        @*<input class="form-control text-center cycle_time" type="text" name="cycle_time" value="@standardOperationTimeItem.Cycle" />*@
+                                        @standardOperationTimeItem.Cycle
+                                    </td>
+                                    <td class="text-center">
+                                        @*<input class="form-control text-center" type="text" name="rating" value="@standardOperationTimeItem.Rating" />*@
+                                        @standardOperationTimeItem.Rating
+                                    </td>
+                                    <td class="text-center">
+                                        @*<input class="form-control text-center" type="text" name="allowance" value="@standardOperationTimeItem.Operation.Machine.Total" />*@
+                                        @standardOperationTimeItem.Operation.Machine.Total
+                                    </td>
+                                    <td class="text-center sot_value">
+                                        @{
+                                            if (standardOperationTimeItem.SotValue != null)
+                                            {
+                                                totalSotValue += standardOperationTimeItem.SotValue;
+                                            }
+                                        }
+                                        @*<input class="form-control sot_value text-center" type="text" name="sot_value" value="@System.Math.Round(Convert.ToDouble(standardOperationTimeItem.SotValue), 3)" />*@
+
+                                        @System.Math.Round(Convert.ToDouble(standardOperationTimeItem.SotValue), 3)
+                                    </td>
+                                    @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") || await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin"))
+                                    {
+                                        <td class="align-middle text-center">
+                                            <input class="btn btn-danger btn-sm delete_sot_item_button" type="button" name="delete_sot_item_button" value="Delete" />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="12" class="text-right p-2 align-middle font-weight-bold">Total</td>
+                                <td class="text-center p-2">
+                                    @*<input class="form-control" type="number" step="any" value="@System.Math.Round(Convert.ToDouble(totalSotValue), 3)" />*@
+                                    @System.Math.Round(Convert.ToDouble(totalSotValue), 3)
+                                </td>
+                                <td class="p-2"></td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td class="text-center" colspan="13">
+                                    <span class="badge badge-danger my-2">No SOT Calculation Item Added Yet</span>
+                                    <input type="hidden" id="inputForButtonDisable" value="50" />
+                                </td>
+                            </tr>
+                        }
+                        <input type="hidden" class="totalSotValue" name="totalSotValue" value="@totalSotValue" />
+                    </tbody>
+                </table>
+            </div>
+            @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+      await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+      await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+      await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+            {
+                <div class="col-md-12 text-center">
+                    <div class="mb-2 mt-2 d-flex justify-content-center">
+                        @foreach (var dataSource in ViewBag.DataSources)
+                        {
+                            <div class="mb-2">
+                                <input type="hidden" class="btn btn-primary dataSourceId btn-sm" value="@dataSource.Id" />
+                                <input type="button" class="btn btn-primary newButton btn-sm mr-2" value="New With @dataSource.Name" />
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    @if (await UserManager.IsInRoleAsync(user, "SuperAdmin") || await UserManager.IsInRoleAsync(user, "KSIAdmin") || await UserManager.IsInRoleAsync(user, "YSSADMIN") || await UserManager.IsInRoleAsync(user, "MAFAdmin") ||
+await UserManager.IsInRoleAsync(user, "RFLAdmin") || await UserManager.IsInRoleAsync(user, "APEXAdmin") || await UserManager.IsInRoleAsync(user, "EDISONAdmin") ||
+await UserManager.IsInRoleAsync(user, "KSIUserOfSOT") || await UserManager.IsInRoleAsync(user, "YSSUserOfSOT") || await UserManager.IsInRoleAsync(user, "MAFUserOfSOT") ||
+await UserManager.IsInRoleAsync(user, "RFLUserOfSOT") || await UserManager.IsInRoleAsync(user, "APEXUserOfSOT") || await UserManager.IsInRoleAsync(user, "EDISONUserOfSOT"))
+    {
+        <div class="text-center">
+            <input type="button" class="btn btn-danger btn-sm update_sot_button" name="update_sot_button" hidden value="Update SOT in The List" />
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/vendor/select2/dist/js/select2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/sweetalert2/dist/sweetalert2.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-notify/bootstrap-notify.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/lightbox/lightbox.min.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            var sotId = $('#sotId').val();
+            var sectionIdForUpdate = $('#sectionId').val();
+            var inputForButtonDisable = $('#inputForButtonDisable').val();
+            if (sectionIdForUpdate != 0) {
+                $('.update_sot_button').attr("hidden", false);
+            }
+            if (inputForButtonDisable == 50) {
+                $('.update_sot_button').attr("disabled", true);
+            }
+
+            $('.update_sot_button').on('click', function () {
+                var totalSotValue = $('.totalSotValue').val();
+                var processIdForRedirect = $('#processIdForRedirect').val();
+
+                if (sectionIdForUpdate == 0) {
+                    $.notify({
+                        title: 'Warning!',
+                        icon: 'fa fa-check',
+                        html: true,
+                        message: 'Something Went Wrong!'
+                    }, {
+                            type: 'warning',
+                            animate: {
+                                enter: 'animated fadeInDown'
+                            },
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                            spacing: 10,
+                            z_index: 1031,
+                            delay: 2000,
+                            template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                        });
+                }
+                else {
+                    $(this).attr("disabled", true);
+                    var url = '@Url.Action("UpdateSotValueOfSection", "StandardOperationTimes")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            sotId: sotId,
+                            sectionId: sectionIdForUpdate,
+                            totalSotValue: totalSotValue,
+                        },
+                        cache: false,
+                        success: function (result) {
+                            if (result) {
+                                location.href = '/StandardOperationTimes/Index?processId=' + processIdForRedirect;
+                            }
+                            else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something Went Wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    });
+                }
+            });
+
+            $('.newButton').on('click', function () {
+                var sectionId = $('#sectionId').val();
+                if (sectionId == 0) {
+                    $('#sectionIdAlert').html("Please Select a Section");
+                } else {
+                    var dataSourceId = $(this).closest("div").find(".dataSourceId").val();
+                    location.href = '/StandardOperationTimes/AddSotItem?sotId=' + sotId + '&dataSourceId=' + dataSourceId + '&sectionId=' + sectionId + '&sotItemId=' + 0;
+                }
+            });
+
+            $("#sot_item_table").on('click', '.delete_sot_item_button', function () {
+                var row = $(this).closest('tr');
+                var sotItemId = row.find('.standardOperationTimeItemId').val();
+                var sectionId = $('#sectionId').val();
+                //$(this).attr("disabled", true);
+                swal({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    type: "error",
+                    showCancelButton: !0,
+                    buttonsStyling: !1,
+                    useRejections: true,
+                    confirmButtonClass: "btn btn-danger",
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonClass: "btn btn-secondary"
+                }).then(function () {
+                    var url = '@Url.Action("DeleteSotItem", "StandardOperationTimes")';
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: url,
+                        data: {
+                            sotItemId: sotItemId,
+                        },
+                        cache: false,
+                        success: function (result) {
+                            if (result) {
+                                location.href = '/StandardOperationTimes/AddSection?sotId=' + sotId + '&sectionId=' + sectionId;
+                            }
+                            else {
+                                $.notify({
+                                    title: 'Warning!',
+                                    icon: 'fa fa-check',
+                                    html: true,
+                                    message: 'Something Went Wrong!'
+                                }, {
+                                        type: 'warning',
+                                        animate: {
+                                            enter: 'animated fadeInDown'
+                                        },
+                                        placement: {
+                                            from: "top",
+                                            align: "center"
+                                        },
+                                        spacing: 10,
+                                        z_index: 1031,
+                                        delay: 2000,
+                                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                    });
+                            }
+                        }
+                    });
+                });
+            });
+
+            $("#sot_item_table").on('change', '.serialNumber', function () {
+                var row = $(this).closest('tr');
+                var sotItemId = row.find('.standardOperationTimeItemId').val();
+                var serialNumber = row.find('.serialNumber').val();
+                //var sectionId = $('#sectionId').val();
+                var url = '@Url.Action("AddSerialNumberOfSotItem", "StandardOperationTimes")';
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: url,
+                    data: {
+                        sotItemId: sotItemId,
+                        serialNumber: serialNumber,
+                    },
+                    cache: false,
+                    success: function (result) {
+                        if (result) {
+                            //location.href = '/StandardOperationTimes/AddSection?sotId=' + sotId + '&sectionId=' + sectionId;
+                        }
+                    }
+                });
+            });
+
+            $('#confirmSerialButton').on('click', function () {
+                $.notify({
+                    title: 'Success!',
+                    icon: 'fa fa-check',
+                    html: true,
+                    message: 'Serials Updated!'
+                }, {
+                        type: 'success',
+                        animate: {
+                            enter: 'animated fadeInDown'
+                        },
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        },
+                        spacing: 10,
+                        z_index: 1031,
+                        delay: 2000,
+                        template: '<div data-notify="container" class="alert alert-dismissible alert-{0} alert-notify" role="alert"><span class="alert-icon" data-notify="icon"></span> <div class="alert-text"</div> <span class="alert-title" data-notify="title">{1}</span> <span data-notify="message">{2}</span></div><button type="button" class="close" data-notify="dismiss" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                    });
+                location.reload();
+            });
+
+            $('#checkboxForSerialNumberEnable').change(function () {
+                if (this.checked) {
+                    $('.serialNumber').prop("disabled", false);
+                }
+                else {
+                    $('.serialNumber').prop("disabled", true);
+                }
+            });
+
+        });
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
